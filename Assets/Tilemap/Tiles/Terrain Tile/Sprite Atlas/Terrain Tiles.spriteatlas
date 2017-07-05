@@ -1,0 +1,132 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Terrain Tiles
+  m_EditorData:
+    textureSettings:
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      colorSpace: 1
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+    platformSettings: []
+    packingParameters:
+      paddingPower: 2
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 1
+    packedHash:
+      serializedVersion: 2
+      Hash: a7a2a13fdac70e3fdc2ea3cbea6d6058
+    variantMultiplier: 1
+    bindAsDefault: 1
+    finalFormat: 4
+    hashString: a7a2a13fdac70e3fdc2ea3cbea6d6058
+    totalSpriteSurfaceArea: 122880
+    packables:
+    - {fileID: 2800000, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+    packedSpriteRenderDataKeys:
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300068
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300082
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300066
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300084
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300056
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300060
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300058
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300028
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300020
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300022
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300024
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300026
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300010
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300008
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300014
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300012
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300002
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300000
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300006
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300004
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300018
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300016
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300072
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300078
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300070
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300080
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300074
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300076
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300064
+    - a51e743cd78e513489bb4b23cd3d13f2: 21300062
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300068, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300082, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300066, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300084, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300056, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300060, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300058, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300028, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300020, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300022, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300024, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300026, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300010, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300008, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300014, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300012, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300002, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300000, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300006, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300004, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300018, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300016, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300072, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300078, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300070, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300080, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300074, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300076, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300064, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  - {fileID: 21300062, guid: a51e743cd78e513489bb4b23cd3d13f2, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - Pebbles_07
+  - Pebbles_14
+  - Pebbles_06
+  - Pebbles_15
+  - Pebbles_01
+  - Pebbles_03
+  - Pebbles_02
+  - PBrick_14
+  - PBrick_10
+  - PBrick_11
+  - PBrick_12
+  - PBrick_13
+  - PBrick_5
+  - PBrick_4
+  - PBrick_7
+  - PBrick_6
+  - PBrick_1
+  - PBrick_0
+  - PBrick_3
+  - PBrick_2
+  - PBrick_9
+  - PBrick_8
+  - Pebbles_09
+  - Pebbles_12
+  - Pebbles_08
+  - Pebbles_13
+  - Pebbles_10
+  - Pebbles_11
+  - Pebbles_05
+  - Pebbles_04
+  m_Tag: Terrain Tiles
+  m_IsVariant: 0

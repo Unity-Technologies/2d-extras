@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d80edd6caba93514eb01722041fe50b4, type: 3}
+  m_Name: Random Plant Brush
+  m_EditorClassIdentifier: 
+  m_Cells:
+  - m_Tile: {fileID: 0}
+    m_Matrix:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Pivot: {x: 0, y: 0, z: 0}
+  randomTiles:
+  - {fileID: 11400000, guid: d8b12a476c2a84b4692adc51a60fc5b4, type: 2}
+  - {fileID: 11400000, guid: 68eea7afc1d4d57408baad8249b76e40, type: 2}
+  - {fileID: 11400000, guid: fa5af3e902a89fc4e9e1a508c4a0a5bc, type: 2}
+  - {fileID: 11400000, guid: 2748e9abf42487044b297db69bfa1d7c, type: 2}
+  - {fileID: 11400000, guid: 948a3d70b8fb4b6459ddfc83cd3d598c, type: 2}

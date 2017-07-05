@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Animated Tiles
+  m_EditorData:
+    textureSettings:
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      colorSpace: 1
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+    platformSettings: []
+    packingParameters:
+      paddingPower: 2
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 1
+    packedHash:
+      serializedVersion: 2
+      Hash: cf00b53d007ade61fbb28cc0a92b8a23
+    variantMultiplier: 1
+    bindAsDefault: 1
+    finalFormat: 4
+    hashString: cf00b53d007ade61fbb28cc0a92b8a23
+    totalSpriteSurfaceArea: 40960
+    packables:
+    - {fileID: 2800000, guid: bf541ba7810cafd43af665d35d1dc29e, type: 3}
+    packedSpriteRenderDataKeys:
+    - bf541ba7810cafd43af665d35d1dc29e: 21300014
+    - bf541ba7810cafd43af665d35d1dc29e: 21300012
+    - bf541ba7810cafd43af665d35d1dc29e: 21300010
+    - bf541ba7810cafd43af665d35d1dc29e: 21300008
+    - bf541ba7810cafd43af665d35d1dc29e: 21300006
+    - bf541ba7810cafd43af665d35d1dc29e: 21300004
+    - bf541ba7810cafd43af665d35d1dc29e: 21300002
+    - bf541ba7810cafd43af665d35d1dc29e: 21300000
+    - bf541ba7810cafd43af665d35d1dc29e: 21300018
+    - bf541ba7810cafd43af665d35d1dc29e: 21300016
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300014, guid: bf541ba7810cafd43af665d35d1dc29e, type: 3}
+  - {fileID: 21300012, guid: bf541ba7810cafd43af665d35d1dc29e, type: 3}
+  - {fileID: 21300010, guid: bf541ba7810cafd43af665d35d1dc29e, type: 3}
+  - {fileID: 21300008, guid: bf541ba7810cafd43af665d35d1dc29e, type: 3}
+  - {fileID: 21300006, guid: bf541ba7810cafd43af665d35d1dc29e, type: 3}
+  - {fileID: 21300004, guid: bf541ba7810cafd43af665d35d1dc29e, type: 3}
+  - {fileID: 21300002, guid: bf541ba7810cafd43af665d35d1dc29e, type: 3}
+  - {fileID: 21300000, guid: bf541ba7810cafd43af665d35d1dc29e, type: 3}
+  - {fileID: 21300018, guid: bf541ba7810cafd43af665d35d1dc29e, type: 3}
+  - {fileID: 21300016, guid: bf541ba7810cafd43af665d35d1dc29e, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - WaterfallTiles_7
+  - WaterfallTiles_6
+  - WaterfallTiles_5
+  - WaterfallTiles_4
+  - WaterfallTiles_3
+  - WaterfallTiles_2
+  - WaterfallTiles_1
+  - WaterfallTiles_0
+  - WaterfallTiles_9
+  - WaterfallTiles_8
+  m_Tag: Animated Tiles
+  m_IsVariant: 0
