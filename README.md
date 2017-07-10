@@ -1,6 +1,8 @@
 # 2d-extras
 
-2d-extras is a repository containing helpful reusable example scripts and assets which you can use to make your games, with a slant towards 2D. Feel free to customise the behavior of the scripts to create new tools for your use case!
+2d-extras is a repository containing helpful reusable scripts which you can use to make your games, with a slant towards 2D. Feel free to customise the behavior of the scripts to create new tools for your use case! 
+
+Implemented examples using these scripts can be found in the sister repository [2d-techdemos](https://github.com/Unity-Technologies/2d-techdemos "2d-techdemos: Examples for 2d features").
 
 All items in the repository are grouped by use for a feature and are listed below.
 
