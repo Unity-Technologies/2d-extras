@@ -233,7 +233,7 @@ namespace UnityEngine.Tilemaps
                 positionValue.type = dataType;
                 positionValue.data = positionProperty;
 
-                m_PositionProperties.Add(positionKey, positionValue);
+	            m_PositionProperties[positionKey] = positionValue;
                 return true;
             }
             return false;
