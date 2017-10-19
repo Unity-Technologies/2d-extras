@@ -42,10 +42,9 @@ namespace UnityEngine.Tilemaps
 
 #if UNITY_EDITOR
 		[MenuItem("Assets/Create/Animated Tile")]
-		public static void CreateBrush()
+		public static void CreateAnimatedTile()
 		{
-			string path = EditorUtility.SaveFilePanelInProject("Save Brush", "New Brush", "asset", "Save Brush", "Assets");
-
+			string path = EditorUtility.SaveFilePanelInProject("Save Animated Tile", "New Animated Tile", "asset", "Save Animated Tile", "Assets");
 			if (path == "")
 				return;
 
@@ -63,9 +62,10 @@ namespace UnityEngine.Tilemaps
 		public override void OnInspectorGUI()
 		{
 			EditorGUI.BeginChangeCheck();
-			int count = EditorGUILayout.IntField("Number of Animated Sprites", tile.m_AnimatedSprites.Length);
+			int count = EditorGUILayout.DelayedIntField("Number of Animated Sprites", tile.m_AnimatedSprites != null ? tile.m_AnimatedSprites.Length : 0);
 			if (count < 0)
 				count = 0;
+				
 			if (tile.m_AnimatedSprites == null || tile.m_AnimatedSprites.Length != count)
 			{
 				Array.Resize<Sprite>(ref tile.m_AnimatedSprites, count);
@@ -84,15 +84,16 @@ namespace UnityEngine.Tilemaps
 			
 			float minSpeed = EditorGUILayout.FloatField("Minimum Speed", tile.m_MinSpeed);
 			float maxSpeed = EditorGUILayout.FloatField("Minimum Speed", tile.m_MaxSpeed);
-			if (minSpeed < 0)
+			if (minSpeed < 0.0f)
 				minSpeed = 0.0f;
-			if (maxSpeed < 0)
+				
+			if (maxSpeed < 0.0f)
 				maxSpeed = 0.0f;
+				
 			if (maxSpeed < minSpeed)
 			{
 				float temp = maxSpeed;
 				maxSpeed = minSpeed;
-				minSpeed = temp;
 			}
 			
 			tile.m_MinSpeed = minSpeed;
