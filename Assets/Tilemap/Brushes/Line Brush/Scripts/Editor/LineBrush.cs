@@ -3,12 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Linq;
 
 namespace UnityEditor
 {
     [CustomGridBrush(true, false, false, "Line Brush")]
-    public class LineBrush : GridBrush {
+    public class LineBrush : GridBrush
+    {
         public bool lineStartActive = false;
+        public bool fillGaps = false;
         public Vector3Int lineStart = Vector3Int.zero;
 
         public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
@@ -21,7 +24,7 @@ namespace UnityEditor
                     base.Paint(grid, brushTarget, position);    
                 else
                 {
-                    foreach (var point in GetPointsOnLine(startPos, endPos))
+                    foreach (var point in GetPointsOnLine(startPos, endPos, fillGaps))
                     {
                         Vector3Int paintPos = new Vector3Int(point.x, point.y, position.z);
                         base.Paint(grid, brushTarget, paintPos);
@@ -45,6 +48,66 @@ namespace UnityEditor
                 return;
 
             AssetDatabase.CreateAsset(ScriptableObject.CreateInstance<LineBrush>(), path);
+        }
+
+        /// <summary>
+        /// Added option to fill gaps for continuous lines.
+        /// </summary>
+        public static IEnumerable<Vector2Int> GetPointsOnLine(Vector2Int startPos, Vector2Int endPos, bool fillGaps)
+        {
+            var points = GetPointsOnLine(startPos, endPos);
+            if (fillGaps)
+            {
+                var rise = endPos.y - startPos.y;
+                var run = endPos.x - startPos.x;
+
+                if (rise != 0 || run != 0)
+                {
+                    var extraStart = startPos;
+                    var extraEnd = endPos;
+
+
+                    if (Mathf.Abs(rise) >= Mathf.Abs(run))
+                    {
+                        // up
+                        if (rise > 0)
+                        {
+                            extraStart.y += 1;
+                            extraEnd.y += 1;
+                        }
+                        // down
+                        else // rise < 0
+                        {
+
+                            extraStart.y -= 1;
+                            extraEnd.y -= 1;
+                        }
+                    }
+                    else // Mathf.Abs(rise) < Mathf.Abs(run)
+                    {
+
+                        // right
+                        if (run > 0)
+                        {
+                            extraStart.x += 1;
+                            extraEnd.x += 1;
+                        }
+                        // left
+                        else // run < 0
+                        {
+                            extraStart.x -= 1;
+                            extraEnd.x -= 1;
+                        }
+                    }
+
+                    var extraPoints = GetPointsOnLine(extraStart, extraEnd);
+                    extraPoints = extraPoints.Except(new[] { extraEnd });
+                    points = points.Union(extraPoints);
+                }
+
+            }
+
+            return points;
         }
 
         // http://ericw.ca/notes/bresenhams-line-algorithm-in-csharp.html
@@ -116,7 +179,7 @@ namespace UnityEditor
                     PaintPreview(grid, brushTarget, position.min);
                 else
                 {
-                    foreach (var point in LineBrush.GetPointsOnLine(startPos, endPos))
+                    foreach (var point in LineBrush.GetPointsOnLine(startPos, endPos, lineBrush.fillGaps))
                     {
                         Vector3Int paintPos = new Vector3Int(point.x, point.y, position.z);
                         PaintPreview(grid, brushTarget, paintPos);
