@@ -62,7 +62,7 @@ namespace UnityEngine.Tilemaps
 		public override void OnInspectorGUI()
 		{
 			EditorGUI.BeginChangeCheck();
-			int count = EditorGUILayout.DelayedIntField("Number of Animated Sprites", tile.m_AnimatedSprite != null ? tile.m_AnimatedSprites.Length : 0);
+			int count = EditorGUILayout.DelayedIntField("Number of Animated Sprites", tile.m_AnimatedSprites != null ? tile.m_AnimatedSprites.Length : 0);
 			if (count < 0)
 				count = 0;
 				
