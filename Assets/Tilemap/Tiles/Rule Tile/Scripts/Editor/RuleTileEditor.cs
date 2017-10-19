@@ -275,7 +275,7 @@ namespace UnityEditor
 			{
 				GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Size");
 				EditorGUI.BeginChangeCheck();
-				int newLength = EditorGUI.IntField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_Sprites.Length);
+				int newLength = EditorGUI.DelayedIntField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_Sprites.Length);
 				if (EditorGUI.EndChangeCheck())
 					Array.Resize(ref tilingRule.m_Sprites, Math.Max(newLength, 1));
 				y += k_SingleLineHeight;
