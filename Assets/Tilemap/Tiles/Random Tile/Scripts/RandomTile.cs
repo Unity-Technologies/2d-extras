@@ -55,7 +55,7 @@ namespace UnityEngine.Tilemaps
 		public override void OnInspectorGUI()
 		{
 			EditorGUI.BeginChangeCheck();
-			int count = EditorGUILayout.IntField("Number of Sprites", tile.m_Sprites != null ? tile.m_Sprites.Length : 0);
+			int count = EditorGUILayout.DelayedIntField("Number of Sprites", tile.m_Sprites != null ? tile.m_Sprites.Length : 0);
 			if (count < 0)
 				count = 0;
 			if (tile.m_Sprites == null || tile.m_Sprites.Length != count)
