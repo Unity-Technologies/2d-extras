@@ -79,11 +79,12 @@ namespace UnityEditor
                 }
             }
 
-            Handles.Label(
-                grid.CellToWorld(new Vector3Int(position.x, position.y, coordinateBrush.z)),
-                "Pos: " + new Vector3Int(position.x, position.y, coordinateBrush.z)
-                        + " Size: " + new Vector3Int(position.size.x, position.size.y)
-            );
+            var labelText = "Pos: " + new Vector3Int(position.x, position.y, coordinateBrush.z);
+            if (position.size.x > 1 || position.size.y > 1) {
+                labelText += " Size: " + new Vector2Int(position.size.x, position.size.y);
+            }
+
+            Handles.Label(grid.CellToWorld(new Vector3Int(position.x, position.y, coordinateBrush.z)), labelText);
         }
     }
 }
