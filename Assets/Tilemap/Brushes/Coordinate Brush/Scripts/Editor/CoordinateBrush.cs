@@ -26,6 +26,13 @@ namespace UnityEditor
             base.FloodFill(grid, brushTarget, zPosition);
         }
 
+        public override void BoxFill(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
+        {
+            var zPosition = new Vector3Int(position.x, position.y, z);
+            position.position = zPosition;
+            base.BoxFill(gridLayout, brushTarget, position);
+        }
+
         [MenuItem("Assets/Create/Coordinate Brush")]
         public static void CreateBrush()
         {
@@ -71,7 +78,12 @@ namespace UnityEditor
                     Handles.DrawLine(cellLocals[j], cellLocals[i]);
                 }
             }
-            Handles.Label(grid.CellToWorld(new Vector3Int(position.x, position.y, coordinateBrush.z)), new Vector3Int(position.x, position.y, coordinateBrush.z).ToString());
+
+            Handles.Label(
+                grid.CellToWorld(new Vector3Int(position.x, position.y, coordinateBrush.z)),
+                "Pos: " + new Vector3Int(position.x, position.y, coordinateBrush.z)
+                        + " Size: " + new Vector3Int(position.size.x, position.size.y)
+            );
         }
     }
 }
