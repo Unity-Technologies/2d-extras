@@ -58,7 +58,7 @@ namespace UnityEngine.Tilemaps {
 
 #if UNITY_EDITOR
     [CustomEditor(typeof(WeightedRandomTile))]
-    public class RandomTileEditor : Editor {
+    public class WeightedRandomTileEditor : Editor {
         private WeightedRandomTile Tile {
             get { return target as WeightedRandomTile; }
         }
