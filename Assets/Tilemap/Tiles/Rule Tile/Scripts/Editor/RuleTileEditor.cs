@@ -184,7 +184,10 @@ namespace UnityEditor
 						}
 						if (Event.current.type == EventType.MouseDown && r.Contains(Event.current.mousePosition))
 						{
-							tilingRule.m_Neighbors[index] = (RuleTile.TilingRule.Neighbor) (((int)tilingRule.m_Neighbors[index] + 1) % 3);
+                            				int change = 1;
+						    	if (Event.current.button == 1)
+								change = -1;
+							tilingRule.m_Neighbors[index] = (RuleTile.TilingRule.Neighbor) (((int)tilingRule.m_Neighbors[index] + change + 3) % 3);
 							GUI.changed = true;
 							Event.current.Use();
 						}
