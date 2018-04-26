@@ -8,8 +8,20 @@ namespace UnityEngine
 	[CreateAssetMenu]
 	public class RuleTile : TileBase
 	{
+		private static readonly int[,] RotatedOrMirroredIndexes =
+		{
+			{2, 4, 7, 1, 6, 0, 3, 5}, // 90
+			{7, 6, 5, 4, 3, 2, 1, 0}, // 180, XY
+			{5, 3, 0, 6, 1, 7, 4, 2}, // 270
+			{2, 1, 0, 4, 3, 7, 6, 5}, // X
+			{5, 6, 7, 3, 4, 0, 1, 2}, // Y
+		};
+		private static readonly int NeighborCount = 8;
+		
 		public Sprite m_DefaultSprite;
 		public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
+		
+		private TileBase[] m_CachedNeighboringTiles = new TileBase[NeighborCount];
 
 		[Serializable]
 		public class TilingRule
@@ -26,7 +38,7 @@ namespace UnityEngine
 			public TilingRule()
 			{
 				m_Output = OutputSprite.Single;
-				m_Neighbors = new Neighbor[8];
+				m_Neighbors = new Neighbor[NeighborCount];
 				m_Sprites = new Sprite[1];
 				m_AnimationSpeed = 1f;
 				m_PerlinScale = 0.5f;
@@ -43,9 +55,12 @@ namespace UnityEngine
 
 		[HideInInspector] public List<TilingRule> m_TilingRules;
 
-		public override void GetTileData(Vector3Int position, ITilemap tileMap, ref TileData tileData)
+		public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
 		{
+			TileBase[] neighboringTiles = null;
+			GetMatchingNeighboringTiles(tilemap, position, ref neighboringTiles);
 			var iden = Matrix4x4.identity;
+			
 			tileData.sprite = m_DefaultSprite;
 			tileData.colliderType = m_DefaultColliderType;
 			tileData.flags = TileFlags.LockTransform;
@@ -54,7 +69,7 @@ namespace UnityEngine
 			foreach (TilingRule rule in m_TilingRules)
 			{
 				Matrix4x4 transform = iden;
-				if (RuleMatches(rule, position, tileMap, ref transform))
+				if (RuleMatches(rule, ref neighboringTiles, ref transform))
 				{
 					switch (rule.m_Output)
 					{
@@ -83,13 +98,15 @@ namespace UnityEngine
 
 		public override bool GetTileAnimationData(Vector3Int position, ITilemap tilemap, ref TileAnimationData tileAnimationData)
 		{
+			TileBase[] neighboringTiles = null;
 			var iden = Matrix4x4.identity;
 			foreach (TilingRule rule in m_TilingRules)
 			{
 				if (rule.m_Output == TilingRule.OutputSprite.Animation)
 				{
 					Matrix4x4 transform = iden;
-					if (RuleMatches(rule, position, tilemap, ref transform))
+					GetMatchingNeighboringTiles(tilemap, position, ref neighboringTiles);
+					if (RuleMatches(rule, ref neighboringTiles, ref transform))
 					{
 						tileAnimationData.animatedSprites = rule.m_Sprites;
 						tileAnimationData.animationSpeed = rule.m_AnimationSpeed;
@@ -118,12 +135,12 @@ namespace UnityEngine
 			}
 		}
 
-		public bool RuleMatches(TilingRule rule, Vector3Int position, ITilemap tilemap, ref Matrix4x4 transform)
+		public bool RuleMatches(TilingRule rule, ref TileBase[] neighboringTiles, ref Matrix4x4 transform)
 		{
 			// Check rule against rotations of 0, 90, 180, 270
 			for (int angle = 0; angle <= (rule.m_RuleTransform == TilingRule.Transform.Rotated ? 270 : 0); angle += 90)
 			{
-				if (RuleMatches(rule, position, tilemap, angle))
+				if (RuleMatches(rule, ref neighboringTiles, angle))
 				{
 					transform = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), Vector3.one);
 					return true;
@@ -131,14 +148,14 @@ namespace UnityEngine
 			}
 
 			// Check rule against x-axis mirror
-			if ((rule.m_RuleTransform == TilingRule.Transform.MirrorX) && RuleMatches(rule, position, tilemap, true, false))
+			if ((rule.m_RuleTransform == TilingRule.Transform.MirrorX) && RuleMatches(rule, ref neighboringTiles, true, false))
 			{
 				transform = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(-1f, 1f, 1f));
 				return true;
 			}
 
 			// Check rule against y-axis mirror
-			if ((rule.m_RuleTransform == TilingRule.Transform.MirrorY) && RuleMatches(rule, position, tilemap, false, true))
+			if ((rule.m_RuleTransform == TilingRule.Transform.MirrorY) && RuleMatches(rule, ref neighboringTiles, false, true))
 			{
 				transform = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1f, -1f, 1f));
 				return true;
@@ -163,52 +180,90 @@ namespace UnityEngine
 			return original;
 		}
 
-		public bool RuleMatches(TilingRule rule, Vector3Int position, ITilemap tilemap, int angle)
+		public bool RuleMatches(TilingRule rule, ref TileBase[] neighboringTiles, int angle)
 		{
-			for (int y = -1; y <= 1; y++)
+			for (int i = 0; i < NeighborCount; ++i)
+			{
+				int index = GetRotatedIndex(i, angle);
+				TileBase tile = neighboringTiles[index];
+				if (rule.m_Neighbors[i] == TilingRule.Neighbor.This && tile != this || rule.m_Neighbors[i] == TilingRule.Neighbor.NotThis && tile == this)
+				{
+					return false;
+				}	
+			}
+			return true;
+		}
+
+		public bool RuleMatches(TilingRule rule, ref TileBase[] neighboringTiles, bool mirrorX, bool mirrorY)
+		{
+			for (int i = 0; i < NeighborCount; ++i)
+			{
+				int index = GetMirroredIndex(i, mirrorX, mirrorY);
+				TileBase tile = neighboringTiles[index];
+				if (rule.m_Neighbors[i] == TilingRule.Neighbor.This && tile != this || rule.m_Neighbors[i] == TilingRule.Neighbor.NotThis && tile == this)
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		private void GetMatchingNeighboringTiles(ITilemap tilemap, Vector3Int position, ref TileBase[] neighboringTiles)
+		{
+			if (neighboringTiles != null)
+				return;
+
+			if (m_CachedNeighboringTiles == null || m_CachedNeighboringTiles.Length < NeighborCount)
+				m_CachedNeighboringTiles = new TileBase[NeighborCount];
+
+			int index = 0;
+			for (int y = 1; y >= -1; y--)
 			{
 				for (int x = -1; x <= 1; x++)
 				{
 					if (x != 0 || y != 0)
 					{
-						Vector3Int offset = new Vector3Int(x, y, 0);
-						Vector3Int rotated = GetRotatedPos(offset, angle);
-						int index = GetIndexOfOffset(rotated);
-						TileBase tile = tilemap.GetTile(position + offset);
-						if (rule.m_Neighbors[index] == TilingRule.Neighbor.This && tile != this || rule.m_Neighbors[index] == TilingRule.Neighbor.NotThis && tile == this)
-						{
-							return false;
-						}	
+						Vector3Int tilePosition = new Vector3Int(position.x + x, position.y + y, position.z);
+						m_CachedNeighboringTiles[index++] = tilemap.GetTile(tilePosition);
 					}
 				}
-				
 			}
-			return true;
+			neighboringTiles = m_CachedNeighboringTiles;
 		}
 
-		public bool RuleMatches(TilingRule rule, Vector3Int position, ITilemap tilemap, bool mirrorX, bool mirrorY)
+		private int GetRotatedIndex(int original, int rotation)
 		{
-			for (int y = -1; y <= 1; y++)
+			switch (rotation)
 			{
-				for (int x = -1; x <= 1; x++)
-				{
-					if (x != 0 || y != 0)
-					{
-						Vector3Int offset = new Vector3Int(x, y, 0);
-						Vector3Int mirrored = GetMirroredPos(offset, mirrorX, mirrorY);
-						int index = GetIndexOfOffset(mirrored);
-						TileBase tile = tilemap.GetTile(position + offset);
-						if (rule.m_Neighbors[index] == TilingRule.Neighbor.This && tile != this || rule.m_Neighbors[index] == TilingRule.Neighbor.NotThis && tile == this)
-						{
-							return false;
-						}
-					}
-				}
+				case 0:
+					return original;
+				case 90:
+					return RotatedOrMirroredIndexes[0, original];
+				case 180:
+					return RotatedOrMirroredIndexes[1, original];
+				case 270:
+					return RotatedOrMirroredIndexes[2, original];
 			}
-			
-			return true;
+			return original;
 		}
 
+		private int GetMirroredIndex(int original, bool mirrorX, bool mirrorY)
+		{
+			if (mirrorX && mirrorY)
+			{
+				return RotatedOrMirroredIndexes[1, original];
+			}
+			if (mirrorX)
+			{
+				return RotatedOrMirroredIndexes[3, original];
+			}
+			if (mirrorY)
+			{
+				return RotatedOrMirroredIndexes[4, original];
+			}
+			return original;
+		}
+		
 		private int GetIndexOfOffset(Vector3Int offset)
 		{
 			int result = offset.x + 1 + (-offset.y + 1) * 3;
