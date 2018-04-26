@@ -32,7 +32,7 @@ namespace UnityEngine
 				m_PerlinScale = 0.5f;
 				m_ColliderType = Tile.ColliderType.Sprite;
 
-				for(int i=0; i<m_Neighbors.Length; i++)
+				for (int i=0; i<m_Neighbors.Length; i++)
 					m_Neighbors[i] = Neighbor.DontCare;
 			}
 
@@ -45,14 +45,15 @@ namespace UnityEngine
 
 		public override void GetTileData(Vector3Int position, ITilemap tileMap, ref TileData tileData)
 		{
+			var iden = Matrix4x4.identity;
 			tileData.sprite = m_DefaultSprite;
 			tileData.colliderType = m_DefaultColliderType;
 			tileData.flags = TileFlags.LockTransform;
-			tileData.transform = Matrix4x4.identity;
+			tileData.transform = iden;
 			
 			foreach (TilingRule rule in m_TilingRules)
 			{
-				Matrix4x4 transform = Matrix4x4.identity;
+				Matrix4x4 transform = iden;
 				if (RuleMatches(rule, position, tileMap, ref transform))
 				{
 					switch (rule.m_Output)
@@ -82,14 +83,18 @@ namespace UnityEngine
 
 		public override bool GetTileAnimationData(Vector3Int position, ITilemap tilemap, ref TileAnimationData tileAnimationData)
 		{
+			var iden = Matrix4x4.identity;
 			foreach (TilingRule rule in m_TilingRules)
 			{
-				Matrix4x4 transform = Matrix4x4.identity;
-				if (RuleMatches(rule, position, tilemap, ref transform) && rule.m_Output == TilingRule.OutputSprite.Animation)
+				if (rule.m_Output == TilingRule.OutputSprite.Animation)
 				{
-					tileAnimationData.animatedSprites = rule.m_Sprites;
-					tileAnimationData.animationSpeed = rule.m_AnimationSpeed;
-					return true;
+					Matrix4x4 transform = iden;
+					if (RuleMatches(rule, position, tilemap, ref transform))
+					{
+						tileAnimationData.animatedSprites = rule.m_Sprites;
+						tileAnimationData.animationSpeed = rule.m_AnimationSpeed;
+						return true;
+					}	
 				}
 			}
 			return false;
