@@ -36,7 +36,7 @@ namespace UnityEngine.Tilemaps {
             var randomWeight = Random.Range(0, cumulativeWeight);
             foreach (var spriteInfo in Sprites) {
                 randomWeight -= spriteInfo.Weight;
-                if (randomWeight <= 0) {
+                if (randomWeight < 0) {
                     tileData.sprite = spriteInfo.Sprite;    
                     break;
                 }
