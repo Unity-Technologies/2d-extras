@@ -57,7 +57,7 @@ namespace UnityEngine
 		}
 
 		public RuleTile m_Tile;
-		public List<TileSpritePair> m_Sprites;
+		public List<TileSpritePair> m_Sprites = new List<TileSpritePair>();
 
 		public override void GetTileData(Vector3Int position, ITilemap tileMap, ref TileData tileData)
 		{
