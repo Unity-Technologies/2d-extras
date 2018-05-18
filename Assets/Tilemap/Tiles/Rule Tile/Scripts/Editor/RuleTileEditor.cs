@@ -84,6 +84,7 @@ namespace UnityEditor
 			m_ReorderableList.drawElementCallback = OnDrawElement;
 			m_ReorderableList.elementHeightCallback = GetElementHeight;
 			m_ReorderableList.onReorderCallback = ListUpdated;
+			m_ReorderableList.onAddCallback = OnAddElement;
 		}
 
 		private void ListUpdated(ReorderableList list)
@@ -124,6 +125,15 @@ namespace UnityEditor
 			SpriteOnGUI(spriteRect, rule);
 			if (EditorGUI.EndChangeCheck())
 				SaveTile();
+		}
+		
+		private void OnAddElement(ReorderableList list)
+		{
+			RuleTile.TilingRule rule = new RuleTile.TilingRule();
+			rule.m_Output = RuleTile.TilingRule.OutputSprite.Single;
+			rule.m_Sprites[0] = tile.m_DefaultSprite;
+			rule.m_ColliderType = tile.m_DefaultColliderType;
+			tile.m_TilingRules.Add(rule);
 		}
 
 		private void SaveTile()
@@ -348,6 +358,45 @@ namespace UnityEditor
 			t.hideFlags = HideFlags.HideAndDontSave;
 			t.LoadImage(System.Convert.FromBase64String(base64));
 			return t;
+		}
+		
+		[Serializable]
+		class RuleTileRuleWrapper
+		{
+			[SerializeField]
+			public List<RuleTile.TilingRule> rules = new List<RuleTile.TilingRule>();
+		}
+		
+		[MenuItem("CONTEXT/RuleTile/Copy All Rules")]
+		private static void CopyAllRules(MenuCommand item)
+		{
+			RuleTile tile = item.context as RuleTile;
+			if (tile == null)
+				return;
+			
+			RuleTileRuleWrapper rulesWrapper = new RuleTileRuleWrapper();
+			rulesWrapper.rules = tile.m_TilingRules;
+			var rulesJson = EditorJsonUtility.ToJson(rulesWrapper);
+			EditorGUIUtility.systemCopyBuffer = rulesJson;
+		}
+		
+		[MenuItem("CONTEXT/RuleTile/Paste Rules")]
+		private static void PasteRules(MenuCommand item)
+		{
+			RuleTile tile = item.context as RuleTile;
+			if (tile == null)
+				return;
+
+			try
+			{
+				RuleTileRuleWrapper rulesWrapper = new RuleTileRuleWrapper();
+				EditorJsonUtility.FromJsonOverwrite(EditorGUIUtility.systemCopyBuffer, rulesWrapper);
+				tile.m_TilingRules.AddRange(rulesWrapper.rules);
+			}
+			catch (Exception e)
+			{
+				Debug.LogError("Unable to paste rules from system copy buffer");
+			}
 		}
 	}
 }
