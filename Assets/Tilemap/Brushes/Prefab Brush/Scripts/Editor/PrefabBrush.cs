@@ -23,9 +23,10 @@ namespace UnityEditor
 			int index = Mathf.Clamp(Mathf.FloorToInt(GetPerlinValue(position, m_PerlinScale, k_PerlinOffset)*m_Prefabs.Length), 0, m_Prefabs.Length - 1);
 			GameObject prefab = m_Prefabs[index];
 			GameObject instance = (GameObject) PrefabUtility.InstantiatePrefab(prefab);
-			Undo.RegisterCreatedObjectUndo((Object)instance, "Paint Prefabs");
 			if (instance != null)
 			{
+				Undo.MoveGameObjectToScene(instance, brushTarget.scene, "Paint Prefabs");
+				Undo.RegisterCreatedObjectUndo((Object)instance, "Paint Prefabs");
 				instance.transform.SetParent(brushTarget.transform);
 				instance.transform.position = grid.LocalToWorld(grid.CellToLocalInterpolated(new Vector3Int(position.x, position.y, m_Z) + new Vector3(.5f, .5f, .5f)));
 			}
