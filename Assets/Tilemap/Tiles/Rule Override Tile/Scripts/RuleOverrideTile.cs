@@ -210,10 +210,11 @@ namespace UnityEngine
 			{
 				if (m_RuntimeTile.m_DefaultSprite)
 					m_RuntimeTile.m_DefaultSprite = this[m_RuntimeTile.m_DefaultSprite];
-				foreach (RuleTile.TilingRule rule in m_RuntimeTile.m_TilingRules)
-					for (int i = 0; i < rule.m_Sprites.Length; i++)
-						if (rule.m_Sprites[i])
-							rule.m_Sprites[i] = this[rule.m_Sprites[i]];
+				if (m_RuntimeTile.m_TilingRules != null)
+					foreach (RuleTile.TilingRule rule in m_RuntimeTile.m_TilingRules)
+						for (int i = 0; i < rule.m_Sprites.Length; i++)
+							if (rule.m_Sprites[i])
+								rule.m_Sprites[i] = this[rule.m_Sprites[i]];
 			}
 			else
 			{
@@ -222,13 +223,15 @@ namespace UnityEngine
 					m_RuntimeTile.m_DefaultSprite = m_OverrideDefault.m_TilingRule.m_Sprites.Length > 0 ? m_OverrideDefault.m_TilingRule.m_Sprites[0] : null;
 					m_RuntimeTile.m_DefaultColliderType = m_OverrideDefault.m_TilingRule.m_ColliderType;
 				}
-				for (int i = 0; i < m_RuntimeTile.m_TilingRules.Count; i++)
-				{
-					RuleTile.TilingRule originalRule = m_RuntimeTile.m_TilingRules[i];
-					RuleTile.TilingRule overrideRule = this[m_Tile.m_TilingRules[i]];
-					if (overrideRule == null)
-						continue;
-					CopyTilingRule(overrideRule, originalRule, false);
+				if (m_RuntimeTile.m_TilingRules != null) {
+					for (int i = 0; i < m_RuntimeTile.m_TilingRules.Count; i++)
+					{
+						RuleTile.TilingRule originalRule = m_RuntimeTile.m_TilingRules[i];
+						RuleTile.TilingRule overrideRule = this[m_Tile.m_TilingRules[i]];
+						if (overrideRule == null)
+							continue;
+						CopyTilingRule(overrideRule, originalRule, false);
+					}
 				}
 			}
 		}
