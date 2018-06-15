@@ -7,7 +7,7 @@ namespace UnityEngine
 {
 	[Serializable]
 	[CreateAssetMenu]
-	public class RuleOverrideTile : RuleTile
+	public class RuleOverrideTile : TileBase
 	{
 		[Serializable]
 		public class TileSpritePair
@@ -19,7 +19,7 @@ namespace UnityEngine
 		public class OverrideTilingRule
 		{
 			public bool m_Enabled;
-			public TilingRule m_TilingRule = new TilingRule();
+			public RuleTile.TilingRule m_TilingRule = new RuleTile.TilingRule();
 		}
 
 		public Sprite this[Sprite originalSprite]
@@ -59,7 +59,7 @@ namespace UnityEngine
 				}
 			}
 		}
-		public TilingRule this[TilingRule originalRule]
+		public RuleTile.TilingRule this[RuleTile.TilingRule originalRule]
 		{
 			get
 			{
@@ -107,11 +107,11 @@ namespace UnityEngine
 		public List<TileSpritePair> m_Sprites = new List<TileSpritePair>();
 		public List<OverrideTilingRule> m_OverrideTilingRules = new List<OverrideTilingRule>();
 		public OverrideTilingRule m_OverrideDefault = new OverrideTilingRule();
-		public TilingRule m_OriginalDefault
+		public RuleTile.TilingRule m_OriginalDefault
 		{
 			get
 			{
-				return new TilingRule()
+				return new RuleTile.TilingRule()
 				{
 					m_Sprites = new Sprite[] { m_Tile != null ? m_Tile.m_DefaultSprite : null },
 					m_ColliderType = m_Tile != null ? m_Tile.m_DefaultColliderType : Tile.ColliderType.None,
@@ -119,10 +119,30 @@ namespace UnityEngine
 			}
 		}
 
+		private RuleTile m_RuntimeTile;
+
+		public override bool GetTileAnimationData(Vector3Int position, ITilemap tilemap, ref TileAnimationData tileAnimationData)
+		{
+			if (!m_RuntimeTile)
+				Override();
+			return m_RuntimeTile.GetTileAnimationData(position, tilemap, ref tileAnimationData);
+		}
+		public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
+		{
+			if (!m_RuntimeTile)
+				Override();
+			m_RuntimeTile.GetTileData(position, tilemap, ref tileData);
+		}
+		public override void RefreshTile(Vector3Int position, ITilemap tilemap)
+		{
+			if (!m_RuntimeTile)
+				Override();
+			m_RuntimeTile.RefreshTile(position, tilemap);
+		}
 		public override bool StartUp(Vector3Int position, ITilemap tilemap, GameObject go)
 		{
 			Override();
-			return base.StartUp(position, tilemap, go);
+			return m_RuntimeTile.StartUp(position, tilemap, go);
 		}
 
 		public void ApplyOverrides(IList<KeyValuePair<Sprite, Sprite>> overrides)
@@ -156,7 +176,7 @@ namespace UnityEngine
 			foreach (Sprite sprite in originalSprites)
 				overrides.Add(new KeyValuePair<Sprite, Sprite>(sprite, this[sprite]));
 		}
-		public void ApplyOverrides(IList<KeyValuePair<TilingRule, TilingRule>> overrides)
+		public void ApplyOverrides(IList<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>> overrides)
 		{
 			if (overrides == null)
 				throw new System.ArgumentNullException("overrides");
@@ -164,7 +184,7 @@ namespace UnityEngine
 			for (int i = 0; i < overrides.Count; i++)
 				this[overrides[i].Key] = overrides[i].Value;
 		}
-		public void GetOverrides(List<KeyValuePair<TilingRule, TilingRule>> overrides)
+		public void GetOverrides(List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>> overrides)
 		{
 			if (overrides == null)
 				throw new System.ArgumentNullException("overrides");
@@ -176,25 +196,21 @@ namespace UnityEngine
 
 			foreach (var originalRule in m_Tile.m_TilingRules)
 			{
-				TilingRule overrideRule = this[originalRule];
-				overrides.Add(new KeyValuePair<TilingRule, TilingRule>(originalRule, overrideRule));
+				RuleTile.TilingRule overrideRule = this[originalRule];
+				overrides.Add(new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>(originalRule, overrideRule));
 			}
-			overrides.Add(new KeyValuePair<TilingRule, TilingRule>(m_OriginalDefault, m_OverrideDefault.m_TilingRule));
+			overrides.Add(new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>(m_OriginalDefault, m_OverrideDefault.m_TilingRule));
 		}
 
 		public void Override()
 		{
-			if (m_Tile)
-			{
-				m_DefaultSprite = m_Tile.m_DefaultSprite;
-				m_DefaultColliderType = m_Tile.m_DefaultColliderType;
-				m_TilingRules = m_Tile.m_TilingRules.Select(rule => CloneTilingRule(rule)).ToList();
-			}
+			m_RuntimeTile = m_Tile ? Instantiate(m_Tile) : new RuleTile();
+			m_RuntimeTile.m_Self = this;
 			if (!m_Advanced)
 			{
-				if (m_DefaultSprite)
-					m_DefaultSprite = this[m_DefaultSprite];
-				foreach (RuleTile.TilingRule rule in m_TilingRules)
+				if (m_RuntimeTile.m_DefaultSprite)
+					m_RuntimeTile.m_DefaultSprite = this[m_RuntimeTile.m_DefaultSprite];
+				foreach (RuleTile.TilingRule rule in m_RuntimeTile.m_TilingRules)
 					for (int i = 0; i < rule.m_Sprites.Length; i++)
 						if (rule.m_Sprites[i])
 							rule.m_Sprites[i] = this[rule.m_Sprites[i]];
@@ -203,26 +219,26 @@ namespace UnityEngine
 			{
 				if (m_OverrideDefault.m_Enabled)
 				{
-					m_DefaultSprite = m_OverrideDefault.m_TilingRule.m_Sprites.Length > 0 ? m_OverrideDefault.m_TilingRule.m_Sprites[0] : null;
-					m_DefaultColliderType = m_OverrideDefault.m_TilingRule.m_ColliderType;
+					m_RuntimeTile.m_DefaultSprite = m_OverrideDefault.m_TilingRule.m_Sprites.Length > 0 ? m_OverrideDefault.m_TilingRule.m_Sprites[0] : null;
+					m_RuntimeTile.m_DefaultColliderType = m_OverrideDefault.m_TilingRule.m_ColliderType;
 				}
-				for (int i = 0; i < m_TilingRules.Count; i++)
+				for (int i = 0; i < m_RuntimeTile.m_TilingRules.Count; i++)
 				{
-					var originalRule = m_TilingRules[i];
-					TilingRule overrideRule = this[m_Tile.m_TilingRules[i]];
+					RuleTile.TilingRule originalRule = m_RuntimeTile.m_TilingRules[i];
+					RuleTile.TilingRule overrideRule = this[m_Tile.m_TilingRules[i]];
 					if (overrideRule == null)
 						continue;
 					CopyTilingRule(overrideRule, originalRule, false);
 				}
 			}
 		}
-		public TilingRule CloneTilingRule(TilingRule from)
+		public RuleTile.TilingRule CloneTilingRule(RuleTile.TilingRule from)
 		{
-			var clone = new TilingRule();
+			var clone = new RuleTile.TilingRule();
 			CopyTilingRule(from, clone, true);
 			return clone;
 		}
-		public void CopyTilingRule(TilingRule from, TilingRule to, bool copyRule)
+		public void CopyTilingRule(RuleTile.TilingRule from, RuleTile.TilingRule to, bool copyRule)
 		{
 			if (copyRule)
 			{
