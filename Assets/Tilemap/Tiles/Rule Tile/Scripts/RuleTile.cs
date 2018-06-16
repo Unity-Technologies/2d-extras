@@ -6,36 +6,13 @@ namespace UnityEngine
 {
 	public class RuleTile<T> : RuleTile
 	{
-#if UNITY_EDITOR
-		public override Type m_NeighborType
-		{
-			get { return typeof(T); }
-		}
-		public override void RuleOnGUI(Rect rect, Vector2Int pos, int neighbor)
-		{
-			base.RuleOnGUI(rect, pos, neighbor);
-			var allConsts = typeof(T).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.FlattenHierarchy);
-			foreach (var c in allConsts)
-			{
-				if ((int)c.GetValue(null) == neighbor)
-				{
-					GUI.Label(rect, new GUIContent("", c.Name));
-					break;
-				}
-			}
-		}
-#endif
+		public sealed override Type m_NeighborType { get { return typeof(T); } }
 	}
 	[Serializable]
 	[CreateAssetMenu]
 	public class RuleTile : TileBase
 	{
 #if UNITY_EDITOR
-		public virtual Type m_NeighborType
-		{
-			get { return typeof(TilingRule.Neighbor); }
-		}
-
 		private const string s_XIconString = "iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuNWWFMmUAAABoSURBVDhPnY3BDcAgDAOZhS14dP1O0x2C/LBEgiNSHvfwyZabmV0jZRUpq2zi6f0DJwdcQOEdwwDLypF0zHLMa9+NQRxkQ+ACOT2STVw/q8eY1346ZlE54sYAhVhSDrjwFymrSFnD2gTZpls2OvFUHAAAAABJRU5ErkJggg==";
 		private const string s_Arrow0 = "iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuNWWFMmUAAACYSURBVDhPzZExDoQwDATzE4oU4QXXcgUFj+YxtETwgpMwXuFcwMFSRMVKKwzZcWzhiMg91jtg34XIntkre5EaT7yjjhI9pOD5Mw5k2X/DdUwFr3cQ7Pu23E/BiwXyWSOxrNqx+ewnsayam5OLBtbOGPUM/r93YZL4/dhpR/amwByGFBz170gNChA6w5bQQMqramBTgJ+Z3A58WuWejPCaHQAAAABJRU5ErkJggg==";
 		private const string s_Arrow1 = "iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuNWWFMmUAAABqSURBVDhPxYzBDYAgEATpxYcd+PVr0fZ2siZrjmMhFz6STIiDs8XMlpEyi5RkO/d66TcgJUB43JfNBqRkSEYDnYjhbKD5GIUkDqRDwoH3+NgTAw+bL/aoOP4DOgH+iwECEt+IlFmkzGHlAYKAWF9R8zUnAAAAAElFTkSuQmCC";
@@ -95,8 +72,19 @@ namespace UnityEngine
 					GUI.Label(rect, neighbor.ToString(), style);
 					break;
 			}
+			var allConsts = m_NeighborType.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.FlattenHierarchy);
+			foreach (var c in allConsts)
+			{
+				if ((int)c.GetValue(null) == neighbor)
+				{
+					GUI.Label(rect, new GUIContent("", c.Name));
+					break;
+				}
+			}
 		}
 #endif
+
+		public virtual Type m_NeighborType { get { return typeof(TilingRule.Neighbor); } }
 
 		private static readonly int[,] RotatedOrMirroredIndexes =
 		{
