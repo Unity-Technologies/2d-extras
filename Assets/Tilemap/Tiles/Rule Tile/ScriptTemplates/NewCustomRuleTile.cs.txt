@@ -1,0 +1,29 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Tilemaps;
+
+[CreateAssetMenu]
+public class #SCRIPTNAME# : RuleTile<#SCRIPTNAME#.Neighbor> {
+
+	public bool customField;
+
+	public class Neighbor : RuleTile.TilingRule.Neighbor {
+		public const int Null = 3;
+		public const int NotNull = 4;
+	}
+
+	public override bool RuleMatch(int neighbor, TileBase tile) {
+		switch (neighbor) {
+			case Neighbor.Null: return tile == null;
+			case Neighbor.NotNull: return tile != null;
+		}
+		return base.RuleMatch(neighbor, tile);
+	}
+
+#if UNITY_EDITOR
+	public override void RuleOnGUI(Rect rect, Vector2Int pos, int neighbor) {
+		base.RuleOnGUI(rect, pos, neighbor);
+	}
+#endif
+}
