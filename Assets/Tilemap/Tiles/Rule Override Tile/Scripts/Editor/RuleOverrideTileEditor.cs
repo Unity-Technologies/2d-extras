@@ -7,9 +7,8 @@ using System.Collections.Generic;
 
 namespace UnityEditor
 {
-
 	[CustomEditor(typeof(RuleOverrideTile))]
-	internal class RuleOverrideTileEditor : RuleTileEditor
+	internal class RuleOverrideTileEditor : Editor
 	{
 
 		public RuleOverrideTile overrideTile { get { return (target as RuleOverrideTile); } }
@@ -20,7 +19,12 @@ namespace UnityEditor
 		ReorderableList m_SpriteList;
 		ReorderableList m_RuleList;
 
-		new void OnEnable()
+		private float k_DefaultElementHeight { get { return RuleTileEditor.k_DefaultElementHeight; } }
+		private float k_PaddingBetweenRules { get { return RuleTileEditor.k_PaddingBetweenRules; } }
+		private float k_SingleLineHeight { get { return RuleTileEditor.k_SingleLineHeight; } }
+		private float k_LabelWidth { get { return RuleTileEditor.k_LabelWidth; } }
+
+		void OnEnable()
 		{
 			if (m_Sprites == null)
 				m_Sprites = new List<KeyValuePair<Sprite, Sprite>>();
@@ -33,8 +37,8 @@ namespace UnityEditor
 				overrideTile.GetOverrides(m_Sprites);
 
 				m_SpriteList = new ReorderableList(m_Sprites, typeof(KeyValuePair<Sprite, Sprite>), false, true, false, false);
-				m_SpriteList.drawElementCallback = DrawSpriteElement;
 				m_SpriteList.drawHeaderCallback = DrawSpriteHeader;
+				m_SpriteList.drawElementCallback = DrawSpriteElement;
 				m_SpriteList.elementHeight = k_DefaultElementHeight + k_PaddingBetweenRules;
 			}
 			if (m_RuleList == null)
@@ -42,8 +46,8 @@ namespace UnityEditor
 				overrideTile.GetOverrides(m_Rules);
 
 				m_RuleList = new ReorderableList(m_Rules, typeof(KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>), false, true, false, false);
-				m_RuleList.drawElementCallback = DrawRuleElement;
 				m_RuleList.drawHeaderCallback = DrawRuleHeader;
+				m_RuleList.drawElementCallback = DrawRuleElement;
 				m_RuleList.elementHeightCallback = GetRuleElementHeight;
 			}
 		}
@@ -87,6 +91,12 @@ namespace UnityEditor
 			}
 		}
 
+		private void SaveTile()
+		{
+			EditorUtility.SetDirty(target);
+			SceneView.RepaintAll();
+		}
+
 		private void DrawSpriteElement(Rect rect, int index, bool selected, bool focused)
 		{
 			Sprite originalSprite = m_Sprites[index].Key;
@@ -121,8 +131,6 @@ namespace UnityEditor
 
 		private void DrawRuleElement(Rect rect, int index, bool selected, bool focused)
 		{
-			overrideTile.Override();
-
 			RuleTile.TilingRule originalRule = m_Rules[index].Key;
 			RuleTile.TilingRule overrideRule = m_Rules[index].Value;
 
@@ -160,11 +168,11 @@ namespace UnityEditor
 				Rect spriteRect = new Rect(rect.xMax - matrixWidth - 5f, yPos, matrixWidth, k_DefaultElementHeight);
 
 				if (!isDefault)
-					RuleInspectorOnGUI(inspectorRect, originalRule);
+					RuleTileEditor.RuleInspectorOnGUI(inspectorRect, originalRule);
 				else
 					RuleOriginalDefaultInspectorOnGUI(inspectorRect, originalRule);
-				RuleMatrixOnGUI(matrixRect, originalRule);
-				SpriteOnGUI(spriteRect, originalRule);
+				RuleTileEditor.RuleMatrixOnGUI(matrixRect, originalRule);
+				RuleTileEditor.SpriteOnGUI(spriteRect, originalRule);
 			}
 		}
 		private void DrawOverrideElement(Rect rect, RuleTile.TilingRule originalRule)
@@ -179,7 +187,7 @@ namespace UnityEditor
 			RuleOverrideInspectorOnGUI(inspectorRect, originalRule);
 			RuleTile.TilingRule overrideRule = overrideTile[originalRule];
 			if (overrideRule != null)
-				SpriteOnGUI(spriteRect, overrideRule);
+				RuleTileEditor.SpriteOnGUI(spriteRect, overrideRule);
 		}
 		private void RuleOriginalDefaultInspectorOnGUI(Rect rect, RuleTile.TilingRule originalRule)
 		{
@@ -267,7 +275,7 @@ namespace UnityEditor
 
 			RuleOverrideDefaultInspectorOnGUI(inspectorRect, originalRule);
 			if (overrideTile.m_OverrideDefault.m_Enabled)
-				SpriteOnGUI(spriteRect, overrideTile.m_OverrideDefault.m_TilingRule);
+				RuleTileEditor.SpriteOnGUI(spriteRect, overrideTile.m_OverrideDefault.m_TilingRule);
 		}
 		private void RuleOverrideDefaultInspectorOnGUI(Rect rect, RuleTile.TilingRule overrideRule)
 		{
@@ -293,6 +301,8 @@ namespace UnityEditor
 		}
 		private void DrawRuleHeader(Rect rect)
 		{
+			overrideTile.Override();
+
 			float matrixWidth = k_DefaultElementHeight;
 
 			float xMax = rect.xMax;

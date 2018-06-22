@@ -17,11 +17,16 @@ namespace UnityEngine
 			{5, 6, 7, 3, 4, 0, 1, 2}, // Y
 		};
 		private static readonly int NeighborCount = 8;
-		
+
 		public Sprite m_DefaultSprite;
 		public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
-		
+		public TileBase m_Self {
+			get { return m_OverrideSelf ? m_OverrideSelf : this; }
+			set { m_OverrideSelf = value; }
+		}
+
 		private TileBase[] m_CachedNeighboringTiles = new TileBase[NeighborCount];
+		private TileBase m_OverrideSelf;
 
 		[Serializable]
 		public class TilingRule
@@ -34,7 +39,7 @@ namespace UnityEngine
 			public OutputSprite m_Output;
 			public Tile.ColliderType m_ColliderType;
 			public Transform m_RandomTransform;
-			
+
 			public TilingRule()
 			{
 				m_Output = OutputSprite.Single;
@@ -44,7 +49,7 @@ namespace UnityEngine
 				m_PerlinScale = 0.5f;
 				m_ColliderType = Tile.ColliderType.Sprite;
 
-				for (int i=0; i<m_Neighbors.Length; i++)
+				for (int i = 0; i < m_Neighbors.Length; i++)
 					m_Neighbors[i] = Neighbor.DontCare;
 			}
 
@@ -60,12 +65,12 @@ namespace UnityEngine
 			TileBase[] neighboringTiles = null;
 			GetMatchingNeighboringTiles(tilemap, position, ref neighboringTiles);
 			var iden = Matrix4x4.identity;
-			
+
 			tileData.sprite = m_DefaultSprite;
 			tileData.colliderType = m_DefaultColliderType;
 			tileData.flags = TileFlags.LockTransform;
 			tileData.transform = iden;
-			
+
 			foreach (TilingRule rule in m_TilingRules)
 			{
 				Matrix4x4 transform = iden;
@@ -73,15 +78,15 @@ namespace UnityEngine
 				{
 					switch (rule.m_Output)
 					{
-							case TilingRule.OutputSprite.Single:
-							case TilingRule.OutputSprite.Animation:
-								tileData.sprite = rule.m_Sprites[0];
+						case TilingRule.OutputSprite.Single:
+						case TilingRule.OutputSprite.Animation:
+							tileData.sprite = rule.m_Sprites[0];
 							break;
-							case TilingRule.OutputSprite.Random:
-								int index = Mathf.Clamp(Mathf.FloorToInt(GetPerlinValue(position, rule.m_PerlinScale, 100000f) * rule.m_Sprites.Length), 0, rule.m_Sprites.Length - 1);
-								tileData.sprite = rule.m_Sprites[index];
-								if (rule.m_RandomTransform != TilingRule.Transform.Fixed)
-									transform = ApplyRandomTransform(rule.m_RandomTransform, transform, rule.m_PerlinScale, position);
+						case TilingRule.OutputSprite.Random:
+							int index = Mathf.Clamp(Mathf.FloorToInt(GetPerlinValue(position, rule.m_PerlinScale, 100000f) * rule.m_Sprites.Length), 0, rule.m_Sprites.Length - 1);
+							tileData.sprite = rule.m_Sprites[index];
+							if (rule.m_RandomTransform != TilingRule.Transform.Fixed)
+								transform = ApplyRandomTransform(rule.m_RandomTransform, transform, rule.m_PerlinScale, position);
 							break;
 					}
 					tileData.transform = transform;
@@ -111,12 +116,12 @@ namespace UnityEngine
 						tileAnimationData.animatedSprites = rule.m_Sprites;
 						tileAnimationData.animationSpeed = rule.m_AnimationSpeed;
 						return true;
-					}	
+					}
 				}
 			}
 			return false;
 		}
-		
+
 		public override void RefreshTile(Vector3Int location, ITilemap tileMap)
 		{
 			if (m_TilingRules != null && m_TilingRules.Count > 0)
@@ -175,7 +180,7 @@ namespace UnityEngine
 					return original * Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1f, perlin < 0.5 ? 1f : -1f, 1f));
 				case TilingRule.Transform.Rotated:
 					int angle = Mathf.Clamp(Mathf.FloorToInt(perlin * 4), 0, 3) * 90;
-					return Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), Vector3.one);		
+					return Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), Vector3.one);
 			}
 			return original;
 		}
@@ -186,10 +191,10 @@ namespace UnityEngine
 			{
 				int index = GetRotatedIndex(i, angle);
 				TileBase tile = neighboringTiles[index];
-				if (rule.m_Neighbors[i] == TilingRule.Neighbor.This && tile != this || rule.m_Neighbors[i] == TilingRule.Neighbor.NotThis && tile == this)
+				if (rule.m_Neighbors[i] == TilingRule.Neighbor.This && tile != m_Self || rule.m_Neighbors[i] == TilingRule.Neighbor.NotThis && tile == m_Self)
 				{
 					return false;
-				}	
+				}
 			}
 			return true;
 		}
@@ -200,7 +205,7 @@ namespace UnityEngine
 			{
 				int index = GetMirroredIndex(i, mirrorX, mirrorY);
 				TileBase tile = neighboringTiles[index];
-				if (rule.m_Neighbors[i] == TilingRule.Neighbor.This && tile != this || rule.m_Neighbors[i] == TilingRule.Neighbor.NotThis && tile == this)
+				if (rule.m_Neighbors[i] == TilingRule.Neighbor.This && tile != m_Self || rule.m_Neighbors[i] == TilingRule.Neighbor.NotThis && tile == m_Self)
 				{
 					return false;
 				}
@@ -263,7 +268,7 @@ namespace UnityEngine
 			}
 			return original;
 		}
-		
+
 		private int GetIndexOfOffset(Vector3Int offset)
 		{
 			int result = offset.x + 1 + (-offset.y + 1) * 3;
