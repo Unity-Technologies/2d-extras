@@ -171,7 +171,7 @@ namespace UnityEditor
 					RuleTileEditor.RuleInspectorOnGUI(inspectorRect, originalRule);
 				else
 					RuleOriginalDefaultInspectorOnGUI(inspectorRect, originalRule);
-				RuleTileEditor.RuleMatrixOnGUI(matrixRect, originalRule);
+				RuleTileEditor.RuleMatrixOnGUI(overrideTile.m_Tile, matrixRect, originalRule);
 				RuleTileEditor.SpriteOnGUI(spriteRect, originalRule);
 			}
 		}
