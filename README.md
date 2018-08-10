@@ -8,7 +8,7 @@ All items in the repository are grouped by use for a feature and are listed belo
 
 ### Tilemap
 
-For use with Unity 2017.2b02 onwards.
+For use with Unity 2018.2.0f2 onwards. Please use the 2017 branch for earlier versions of Unity (up to 2017.2).
 
 ##### Brushes
 
