@@ -169,7 +169,7 @@ namespace UnityEngine.Tilemaps
 		}
 
 #if UNITY_EDITOR
-		[MenuItem("Assets/Create/Terrain Tile")]
+		[MenuItem("Assets/Create/Tiles/Terrain Tile")]
 		public static void CreateTerrainTile()
 		{
 			string path = EditorUtility.SaveFilePanelInProject("Save Terrain Tile", "New Terrain Tile", "asset", "Save Terrain Tile", "Assets");

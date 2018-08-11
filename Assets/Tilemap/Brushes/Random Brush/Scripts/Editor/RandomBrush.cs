@@ -36,7 +36,7 @@ namespace UnityEditor
 			}
         }
 
-        [MenuItem("Assets/Create/Random Brush")]
+	    [MenuItem("Assets/Create/Brushes/Random Brush")]
         public static void CreateBrush()
         {
             string path = EditorUtility.SaveFilePanelInProject("Save Random Brush", "New Random Brush", "asset", "Save Random Brush", "Assets");

@@ -103,7 +103,7 @@ namespace UnityEngine.Tilemaps
 		}
 
 #if UNITY_EDITOR
-		[MenuItem("Assets/Create/Pipeline Tile")]
+		[MenuItem("Assets/Create/Tiles/Pipeline Tile")]
 		public static void CreatePipelineTile()
 		{
 			string path = EditorUtility.SaveFilePanelInProject("Save Pipeline Tile", "New Pipeline Tile", "asset", "Save Pipeline Tile", "Assets");
