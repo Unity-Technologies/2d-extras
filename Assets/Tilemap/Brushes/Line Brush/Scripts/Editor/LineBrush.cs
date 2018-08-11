@@ -8,6 +8,7 @@ using System.Linq;
 namespace UnityEditor
 {
     [CustomGridBrush(true, false, false, "Line Brush")]
+    [CreateAssetMenu(fileName = "New Line Brush", menuName = "Brushes/Line Brush")]
     public class LineBrush : GridBrush
     {
         public bool lineStartActive = false;
@@ -37,17 +38,6 @@ namespace UnityEditor
                 lineStart = position;
                 lineStartActive = true;
             }
-        }
-
-        [MenuItem("Assets/Create/Brushes/Line Brush")]
-        public static void CreateBrush()
-        {
-            string path = EditorUtility.SaveFilePanelInProject("Save Line Brush", "New Line Brush", "asset", "Save Line Brush", "Assets");
-
-            if (path == "")
-                return;
-
-            AssetDatabase.CreateAsset(ScriptableObject.CreateInstance<LineBrush>(), path);
         }
 
         /// <summary>
