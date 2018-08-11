@@ -43,7 +43,7 @@ namespace UnityEngine.Tilemaps
         }
 
 #if UNITY_EDITOR
-        [MenuItem("Assets/Create/Animated Tile")]
+        [MenuItem("Assets/Create/Tiles/Animated Tile")]
         public static void CreateAnimatedTile()
         {
             string path = EditorUtility.SaveFilePanelInProject("Save Animated Tile", "New Animated Tile", "asset", "Save Animated Tile", "Assets");
