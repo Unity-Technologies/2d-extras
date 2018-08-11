@@ -6,7 +6,7 @@ using UnityEngine.Tilemaps;
 namespace UnityEngine
 {
 	[Serializable]
-	[CreateAssetMenu]
+	[CreateAssetMenu(fileName = "New Rule Override Tile", menuName = "Tiles/Rule Override Tile")]
 	public class RuleOverrideTile : TileBase
 	{
 		[Serializable]

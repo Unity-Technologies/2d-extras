@@ -44,7 +44,7 @@ namespace UnityEngine.Tilemaps {
         }
 
 #if UNITY_EDITOR
-        [MenuItem("Assets/Create/Weighted Random Tile")]
+        [MenuItem("Assets/Create/Tiles/Weighted Random Tile")]
         public static void CreateRandomTile() {
             string path = EditorUtility.SaveFilePanelInProject("Save Weighted Random Tile", "New Weighted Random Tile", "asset",
                 "Save Weighted Random Tile", "Assets");

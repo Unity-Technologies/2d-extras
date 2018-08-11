@@ -33,7 +33,7 @@ namespace UnityEngine.Tilemaps
 		}
 
 #if UNITY_EDITOR
-		[MenuItem("Assets/Create/Random Tile")]
+		[MenuItem("Assets/Create/Tiles/Random Tile")]
 		public static void CreateRandomTile()
 		{
 			string path = EditorUtility.SaveFilePanelInProject("Save Random Tile", "New Random Tile", "asset", "Save Random Tile", "Assets");

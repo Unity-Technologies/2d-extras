@@ -33,7 +33,7 @@ namespace UnityEditor
             base.BoxFill(gridLayout, brushTarget, position);
         }
 
-        [MenuItem("Assets/Create/Coordinate Brush")]
+        [MenuItem("Assets/Create/Brushes/Coordinate Brush")]
         public static void CreateBrush()
         {
             string path = EditorUtility.SaveFilePanelInProject("Save Coordinate Brush", "New Coordinate Brush", "asset", "Save Coordinate Brush", "Assets");

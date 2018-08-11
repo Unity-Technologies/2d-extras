@@ -9,7 +9,7 @@ namespace UnityEngine
 		public sealed override Type m_NeighborType { get { return typeof(T); } }
 	}
 	[Serializable]
-	[CreateAssetMenu]
+	[CreateAssetMenu(fileName = "New Rule Tile", menuName = "Tiles/RuleTile")]
 	public class RuleTile : TileBase
 	{
 #if UNITY_EDITOR

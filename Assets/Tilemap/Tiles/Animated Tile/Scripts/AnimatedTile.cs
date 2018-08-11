@@ -56,7 +56,7 @@ namespace UnityEngine.Tilemaps
     }
 
 #if UNITY_EDITOR
-    [CustomEditor(typeof(AnimatedTile))]
+    [MenuItem("Assets/Create/Tiles/Animated Tile")]
     public class AnimatedTileEditor : Editor
     {
         private AnimatedTile tile { get { return (target as AnimatedTile); } }

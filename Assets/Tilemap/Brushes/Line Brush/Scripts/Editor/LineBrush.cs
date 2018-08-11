@@ -39,7 +39,7 @@ namespace UnityEditor
             }
         }
 
-        [MenuItem("Assets/Create/Line Brush")]
+        [MenuItem("Assets/Create/Brushes/Line Brush")]
         public static void CreateBrush()
         {
             string path = EditorUtility.SaveFilePanelInProject("Save Line Brush", "New Line Brush", "asset", "Save Line Brush", "Assets");
