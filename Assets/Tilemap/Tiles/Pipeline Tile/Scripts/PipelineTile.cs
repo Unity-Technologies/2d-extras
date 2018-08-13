@@ -11,6 +11,7 @@ using UnityEngine;
 namespace UnityEngine.Tilemaps
 {
 	[Serializable]
+	[CreateAssetMenu(fileName = "New Pipeline Tile", menuName = "Tiles/Pipeline Tile")]
 	public class PipelineTile : TileBase
 	{
 		[SerializeField]
@@ -101,19 +102,6 @@ namespace UnityEngine.Tilemaps
 			}
 			return Matrix4x4.identity;
 		}
-
-#if UNITY_EDITOR
-		[MenuItem("Assets/Create/Pipeline Tile")]
-		public static void CreatePipelineTile()
-		{
-			string path = EditorUtility.SaveFilePanelInProject("Save Pipeline Tile", "New Pipeline Tile", "asset", "Save Pipeline Tile", "Assets");
-
-			if (path == "")
-				return;
-
-			AssetDatabase.CreateAsset(ScriptableObject.CreateInstance<PipelineTile>(), path);
-		}
-#endif
 	}
 	
 #if UNITY_EDITOR

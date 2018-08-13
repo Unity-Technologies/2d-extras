@@ -360,7 +360,7 @@ namespace UnityEditor
 				EditorJsonUtility.FromJsonOverwrite(EditorGUIUtility.systemCopyBuffer, rulesWrapper);
 				tile.m_TilingRules.AddRange(rulesWrapper.rules);
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				Debug.LogError("Unable to paste rules from system copy buffer");
 			}

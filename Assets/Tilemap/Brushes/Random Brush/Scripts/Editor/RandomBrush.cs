@@ -7,6 +7,7 @@ using UnityEngine.Tilemaps;
 namespace UnityEditor
 {
     [CustomGridBrush(false, true, false, "Random Brush")]
+    [CreateAssetMenu(fileName = "New Random Brush", menuName = "Brushes/Random Brush")]
     public class RandomBrush : GridBrush 
 	{
 		public TileBase[] randomTiles;
@@ -34,17 +35,6 @@ namespace UnityEditor
 			{
 				base.Paint(grid, brushTarget, position);
 			}
-        }
-
-        [MenuItem("Assets/Create/Random Brush")]
-        public static void CreateBrush()
-        {
-            string path = EditorUtility.SaveFilePanelInProject("Save Random Brush", "New Random Brush", "asset", "Save Random Brush", "Assets");
-
-            if (path == "")
-                return;
-
-            AssetDatabase.CreateAsset(ScriptableObject.CreateInstance<RandomBrush>(), path);
         }
     }
 

@@ -5,6 +5,7 @@ using UnityEngine;
 namespace UnityEditor
 {
     [CustomGridBrush(true, false, false, "Coordinate Brush")]
+    [CreateAssetMenu(fileName = "New Coordinate Brush", menuName = "Brushes/Coordinate Brush")]
     public class CoordinateBrush : GridBrush {
         public int z = 0;
 
@@ -31,17 +32,6 @@ namespace UnityEditor
             var zPosition = new Vector3Int(position.x, position.y, z);
             position.position = zPosition;
             base.BoxFill(gridLayout, brushTarget, position);
-        }
-
-        [MenuItem("Assets/Create/Coordinate Brush")]
-        public static void CreateBrush()
-        {
-            string path = EditorUtility.SaveFilePanelInProject("Save Coordinate Brush", "New Coordinate Brush", "asset", "Save Coordinate Brush", "Assets");
-
-            if (path == "")
-                return;
-
-            AssetDatabase.CreateAsset(ScriptableObject.CreateInstance<CoordinateBrush>(), path);
         }
     }
 
