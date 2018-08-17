@@ -42,7 +42,7 @@ namespace UnityEditor
 		internal const float k_DefaultElementHeight = 48f;
 		internal const float k_PaddingBetweenRules = 26f;
 		internal const float k_SingleLineHeight = 16f;
-		internal const float k_objectFieldLineHeight = 20f;
+		internal const float k_ObjectFieldLineHeight = 20f;
         internal const float k_LabelWidth = 80f;
 			
 		public void OnEnable()
@@ -237,7 +237,7 @@ namespace UnityEditor
 			EditorGUI.BeginChangeCheck();
             GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Game Object");
             tilingRule.m_GameObject = (GameObject)EditorGUI.ObjectField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), "", tilingRule.m_GameObject, typeof(GameObject), true);
-            y += k_objectFieldLineHeight;
+            y += k_ObjectFieldLineHeight;
             GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Rule");
 			tilingRule.m_RuleTransform = (RuleTile.TilingRule.Transform)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_RuleTransform);
 			y += k_SingleLineHeight;
