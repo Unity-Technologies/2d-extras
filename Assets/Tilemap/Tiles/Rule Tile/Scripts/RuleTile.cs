@@ -107,6 +107,7 @@ namespace UnityEngine
 
 		private TileBase[] m_CachedNeighboringTiles = new TileBase[NeighborCount];
 		private TileBase m_OverrideSelf;
+        private Quaternion m_GameObjectQuaternion;
 
 		[Serializable]
 		public class TilingRule
@@ -147,7 +148,17 @@ namespace UnityEngine
 
 		[HideInInspector] public List<TilingRule> m_TilingRules;
 
-		public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
+        public override bool StartUp(Vector3Int location, ITilemap tilemap, GameObject instantiateedGameObject)
+        {
+            if (instantiateedGameObject != null)
+            {
+                instantiateedGameObject.transform.rotation = m_GameObjectQuaternion;
+            }
+
+            return true;
+        }
+
+        public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
 		{
 			TileBase[] neighboringTiles = null;
 			GetMatchingNeighboringTiles(tilemap, position, ref neighboringTiles);
@@ -177,10 +188,13 @@ namespace UnityEngine
 								transform = ApplyRandomTransform(rule.m_RandomTransform, transform, rule.m_PerlinScale, position);
 							break;
 					}
-					tileData.transform = transform;
+                    tileData.transform = transform;
 					tileData.gameObject = rule.m_GameObject;
                     tileData.colliderType = rule.m_ColliderType;
-					break;
+
+                    // Converts the tile's rotation matrix to a quaternion to be used by the instantiated Game Object
+                    m_GameObjectQuaternion = Quaternion.LookRotation(new Vector3(transform.m02, transform.m12, transform.m22), new Vector3(transform.m01, transform.m11, transform.m21));
+                    break;
 				}
 			}
 		}
@@ -396,5 +410,5 @@ namespace UnityEngine
 		{
 			return new Vector3Int(original.x * (mirrorX ? -1 : 1), original.y * (mirrorY ? -1 : 1), original.z);
 		}
-	}
+    }
 }
