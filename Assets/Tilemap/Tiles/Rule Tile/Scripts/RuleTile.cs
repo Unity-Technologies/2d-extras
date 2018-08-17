@@ -97,7 +97,8 @@ namespace UnityEngine
 		private static readonly int NeighborCount = 8;
 
 		public Sprite m_DefaultSprite;
-		public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
+		public GameObject m_DefaultGameObject;
+        public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
 		public TileBase m_Self
 		{
 			get { return m_OverrideSelf ? m_OverrideSelf : this; }
@@ -112,7 +113,8 @@ namespace UnityEngine
 		{
 			public int[] m_Neighbors;
 			public Sprite[] m_Sprites;
-			public float m_AnimationSpeed;
+			public GameObject m_GameObject;
+            public float m_AnimationSpeed;
 			public float m_PerlinScale;
 			public Transform m_RuleTransform;
 			public OutputSprite m_Output;
@@ -124,7 +126,8 @@ namespace UnityEngine
 				m_Output = OutputSprite.Single;
 				m_Neighbors = new int[NeighborCount];
 				m_Sprites = new Sprite[1];
-				m_AnimationSpeed = 1f;
+                m_GameObject = null;
+                m_AnimationSpeed = 1f;
 				m_PerlinScale = 0.5f;
 				m_ColliderType = Tile.ColliderType.Sprite;
 
@@ -151,7 +154,8 @@ namespace UnityEngine
 			var iden = Matrix4x4.identity;
 
 			tileData.sprite = m_DefaultSprite;
-			tileData.colliderType = m_DefaultColliderType;
+			tileData.gameObject = m_DefaultGameObject;
+            tileData.colliderType = m_DefaultColliderType;
 			tileData.flags = TileFlags.LockTransform;
 			tileData.transform = iden;
 
@@ -174,7 +178,8 @@ namespace UnityEngine
 							break;
 					}
 					tileData.transform = transform;
-					tileData.colliderType = rule.m_ColliderType;
+					tileData.gameObject = rule.m_GameObject;
+                    tileData.colliderType = rule.m_ColliderType;
 					break;
 				}
 			}
