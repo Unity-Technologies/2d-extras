@@ -152,6 +152,7 @@ namespace UnityEngine
         {
             if (instantiateedGameObject != null)
             {
+                instantiateedGameObject.transform.position = location + new Vector3(0.5f,0.5f,0);
                 instantiateedGameObject.transform.rotation = m_GameObjectQuaternion;
             }
 
