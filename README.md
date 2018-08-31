@@ -18,7 +18,7 @@ For use with Unity 2018.2.0f2 onwards. Please use the 2017 branch for earlier ve
 - **Prefab**: This Brush instances and places a randomly selected Prefabs onto the targeted location and parents the instanced object to the paint target. Use this as an example to quickly place an assorted type of GameObjects onto structured locations.
 - **GameObject**: This Brush instances, places and manipulates GameObjects onto the scene. Use this as an example to create brushes which targets objects other than tiles for manipulation.
 - **TintBrush**: Brush to edit Tilemap per-cell tint colors.
-- **TintBrushSmooth**: Advanced tint brush for interpolated tint color per-cell. Requires the use of custom shader (see TintedTilemap.shader)
+- **TintBrushSmooth**: Advanced tint brush for interpolated tint color per-cell. Requires the use of custom shader (see TintedTilemap.shader) and helper component TileTextureGenerator.
 
 ##### Tiles
 
@@ -27,7 +27,10 @@ For use with Unity 2018.2.0f2 onwards. Please use the 2017 branch for earlier ve
 - **Random**: Random Tiles are tiles which pseudo-randomly pick a sprite from a given list of sprites and a target location, and displays that sprite.
 - **Terrain**: Terrain Tiles, similar to Pipeline Tiles, are tiles which take into consideration its orthogonal and diagonal neighboring tiles and displays a sprite depending on whether the neighboring tile is the same tile.
 - **RuleTile**: Generic visual tile for creating different tilesets like terrain, pipeline, random or animated tiles.
+- **RuleOverrideTile**: Rule Override Tiles are Tiles which can override a subset of Rules for a given Rule Tile to provide specialised behaviour while keeping most of the Rules originally set in the Rule Tile.
+- **Weighted Random**: Weighted Random Tiles are tiles which randomly pick a sprite from a given list of sprites and a target location, and displays that sprite. The sprites can be weighted with a value to change its probability of appearing.
 
 ##### Other
 
 - **GridInformation**: A simple MonoBehaviour that stores and provides information based on Grid positions and keywords.
+- **Custom Rules for RuleTile**: This helps to create new custom Rules for the Rule Tile. Check the [Wiki](https://github.com/Unity-Technologies/2d-extras/wiki) for more information on how to use this.
