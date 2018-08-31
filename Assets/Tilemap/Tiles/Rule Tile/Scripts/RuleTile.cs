@@ -97,7 +97,8 @@ namespace UnityEngine
 		private static readonly int NeighborCount = 8;
 
 		public Sprite m_DefaultSprite;
-		public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
+		public GameObject m_DefaultGameObject;
+        public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
 		public TileBase m_Self
 		{
 			get { return m_OverrideSelf ? m_OverrideSelf : this; }
@@ -106,13 +107,15 @@ namespace UnityEngine
 
 		private TileBase[] m_CachedNeighboringTiles = new TileBase[NeighborCount];
 		private TileBase m_OverrideSelf;
+        private Quaternion m_GameObjectQuaternion;
 
 		[Serializable]
 		public class TilingRule
 		{
 			public int[] m_Neighbors;
 			public Sprite[] m_Sprites;
-			public float m_AnimationSpeed;
+			public GameObject m_GameObject;
+            public float m_AnimationSpeed;
 			public float m_PerlinScale;
 			public Transform m_RuleTransform;
 			public OutputSprite m_Output;
@@ -124,7 +127,8 @@ namespace UnityEngine
 				m_Output = OutputSprite.Single;
 				m_Neighbors = new int[NeighborCount];
 				m_Sprites = new Sprite[1];
-				m_AnimationSpeed = 1f;
+                m_GameObject = null;
+                m_AnimationSpeed = 1f;
 				m_PerlinScale = 0.5f;
 				m_ColliderType = Tile.ColliderType.Sprite;
 
@@ -144,14 +148,26 @@ namespace UnityEngine
 
 		[HideInInspector] public List<TilingRule> m_TilingRules;
 
-		public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
+        public override bool StartUp(Vector3Int location, ITilemap tilemap, GameObject instantiateedGameObject)
+        {
+            if (instantiateedGameObject != null)
+            {
+                instantiateedGameObject.transform.position = location + new Vector3(0.5f,0.5f,0);
+                instantiateedGameObject.transform.rotation = m_GameObjectQuaternion;
+            }
+
+            return true;
+        }
+
+        public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
 		{
 			TileBase[] neighboringTiles = null;
 			GetMatchingNeighboringTiles(tilemap, position, ref neighboringTiles);
 			var iden = Matrix4x4.identity;
 
 			tileData.sprite = m_DefaultSprite;
-			tileData.colliderType = m_DefaultColliderType;
+			tileData.gameObject = m_DefaultGameObject;
+            tileData.colliderType = m_DefaultColliderType;
 			tileData.flags = TileFlags.LockTransform;
 			tileData.transform = iden;
 
@@ -173,9 +189,13 @@ namespace UnityEngine
 								transform = ApplyRandomTransform(rule.m_RandomTransform, transform, rule.m_PerlinScale, position);
 							break;
 					}
-					tileData.transform = transform;
-					tileData.colliderType = rule.m_ColliderType;
-					break;
+                    tileData.transform = transform;
+					tileData.gameObject = rule.m_GameObject;
+                    tileData.colliderType = rule.m_ColliderType;
+
+                    // Converts the tile's rotation matrix to a quaternion to be used by the instantiated Game Object
+                    m_GameObjectQuaternion = Quaternion.LookRotation(new Vector3(transform.m02, transform.m12, transform.m22), new Vector3(transform.m01, transform.m11, transform.m21));
+                    break;
 				}
 			}
 		}
@@ -391,5 +411,5 @@ namespace UnityEngine
 		{
 			return new Vector3Int(original.x * (mirrorX ? -1 : 1), original.y * (mirrorY ? -1 : 1), original.z);
 		}
-	}
+    }
 }

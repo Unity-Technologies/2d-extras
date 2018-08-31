@@ -40,9 +40,10 @@ namespace UnityEditor
 		private Rect m_ListRect;
 
 		internal const float k_DefaultElementHeight = 48f;
-		internal const float k_PaddingBetweenRules = 13f;
+		internal const float k_PaddingBetweenRules = 26f;
 		internal const float k_SingleLineHeight = 16f;
-		internal const float k_LabelWidth = 53f;
+		internal const float k_ObjectFieldLineHeight = 20f;
+        internal const float k_LabelWidth = 80f;
 			
 		public void OnEnable()
 		{
@@ -102,7 +103,8 @@ namespace UnityEditor
 			RuleTile.TilingRule rule = new RuleTile.TilingRule();
 			rule.m_Output = RuleTile.TilingRule.OutputSprite.Single;
 			rule.m_Sprites[0] = tile.m_DefaultSprite;
-			rule.m_ColliderType = tile.m_DefaultColliderType;
+			rule.m_GameObject = tile.m_DefaultGameObject;
+            rule.m_ColliderType = tile.m_DefaultColliderType;
 			tile.m_TilingRules.Add(rule);
 		}
 
@@ -120,7 +122,8 @@ namespace UnityEditor
 		public override void OnInspectorGUI()
 		{
 			tile.m_DefaultSprite = EditorGUILayout.ObjectField("Default Sprite", tile.m_DefaultSprite, typeof(Sprite), false) as Sprite;
-			tile.m_DefaultColliderType = (Tile.ColliderType)EditorGUILayout.EnumPopup("Default Collider", tile.m_DefaultColliderType);
+			tile.m_DefaultGameObject = EditorGUILayout.ObjectField("Default Game Object", tile.m_DefaultGameObject, typeof(GameObject), false) as GameObject;
+            tile.m_DefaultColliderType = (Tile.ColliderType)EditorGUILayout.EnumPopup("Default Collider", tile.m_DefaultColliderType);
 
 			var baseFields = typeof(RuleTile).GetFields().Select(field => field.Name);
 			var fields = target.GetType().GetFields().Select(field => field.Name).Where(field => !baseFields.Contains(field));
@@ -232,7 +235,10 @@ namespace UnityEditor
 		{
 			float y = rect.yMin;
 			EditorGUI.BeginChangeCheck();
-			GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Rule");
+            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Game Object");
+            tilingRule.m_GameObject = (GameObject)EditorGUI.ObjectField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), "", tilingRule.m_GameObject, typeof(GameObject), true);
+            y += k_ObjectFieldLineHeight;
+            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Rule");
 			tilingRule.m_RuleTransform = (RuleTile.TilingRule.Transform)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_RuleTransform);
 			y += k_SingleLineHeight;
 			GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Collider");
@@ -241,8 +247,10 @@ namespace UnityEditor
 			GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Output");
 			tilingRule.m_Output = (RuleTile.TilingRule.OutputSprite)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_Output);
 			y += k_SingleLineHeight;
+            
 
-			if (tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Animation)
+
+            if (tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Animation)
 			{
 				GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Speed");
 				tilingRule.m_AnimationSpeed = EditorGUI.FloatField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_AnimationSpeed);
