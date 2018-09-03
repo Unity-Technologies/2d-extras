@@ -9,7 +9,8 @@
 		{
 			Tags { "Queue"="Transparent" "Render"="Transparent" "IgnoreProjector"="True"}
 			LOD 200
-          
+
+			Cull Off
 			ZWrite Off
 			Blend SrcAlpha OneMinusSrcAlpha
   
@@ -35,7 +36,7 @@
 					float4 vertex : SV_POSITION;
 					float4 uv : TEXCOORD0;
 					float3 worldPos : float3;
-				};            
+				};
   
 				v2f vert(appdata v) {
 					v2f o;
