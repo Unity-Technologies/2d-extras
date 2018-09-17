@@ -19,6 +19,7 @@ For use with Unity 2018.2.0f2 onwards. Please use the 2017 branch for earlier ve
 - **GameObject**: This Brush instances, places and manipulates GameObjects onto the scene. Use this as an example to create brushes which targets objects other than tiles for manipulation.
 - **TintBrush**: Brush to edit Tilemap per-cell tint colors.
 - **TintBrushSmooth**: Advanced tint brush for interpolated tint color per-cell. Requires the use of custom shader (see TintedTilemap.shader) and helper component TileTextureGenerator.
+- **Group**: This Brush helps to pick Tiles which are grouped together by position. Gaps can be set to identify if Tiles belong to a Group. Limits can be set to ensure that an over-sized Group will not be picked. Use this as an example to create brushes that have the ability to choose and pick whichever Tiles it is interested in. 
 
 ##### Tiles
 
