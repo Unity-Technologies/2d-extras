@@ -83,25 +83,7 @@ namespace UnityEditor
                 Vector2 position = flatTop ? s_FlatTopPositions[index] : s_PointedTopPositions[index];
                 int arrowIndex = flatTop ? s_FlatTopArrows[index] : s_PointedTopArrows[index];
                 Rect r = new Rect(rect.xMin + position.x * w, rect.yMin + position.y * h, w - 1, h - 1);
-                switch (tilingRule.m_Neighbors[index])
-                {
-                    case RuleTile.TilingRule.Neighbor.DontCare:
-                        break;
-                    case RuleTile.TilingRule.Neighbor.This:
-                        GUI.DrawTexture(r, arrows[arrowIndex]);
-                        break;
-                    case RuleTile.TilingRule.Neighbor.NotThis:
-                        GUI.DrawTexture(r, arrows[9]);
-                        break;
-                    default:
-                        {
-                            var style = new GUIStyle();
-                            style.alignment = TextAnchor.MiddleCenter;
-                            style.fontSize = 10;
-                            GUI.Label(r, tilingRule.m_Neighbors[index].ToString(), style);
-                        }
-                        break;
-                }
+                hexTile.RuleOnGUI(r, arrowIndex, tilingRule.m_Neighbors[index]);
                 if (Event.current.type == EventType.MouseDown && r.Contains(Event.current.mousePosition))
                 {
                     var allConsts = hexTile.m_NeighborType.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);

@@ -56,12 +56,17 @@ namespace UnityEngine
 
         public virtual void RuleOnGUI(Rect rect, Vector2Int pos, int neighbor)
         {
+            RuleOnGUI(rect, pos.y * 3 + pos.x, neighbor);
+        }
+
+        public virtual void RuleOnGUI(Rect rect, int arrowIndex, int neighbor)
+        {
             switch (neighbor)
             {
                 case RuleTile.TilingRule.Neighbor.DontCare:
                     break;
                 case RuleTile.TilingRule.Neighbor.This:
-                    GUI.DrawTexture(rect, arrows[pos.y * 3 + pos.x]);
+                    GUI.DrawTexture(rect, arrows[arrowIndex]);
                     break;
                 case RuleTile.TilingRule.Neighbor.NotThis:
                     GUI.DrawTexture(rect, arrows[9]);
