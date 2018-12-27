@@ -16,14 +16,10 @@ namespace UnityEditor
             { 7, 8, 5 },
         };
 
-        protected override void DoRuleMatrixOnGUI(RuleTile ruleTile, Rect rect, RuleTile.TilingRule tilingRule)
+        internal override void RuleMatrixOnGUI(RuleTile ruleTile, Rect rect, RuleTile.TilingRule tilingRule)
         {
             var isoTile = (IsometricRuleTile) ruleTile;
-            RuleMatrixOnGUI(isoTile, rect, tilingRule);
-        }
 
-        private static void RuleMatrixOnGUI(IsometricRuleTile isoTile, Rect rect, RuleTile.TilingRule tilingRule)
-        {
             Handles.color = EditorGUIUtility.isProSkin ? new Color(1f, 1f, 1f, 0.2f) : new Color(0f, 0f, 0f, 0.2f);
             int index = 0;
             float w = rect.width / 3f;
@@ -59,62 +55,29 @@ namespace UnityEditor
                         w - 1, h - 1);
                     if (x != 1 || y != 1)
                     {
-                        isoTile.RuleOnGUI(r, s_Arrows[y, x], tilingRule.m_Neighbors[index]);
-                        if (Event.current.type == EventType.MouseDown && r.Contains(Event.current.mousePosition))
-                        {
-                            var allConsts = isoTile.m_NeighborType.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
-                            var neighbors = allConsts.Select(c => (int)c.GetValue(null)).ToList();
-                            neighbors.Sort();
-
-                            int oldIndex = neighbors.IndexOf(tilingRule.m_Neighbors[index]);
-                            int newIndex = (int)Mathf.Repeat(oldIndex + GetMouseChange(), neighbors.Count);
-                            tilingRule.m_Neighbors[index] = neighbors[newIndex];
-                            GUI.changed = true;
-                            Event.current.Use();
-                        }
+                        RuleOnGUI(r, s_Arrows[y, x], tilingRule.m_Neighbors[index]);
+                        RuleNeighborUpdate(r, tilingRule, index);
 
                         index++;
                     }
                     else
                     {
-                        switch (tilingRule.m_RuleTransform)
-                        {
-                            case RuleTile.TilingRule.Transform.Rotated:
-                                GUI.DrawTexture(r, autoTransforms[0]);
-                                break;
-                            case RuleTile.TilingRule.Transform.MirrorX:
-                                GUI.DrawTexture(r, autoTransforms[1]);
-                                break;
-                            case RuleTile.TilingRule.Transform.MirrorY:
-                                GUI.DrawTexture(r, autoTransforms[2]);
-                                break;
-                        }
-
-                        if (Event.current.type == EventType.MouseDown && ContainsMousePosition(r))
-                        {
-                            tilingRule.m_RuleTransform = (RuleTile.TilingRule.Transform)(((int)tilingRule.m_RuleTransform + 1) % 4);
-                            GUI.changed = true;
-                            Event.current.Use();
-                        }
+                        RuleTransformOnGUI(r, tilingRule.m_RuleTransform);
+                        RuleTransformUpdate(r, tilingRule);
                     }
                 }
             }
         }
 
-        private static bool ContainsMousePosition(Rect r)
+        internal override bool ContainsMousePosition(Rect rect)
         {
-            var center = r.center;
-            var halfWidth = r.width / 2;
-            var halfHeight = r.height / 2;
+            var center = rect.center;
+            var halfWidth = rect.width / 2;
+            var halfHeight = rect.height / 2;
             var mouseFromCenter = Event.current.mousePosition - center;
             var xAbs = Mathf.Abs(Vector2.Dot(mouseFromCenter, Vector2.right));
             var yAbs = Mathf.Abs(Vector2.Dot(mouseFromCenter, Vector2.up));
             return (xAbs / halfWidth + yAbs / halfHeight) <= 1;
-        }
-        
-        private static int GetMouseChange()
-        {
-            return Event.current.button == 1 ? -1 : 1;
         }
     }
 }

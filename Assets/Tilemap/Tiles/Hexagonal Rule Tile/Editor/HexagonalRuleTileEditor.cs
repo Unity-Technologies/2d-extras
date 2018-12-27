@@ -19,19 +19,11 @@ namespace UnityEditor
         };
         private static readonly int[] s_FlatTopArrows = {1, 2, 8, 7, 6, 0};
 
-        private static Texture2D[] arrows
-        {
-            get { return RuleTile.arrows; }
-        }
-
-        protected override void DoRuleMatrixOnGUI(RuleTile ruleTile, Rect rect, RuleTile.TilingRule tilingRule)
+        internal override void RuleMatrixOnGUI(RuleTile ruleTile, Rect rect, RuleTile.TilingRule tilingRule)
         {
             var hexTile = (HexagonalRuleTile) ruleTile;
-            RuleMatrixOnGUI(hexTile, rect, tilingRule, hexTile.m_FlatTop);
-        }
+            bool flatTop = hexTile.m_FlatTop;
 
-        private static void RuleMatrixOnGUI(HexagonalRuleTile hexTile, Rect rect, RuleTile.TilingRule tilingRule, bool flatTop)
-        {
             Handles.color = EditorGUIUtility.isProSkin ? new Color(1f, 1f, 1f, 0.2f) : new Color(0f, 0f, 0f, 0.2f);
             float w = rect.width / 3f;
             float h = rect.height / 3f;
@@ -83,47 +75,15 @@ namespace UnityEditor
                 Vector2 position = flatTop ? s_FlatTopPositions[index] : s_PointedTopPositions[index];
                 int arrowIndex = flatTop ? s_FlatTopArrows[index] : s_PointedTopArrows[index];
                 Rect r = new Rect(rect.xMin + position.x * w, rect.yMin + position.y * h, w - 1, h - 1);
-                hexTile.RuleOnGUI(r, arrowIndex, tilingRule.m_Neighbors[index]);
-                if (Event.current.type == EventType.MouseDown && r.Contains(Event.current.mousePosition))
-                {
-                    var allConsts = hexTile.m_NeighborType.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
-                    var neighbors = allConsts.Select(c => (int)c.GetValue(null)).ToList();
-                    neighbors.Sort();
-
-                    int oldIndex = neighbors.IndexOf(tilingRule.m_Neighbors[index]);
-                    int newIndex = (int)Mathf.Repeat(oldIndex + GetMouseChange(), neighbors.Count);
-                    tilingRule.m_Neighbors[index] = neighbors[newIndex];
-                    GUI.changed = true;
-                    Event.current.Use();
-                }
+                RuleOnGUI(r, arrowIndex, tilingRule.m_Neighbors[index]);
+                RuleNeighborUpdate(r, tilingRule, index);
             }
             // Center
             {
                 Rect r = new Rect(rect.xMin + w, rect.yMin + h, w - 1, h - 1);
-                switch (tilingRule.m_RuleTransform)
-                {
-                    case RuleTile.TilingRule.Transform.Rotated:
-                        GUI.DrawTexture(r, autoTransforms[0]);
-                        break;
-                    case RuleTile.TilingRule.Transform.MirrorX:
-                        GUI.DrawTexture(r, autoTransforms[1]);
-                        break;
-                    case RuleTile.TilingRule.Transform.MirrorY:
-                        GUI.DrawTexture(r, autoTransforms[2]);
-                        break;
-                }
-                if (Event.current.type == EventType.MouseDown && r.Contains(Event.current.mousePosition))
-                {
-                    tilingRule.m_RuleTransform = (RuleTile.TilingRule.Transform)(((int)tilingRule.m_RuleTransform + GetMouseChange()) % 4);
-                    GUI.changed = true;
-                    Event.current.Use();
-                }
+                RuleTransformOnGUI(r, tilingRule.m_RuleTransform);
+                RuleTransformUpdate(r, tilingRule);
             }
-        }
-
-        private static int GetMouseChange()
-        {
-            return Event.current.button == 1 ? -1 : 1;
         }
     }
 }

@@ -167,12 +167,16 @@ namespace UnityEditor
                 Rect matrixRect = new Rect(rect.xMax - matrixWidth * 2f - 10f, yPos, matrixWidth, k_DefaultElementHeight);
                 Rect spriteRect = new Rect(rect.xMax - matrixWidth - 5f, yPos, matrixWidth, k_DefaultElementHeight);
 
+                RuleTileEditor ruleTileEditor = Editor.CreateEditor(overrideTile.m_Tile) as RuleTileEditor;
+
                 if (!isDefault)
                     RuleTileEditor.RuleInspectorOnGUI(inspectorRect, originalRule);
                 else
                     RuleOriginalDefaultInspectorOnGUI(inspectorRect, originalRule);
-                RuleTileEditor.RuleMatrixOnGUI(overrideTile.m_Tile, matrixRect, originalRule);
+                ruleTileEditor.RuleMatrixOnGUI(overrideTile.m_Tile, matrixRect, originalRule);
                 RuleTileEditor.SpriteOnGUI(spriteRect, originalRule);
+
+                DestroyImmediate(ruleTileEditor);
             }
         }
         private void DrawOverrideElement(Rect rect, RuleTile.TilingRule originalRule)
@@ -224,6 +228,9 @@ namespace UnityEditor
             if (overrideRule == null)
                 return;
 
+            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Game Object");
+            overrideRule.m_GameObject = (GameObject)EditorGUI.ObjectField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), "", overrideRule.m_GameObject, typeof(GameObject), false);
+            y += k_SingleLineHeight;
             GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Collider");
             overrideRule.m_ColliderType = (Tile.ColliderType)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), overrideRule.m_ColliderType);
             y += k_SingleLineHeight;
