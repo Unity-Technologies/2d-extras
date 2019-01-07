@@ -20,10 +20,4 @@ public class #SCRIPTNAME# : RuleTile<#SCRIPTNAME#.Neighbor> {
         }
         return base.RuleMatch(neighbor, tile);
     }
-
-#if UNITY_EDITOR
-    public override void RuleOnGUI(Rect rect, Vector2Int pos, int neighbor) {
-        base.RuleOnGUI(rect, pos, neighbor);
-    }
-#endif
 }
