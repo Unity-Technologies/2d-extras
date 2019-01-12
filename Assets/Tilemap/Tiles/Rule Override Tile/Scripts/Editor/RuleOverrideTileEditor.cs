@@ -57,6 +57,7 @@ namespace UnityEditor
             serializedObject.UpdateIfRequiredOrScript();
 
             EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Tile"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_OverrideSelf"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Advanced"));
             serializedObject.ApplyModifiedProperties();
 
