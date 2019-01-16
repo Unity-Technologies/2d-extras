@@ -103,6 +103,7 @@ namespace UnityEngine
         }
 
         public RuleTile m_Tile;
+        public bool m_OverrideSelf = true;
         public bool m_Advanced;
         public List<TileSpritePair> m_Sprites = new List<TileSpritePair>();
         public List<OverrideTilingRule> m_OverrideTilingRules = new List<OverrideTilingRule>();
@@ -119,7 +120,7 @@ namespace UnityEngine
             }
         }
 
-        private RuleTile m_RuntimeTile;
+        [HideInInspector] public RuleTile m_RuntimeTile;
 
         public override bool GetTileAnimationData(Vector3Int position, ITilemap tilemap, ref TileAnimationData tileAnimationData)
         {
@@ -205,7 +206,7 @@ namespace UnityEngine
         public void Override()
         {
             m_RuntimeTile = m_Tile ? Instantiate(m_Tile) : new RuleTile();
-            m_RuntimeTile.m_Self = this;
+            m_RuntimeTile.m_Self = m_OverrideSelf ? this : m_Tile as TileBase;
             if (!m_Advanced)
             {
                 if (m_RuntimeTile.m_DefaultSprite)
