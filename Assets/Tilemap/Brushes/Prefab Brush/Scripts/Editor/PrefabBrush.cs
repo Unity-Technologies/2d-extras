@@ -13,9 +13,15 @@ namespace UnityEditor
 		public GameObject[] m_Prefabs;
 		public float m_PerlinScale = 0.5f;
 		public int m_Z;
+		private prev_brushTarget;
 
 		public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
 		{
+			if (brushTarget) {
+				prev_brushTarget = brushTarget;
+			}
+			brushTarget = prev_brushTarget;
+
 			// Do not allow editing palettes
 			if (brushTarget.layer == 31)
 				return;
