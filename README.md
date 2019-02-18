@@ -9,7 +9,7 @@ All items in the repository are grouped by use for a feature and are listed belo
 ## How to use this
 
 #### Requirements
-[Git](https://git-scm.com/) must be installed and added to your path
+[Git](https://git-scm.com/) must be installed and added to your path.
 
 #### Setup
 The following line needs to be added to your `Packages/manifest.json` file in your Unity Project under the `dependencies` section:
@@ -18,8 +18,11 @@ The following line needs to be added to your `Packages/manifest.json` file in yo
 ### Tilemap
 
 For use with Unity `2018.3.0f2` onwards. 
+
 Please use the `2018.2` branch for Unity 2018.2 versions. 
+
 Please use the `2017` branch for earlier versions of Unity (from 2017.2 and up).
+
 Please use the `package` branch for Unity `2018.3.0f2` but as a Unity Package instead of a Unity Project.
 
 ##### Brushes
