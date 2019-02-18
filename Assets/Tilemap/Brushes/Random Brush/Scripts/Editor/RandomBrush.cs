@@ -148,7 +148,6 @@ namespace UnityEditor
             if (randomBrush.randomTileSets != null && randomBrush.randomTileSets.Length > 0)
             {
                 base.PaintPreview(grid, null, position);
-                
                 if (brushTarget == null)
                     return;
 
@@ -197,7 +196,10 @@ namespace UnityEditor
         {
             EditorGUI.BeginChangeCheck();
             randomBrush.pickRandomTiles = EditorGUILayout.Toggle("Pick Random Tiles", randomBrush.pickRandomTiles);
-            randomBrush.addToRandomTiles = EditorGUILayout.Toggle("Add To Random Tiles", randomBrush.addToRandomTiles);
+            using (new EditorGUI.DisabledScope(!randomBrush.pickRandomTiles))
+            {
+                randomBrush.addToRandomTiles = EditorGUILayout.Toggle("Add To Random Tiles", randomBrush.addToRandomTiles);
+            }
 
             EditorGUI.BeginChangeCheck();
             randomBrush.randomTileSetSize = EditorGUILayout.Vector3IntField("Tile Set Size", randomBrush.randomTileSetSize);
