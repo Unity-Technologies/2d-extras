@@ -72,6 +72,7 @@ namespace UnityEditor
         public RandomTileSet[] randomTileSets;
 
         public bool pickRandomTiles;
+        public bool addToRandomTiles;
 
         public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
@@ -114,7 +115,13 @@ namespace UnityEditor
             int count = ((bounds.size.x + randomTileSetSize.x - 1) / randomTileSetSize.x)
                         * ((bounds.size.y + randomTileSetSize.y - 1) / randomTileSetSize.y)
                         * ((bounds.size.z + randomTileSetSize.z - 1) / randomTileSetSize.z);
+            if (addToRandomTiles)
+            {
+                i = randomTileSets.Length;
+                count += i;
+            }
             Array.Resize<RandomTileSet>(ref randomTileSets, count);
+
             foreach (var startLocation in new SizeEnumerator(bounds.min, bounds.max, randomTileSetSize))
             {
                 randomTileSets[i].randomTiles = new TileBase[randomTileSetSize.x * randomTileSetSize.y * randomTileSetSize.z];
@@ -192,6 +199,7 @@ namespace UnityEditor
         {
             EditorGUI.BeginChangeCheck();
             randomBrush.pickRandomTiles = EditorGUILayout.Toggle("Pick Random Tiles", randomBrush.pickRandomTiles);
+            randomBrush.addToRandomTiles = EditorGUILayout.Toggle("Add To Random Tiles", randomBrush.addToRandomTiles);
 
             EditorGUI.BeginChangeCheck();
             randomBrush.randomTileSetSize = EditorGUILayout.Vector3IntField("Tile Set Size", randomBrush.randomTileSetSize);
