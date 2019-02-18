@@ -101,11 +101,9 @@ namespace UnityEditor
 
         public override void Pick(GridLayout gridLayout, GameObject brushTarget, BoundsInt bounds, Vector3Int pickStart)
         {
+            base.Pick(gridLayout, brushTarget, bounds, pickStart);
             if (!pickRandomTiles)
-            {
-                base.Pick(gridLayout, brushTarget, bounds, pickStart);
                 return;
-            }
 
             Tilemap tilemap = brushTarget.GetComponent<Tilemap>();
             if (tilemap == null)
@@ -120,7 +118,7 @@ namespace UnityEditor
                 i = randomTileSets.Length;
                 count += i;
             }
-            Array.Resize<RandomTileSet>(ref randomTileSets, count);
+            Array.Resize(ref randomTileSets, count);
 
             foreach (var startLocation in new SizeEnumerator(bounds.min, bounds.max, randomTileSetSize))
             {
@@ -217,7 +215,7 @@ namespace UnityEditor
                 randomTileSetCount = 0;
             if (randomBrush.randomTileSets == null || randomBrush.randomTileSets.Length != randomTileSetCount)
             {
-                Array.Resize<RandomBrush.RandomTileSet>(ref randomBrush.randomTileSets, randomTileSetCount);
+                Array.Resize(ref randomBrush.randomTileSets, randomTileSetCount);
                 for (int i = 0; i < randomBrush.randomTileSets.Length; ++i)
                 {
                     int sizeCount = randomBrush.randomTileSetSize.x * randomBrush.randomTileSetSize.y *
