@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace UnityEditor
+namespace UnityEditor.Tilemaps
 {
     [CustomGridBrush(false, false, false, "Random Brush")]
     [CreateAssetMenu(fileName = "New Random Brush", menuName = "Brushes/Random Brush")]

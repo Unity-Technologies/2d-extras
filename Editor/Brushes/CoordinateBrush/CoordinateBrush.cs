@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace UnityEditor
+namespace UnityEditor.Tilemaps
 {
     [CustomGridBrush(true, false, false, "Coordinate Brush")]
     [CreateAssetMenu(fileName = "New Coordinate Brush", menuName = "Brushes/Coordinate Brush")]

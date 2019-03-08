@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
-namespace UnityEditor
+namespace UnityEditor.Tilemaps
 {
     [CreateAssetMenu(fileName = "Prefab brush", menuName = "Brushes/Prefab brush")]
     [CustomGridBrush(false, true, false, "Prefab Brush")]

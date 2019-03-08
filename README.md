@@ -13,11 +13,11 @@ All items in the repository are grouped by use for a feature and are listed belo
 
 #### Setup
 The following line needs to be added to your `Packages/manifest.json` file in your Unity Project under the `dependencies` section:
-"com.unity.2d.tilemap.extras": "https://github.com/Unity-Technologies/2d-extras.git#package"
+"com.unity.2d.tilemap.extras": "https://github.com/Unity-Technologies/2d-extras.git#package_2019.2"
 
 ### Tilemap
 
-For use with Unity `2018.3.0f2` onwards. 
+For use with Unity `2019.2.0a7` onwards. 
 
 Please use the `2018.2` branch for Unity 2018.2 versions. 
 

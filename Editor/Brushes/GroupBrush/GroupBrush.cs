@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace UnityEditor
+namespace UnityEditor.Tilemaps
 {
     [CustomGridBrush(true, false, false, "Group Brush")]
     public class GroupBrush : GridBrush

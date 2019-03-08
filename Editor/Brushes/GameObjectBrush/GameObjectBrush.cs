@@ -1,10 +1,8 @@
 using System;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 using Object = UnityEngine.Object;
 
-namespace UnityEditor
+namespace UnityEditor.Tilemaps
 {
     [CustomGridBrush(true, false, false, "GameObject Brush")]
     public class GameObjectBrush : GridBrushBase
