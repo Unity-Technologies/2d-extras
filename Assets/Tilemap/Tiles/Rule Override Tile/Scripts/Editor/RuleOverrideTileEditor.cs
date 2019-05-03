@@ -61,10 +61,22 @@ namespace UnityEditor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Advanced"));
             serializedObject.ApplyModifiedProperties();
 
+
+			using(new EditorGUI.DisabledScope(overrideTile.m_Tile == null))
+			{
+				if(GUILayout.Button("Populate based on sprite sheet..."))
+				{
+					foreach(UnityEngine.Object obj in serializedObject.targetObjects) {
+						PopulateRuleOverideTileWizard.CreateWizard(obj as RuleOverrideTile);
+					}
+				}
+			}
+
             if (!overrideTile.m_Advanced)
             {
                 using (new EditorGUI.DisabledScope(overrideTile.m_Tile == null))
                 {
+
                     EditorGUI.BeginChangeCheck();
                     overrideTile.GetOverrides(m_Sprites);
 
@@ -90,6 +102,7 @@ namespace UnityEditor
                     m_RuleList.DoLayoutList();
                 }
             }
+
         }
 
         private void SaveTile()
