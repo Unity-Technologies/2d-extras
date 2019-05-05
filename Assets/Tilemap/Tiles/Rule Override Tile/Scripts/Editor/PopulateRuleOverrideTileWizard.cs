@@ -5,6 +5,18 @@ using System.Text.RegularExpressions;
 namespace UnityEditor {
 	public class PopulateRuleOverideTileWizard : ScriptableWizard {
 
+        [MenuItem("CONTEXT/RuleOverrideTile/Populate From Sprite Sheet")]
+        static void MenuOption(MenuCommand menuCommand)
+        {
+                PopulateRuleOverideTileWizard.CreateWizard(menuCommand.context as RuleOverrideTile);
+        }
+        [MenuItem("CONTEXT/RuleOverrideTile/Populate From Sprite Sheet", true)]
+        static bool MenuOptionValidation(MenuCommand menuCommand)
+        {
+                RuleOverrideTile tile = menuCommand.context as RuleOverrideTile;
+                return tile.m_Tile && !tile.m_Advanced;
+        }
+
 		public Texture2D m_spriteSet;
 
 		private RuleOverrideTile m_tileset;
