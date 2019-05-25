@@ -119,31 +119,33 @@ namespace UnityEngine
                 };
             }
         }
+        public RuleTile runtimeTile
+        {
+            get
+            {
+                if (!m_RuntimeTile)
+                    Override();
+                return m_RuntimeTile;
+            }
+        }
 
-        [HideInInspector] public RuleTile m_RuntimeTile;
+        private RuleTile m_RuntimeTile;
 
         public override bool GetTileAnimationData(Vector3Int position, ITilemap tilemap, ref TileAnimationData tileAnimationData)
         {
-            if (!m_RuntimeTile)
-                Override();
-            return m_RuntimeTile.GetTileAnimationData(position, tilemap, ref tileAnimationData);
+            return runtimeTile.GetTileAnimationData(position, tilemap, ref tileAnimationData);
         }
         public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
         {
-            if (!m_RuntimeTile)
-                Override();
-            m_RuntimeTile.GetTileData(position, tilemap, ref tileData);
+            runtimeTile.GetTileData(position, tilemap, ref tileData);
         }
         public override void RefreshTile(Vector3Int position, ITilemap tilemap)
         {
-            if (!m_RuntimeTile)
-                Override();
-            m_RuntimeTile.RefreshTile(position, tilemap);
+            runtimeTile.RefreshTile(position, tilemap);
         }
         public override bool StartUp(Vector3Int position, ITilemap tilemap, GameObject go)
         {
-            Override();
-            return m_RuntimeTile.StartUp(position, tilemap, go);
+            return runtimeTile.StartUp(position, tilemap, go);
         }
 
         public void ApplyOverrides(IList<KeyValuePair<Sprite, Sprite>> overrides)
@@ -224,7 +226,8 @@ namespace UnityEngine
                     m_RuntimeTile.m_DefaultSprite = m_OverrideDefault.m_TilingRule.m_Sprites.Length > 0 ? m_OverrideDefault.m_TilingRule.m_Sprites[0] : null;
                     m_RuntimeTile.m_DefaultColliderType = m_OverrideDefault.m_TilingRule.m_ColliderType;
                 }
-                if (m_RuntimeTile.m_TilingRules != null) {
+                if (m_RuntimeTile.m_TilingRules != null)
+                {
                     for (int i = 0; i < m_RuntimeTile.m_TilingRules.Count; i++)
                     {
                         RuleTile.TilingRule originalRule = m_RuntimeTile.m_TilingRules[i];

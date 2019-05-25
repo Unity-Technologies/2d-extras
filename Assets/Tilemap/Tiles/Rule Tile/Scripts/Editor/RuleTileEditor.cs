@@ -139,6 +139,20 @@ namespace UnityEditor
         {
             EditorUtility.SetDirty(target);
             SceneView.RepaintAll();
+
+            UpdateOverrideTiles();
+        }
+
+        private void UpdateOverrideTiles()
+        {
+            string[] overrideTileGuids = AssetDatabase.FindAssets("t:RuleOverrideTile");
+            foreach (string overrideTileGuid in overrideTileGuids)
+            {
+                string overrideTilePath = AssetDatabase.GUIDToAssetPath(overrideTileGuid);
+                RuleOverrideTile overrideTile = AssetDatabase.LoadAssetAtPath<RuleOverrideTile>(overrideTilePath);
+                if (overrideTile.m_Tile == target)
+                    overrideTile.Override();
+            }
         }
 
         private void OnDrawHeader(Rect rect)
