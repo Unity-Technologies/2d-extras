@@ -148,9 +148,12 @@ namespace UnityEditor
 
         public override void OnInspectorGUI()
         {
+            EditorGUI.BeginChangeCheck();
             tile.m_DefaultSprite = EditorGUILayout.ObjectField("Default Sprite", tile.m_DefaultSprite, typeof(Sprite), false) as Sprite;
             tile.m_DefaultGameObject = EditorGUILayout.ObjectField("Default Game Object", tile.m_DefaultGameObject, typeof(GameObject), false) as GameObject;
             tile.m_DefaultColliderType = (Tile.ColliderType)EditorGUILayout.EnumPopup("Default Collider", tile.m_DefaultColliderType);
+            if (EditorGUI.EndChangeCheck())
+                EditorUtility.SetDirty(tile);
 
             serializedObject.Update();
             EditorGUI.BeginChangeCheck();
