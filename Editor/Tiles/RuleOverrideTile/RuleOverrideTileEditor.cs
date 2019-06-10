@@ -56,10 +56,15 @@ namespace UnityEditor
         {
             serializedObject.UpdateIfRequiredOrScript();
 
+            EditorGUI.BeginChangeCheck();
+
             EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Tile"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("m_OverrideSelf"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Advanced"));
             serializedObject.ApplyModifiedProperties();
+
+            if (EditorGUI.EndChangeCheck())
+                SaveTile();
 
             if (!overrideTile.m_Advanced)
             {
@@ -96,6 +101,8 @@ namespace UnityEditor
         {
             EditorUtility.SetDirty(target);
             SceneView.RepaintAll();
+
+            overrideTile.Override();
         }
 
         private void DrawSpriteElement(Rect rect, int index, bool selected, bool focused)
@@ -309,8 +316,6 @@ namespace UnityEditor
         }
         private void DrawRuleHeader(Rect rect)
         {
-            overrideTile.Override();
-
             float matrixWidth = k_DefaultElementHeight;
 
             float xMax = rect.xMax;
