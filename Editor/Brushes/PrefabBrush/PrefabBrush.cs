@@ -16,10 +16,10 @@ namespace UnityEditor.Tilemaps
         public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
             if (position == prev_position)
-                    {
-                        return;
-                    }
-                    prev_position = position;
+            {
+                return;
+            }
+            prev_position = position;
             if (brushTarget) {
                 prev_brushTarget = brushTarget;
             }
@@ -44,10 +44,10 @@ namespace UnityEditor.Tilemaps
         public override void Erase(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
             if (brushTarget)
-                    {
-                        prev_brushTarget = brushTarget;
-                    }
-                    brushTarget = prev_brushTarget;
+            {
+                prev_brushTarget = brushTarget;
+            }
+            brushTarget = prev_brushTarget;
             // Do not allow editing palettes
             if (brushTarget.layer == 31)
                 return;
