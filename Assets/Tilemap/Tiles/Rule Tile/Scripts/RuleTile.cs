@@ -87,7 +87,7 @@ namespace UnityEngine
             if (instantiateedGameObject != null)
             {
                 Tilemap tmpMap = tilemap.GetComponent<Tilemap>();
-                instantiateedGameObject.transform.position = tmpMap.CellToWorld(location) + Vector3.Scale(tmpMap.tileAnchor, tmpMap.cellSize);
+                instantiateedGameObject.transform.position = tmpMap.LocalToWorld(tmpMap.CellToLocalInterpolated(location + tmpMap.tileAnchor));
                 instantiateedGameObject.transform.rotation = m_GameObjectQuaternion;
             }
 
