@@ -47,31 +47,58 @@ namespace UnityEngine.Tilemaps {
 
 #if UNITY_EDITOR
     [CustomEditor(typeof(WeightedRandomTile))]
-    public class WeightedRandomTileEditor : Editor {
+    public class WeightedRandomTileEditor : Editor 
+    {
+        private SerializedProperty m_Color;
+        private SerializedProperty m_ColliderType;
+
         private WeightedRandomTile Tile {
             get { return target as WeightedRandomTile; }
         }
 
-        public override void OnInspectorGUI() {
+        public void OnEnable()
+        {
+            m_Color = serializedObject.FindProperty("m_Color");
+            m_ColliderType = serializedObject.FindProperty("m_ColliderType");
+        }
+
+        public override void OnInspectorGUI() 
+        {
+            serializedObject.Update();
+
             EditorGUI.BeginChangeCheck();
+
             int count = EditorGUILayout.DelayedIntField("Number of Sprites", Tile.Sprites != null ? Tile.Sprites.Length : 0);
-            if (count < 0) count = 0;
-            
-            if (Tile.Sprites == null || Tile.Sprites.Length != count) {
+            if (count < 0) 
+                count = 0;
+
+            if (Tile.Sprites == null || Tile.Sprites.Length != count) 
+            {
                 Array.Resize(ref Tile.Sprites, count);
             }
 
-            if (count == 0) return;
+            if (count == 0) 
+                return;
 
             EditorGUILayout.LabelField("Place random sprites.");
             EditorGUILayout.Space();
 
-            for (int i = 0; i < count; i++) {
+            for (int i = 0; i < count; i++) 
+            {
                 Tile.Sprites[i].Sprite = (Sprite) EditorGUILayout.ObjectField("Sprite " + (i + 1), Tile.Sprites[i].Sprite, typeof(Sprite), false, null);
                 Tile.Sprites[i].Weight = EditorGUILayout.IntField("Weight " + (i + 1), Tile.Sprites[i].Weight);
             }
 
-            if (EditorGUI.EndChangeCheck()) EditorUtility.SetDirty(Tile);
+            EditorGUILayout.Space();
+
+            EditorGUILayout.PropertyField(m_Color);
+            EditorGUILayout.PropertyField(m_ColliderType);
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                EditorUtility.SetDirty(Tile);
+                serializedObject.ApplyModifiedProperties();
+            }
         }
     }
 #endif
