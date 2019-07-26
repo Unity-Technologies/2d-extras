@@ -164,7 +164,7 @@ namespace UnityEditor.Tilemaps
             }
         }
 
-        [MenuItem("Assets/Create/Group Brush")]
+        [MenuItem("Assets/Create/Brushes/Group Brush")]
         public static void CreateBrush()
         {
             string path = EditorUtility.SaveFilePanelInProject("Save Group Brush", "New Group Brush", "asset", "Save Group Brush", "Assets");
