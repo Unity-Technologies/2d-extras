@@ -8,22 +8,35 @@ All items in the repository are grouped by use for a feature and are listed belo
 
 ## How to use this
 
+You can use this in two different ways: downloading this repository or adding it to your project's Package Manager manifest.
+
+Alternatively, you can pick and choose the scripts that you want by placing only these scripts in your project's `Assets` folder.
+
+### Download
+
+#### Setup
+Download or clone this repository into your project in the folder `Packages/com.unity.2d.tilemap.extras`.
+
+### Package Manager Manifest
+
 #### Requirements
 [Git](https://git-scm.com/) must be installed and added to your path.
 
 #### Setup
 The following line needs to be added to your `Packages/manifest.json` file in your Unity Project under the `dependencies` section:
-"com.unity.2d.tilemap.extras": "https://github.com/Unity-Technologies/2d-extras.git#package_2019.2"
+"com.unity.2d.tilemap.extras": "https://github.com/Unity-Technologies/2d-extras.git#master".
 
 ### Tilemap
 
-For use with Unity `2019.2.0a7` onwards. 
+For use with Unity `2019.2.0f1` onwards. 
 
-Please use the `2018.2` branch for Unity 2018.2 versions. 
+Please use the `2019.1` branch or the `2019.1` tag for Unity 2019.1 versions. 
 
-Please use the `2017` branch for earlier versions of Unity (from 2017.2 and up).
+Please use the `2018.3` branch or the `2018.3` tag for Unity 2018.3 versions. 
 
-Please use the `package` branch for Unity `2018.3.0f2` but as a Unity Package instead of a Unity Project.
+Please use the `2018.2` branch or the `2018.2` tag for Unity 2018.2 versions. 
+
+Please use the `2017` branch or the `2017` tag for earlier versions of Unity (from 2017.2 and up).
 
 ##### Brushes
 
