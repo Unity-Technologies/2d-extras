@@ -4,19 +4,45 @@ using System;
 using UnityEditor;
 #endif
 
-namespace UnityEngine.Tilemaps {
+namespace UnityEngine.Tilemaps 
+{
+    /// <summary>
+    /// A Sprite with a Weight value for randomization.
+    /// </summary>
     [Serializable]
-    public struct WeightedSprite {
+    public struct WeightedSprite 
+    {
+        /// <summary>
+        /// Sprite.
+        /// </summary>
         public Sprite Sprite;
+        /// <summary>
+        /// Weight of the Sprite.
+        /// </summary>
         public int Weight;
     }
 
+    /// <summary>
+    /// Weighted Random Tiles are tiles which randomly pick a sprite from a given list of sprites and a target location, and displays that sprite.
+    /// The sprites can be weighted with a value to change its probability of appearing. The Sprite displayed for the Tile is randomized based on its location and will be fixed for that particular location.
+    /// </summary>
     [Serializable]
     [CreateAssetMenu(fileName = "New Weighted Random Tile", menuName = "Tiles/Weighted Random Tile")]
-    public class WeightedRandomTile : Tile {
+    public class WeightedRandomTile : Tile 
+    {
+        /// <summary>
+        /// The Sprites used for randomizing output.
+        /// </summary>
         [SerializeField] public WeightedSprite[] Sprites;
 
-        public override void GetTileData(Vector3Int location, ITilemap tileMap, ref TileData tileData) {
+        /// <summary>
+        /// Retrieves any tile rendering data from the scripted tile.
+        /// </summary>
+        /// <param name="position">Position of the Tile on the Tilemap.</param>
+        /// <param name="tilemap">The Tilemap the tile is present on.</param>
+        /// <param name="tileData">Data to render the tile.</param>
+        public override void GetTileData(Vector3Int location, ITilemap tileMap, ref TileData tileData) 
+        {
             base.GetTileData(location, tileMap, ref tileData);
             
             if (Sprites == null || Sprites.Length <= 0) return;

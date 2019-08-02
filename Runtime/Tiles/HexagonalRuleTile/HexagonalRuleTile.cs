@@ -1,14 +1,26 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine.Tilemaps;
 
 namespace UnityEngine
 {
+    /// <summary>
+    /// Generic visual tile for creating different tilesets like terrain, pipeline, random or animated tiles.
+    /// This is templated to accept a Neighbor Rule Class for Custom Rules.
+    /// Use this for Hexagonal Grids. 
+    /// </summary>
+    /// <typeparam name="T">Neighbor Rule Class for Custom Rules</typeparam>
     public class HexagonalRuleTile<T> : HexagonalRuleTile
     {
+        /// <summary>
+        /// Returns the Neighbor Rule Class type for this Rule Tile.
+        /// </summary>
         public sealed override Type m_NeighborType { get { return typeof(T); } }
     }
 
+    /// <summary>
+    /// Generic visual tile for creating different tilesets like terrain, pipeline, random or animated tiles.
+    /// Use this for Hexagonal Grids.
+    /// </summary>
     [Serializable]
     [CreateAssetMenu(fileName = "New Hexagonal Rule Tile", menuName = "Tiles/Hexagonal Rule Tile")]
     public class HexagonalRuleTile : RuleTile
@@ -42,13 +54,25 @@ namespace UnityEngine
         };
 
         private static readonly int NeighborCount = 6;
+
+        /// <summary>
+        /// Returns the number of neighbors a Rule Tile can have.
+        /// </summary>
         public override int neighborCount
         {
             get { return NeighborCount; }
         }
 
+        /// <summary>
+        /// Whether this is a flat top Hexagonal Tile
+        /// </summary>
         public bool m_FlatTop;
 
+        /// <summary>
+        /// This method is called when the tile is refreshed.
+        /// </summary>
+        /// <param name="location">Position of the Tile on the Tilemap.</param>
+        /// <param name="tileMap">The Tilemap the tile is present on.</param>
         public override void RefreshTile(Vector3Int location, ITilemap tileMap)
         {
             if (m_TilingRules != null && m_TilingRules.Count > 0)
@@ -61,6 +85,13 @@ namespace UnityEngine
             base.RefreshTile(location, tileMap);
         }
 
+        /// <summary>
+        /// Does a Rule Match given a Tiling Rule and neighboring Tiles.
+        /// </summary>
+        /// <param name="rule">The Tiling Rule to match with.</param>
+        /// <param name="neighboringTiles">The neighboring Tiles to match with.</param>
+        /// <param name="transform">A transform matrix which will match the Rule.</param>
+        /// <returns>True if there is a match, False if not.</returns>
         protected override bool RuleMatches(TilingRule rule, ref TileBase[] neighboringTiles, ref Matrix4x4 transform)
         {
             // Check rule against rotations of 0, 60, 120, 180, 240, 300
@@ -90,6 +121,14 @@ namespace UnityEngine
             return false;
         }
 
+        /// <summary>
+        /// Returns a random transform matrix given the random transform rule.
+        /// </summary>
+        /// <param name="type">Random transform rule.</param>
+        /// <param name="original">The original transform matrix.</param>
+        /// <param name="perlinScale">The Perlin Scale factor of the Tile.</param>
+        /// <param name="position">Position of the Tile on the Tilemap.</param>
+        /// <returns>A random transform matrix.</returns>
         protected override Matrix4x4 ApplyRandomTransform(TilingRule.Transform type, Matrix4x4 original, float perlinScale, Vector3Int position)
         {
             float perlin = GetPerlinValue(position, perlinScale, 200000f);
@@ -106,6 +145,12 @@ namespace UnityEngine
             return original;
         }
 
+        /// <summary>
+        /// Gets and caches the neighboring Tiles around the given Tile on the Tilemap.
+        /// </summary>
+        /// <param name="tilemap">The Tilemap the tile is present on.</param>
+        /// <param name="position">Position of the Tile on the Tilemap.</param>
+        /// <param name="neighboringTiles">An array storing the neighboring Tiles</param>
         protected override void GetMatchingNeighboringTiles(ITilemap tilemap, Vector3Int position, ref TileBase[] neighboringTiles)
         {
             if (neighboringTiles != null)
@@ -122,11 +167,24 @@ namespace UnityEngine
             neighboringTiles = m_CachedNeighboringTiles;
         }
 
+        /// <summary>
+        /// Gets a rotated index given its original index and the rotation in degrees. 
+        /// </summary>
+        /// <param name="original">Original index of Tile.</param>
+        /// <param name="rotation">Rotation in degrees.</param>
+        /// <returns>Rotated Index of Tile.</returns>
         protected override int GetRotatedIndex(int original, int rotation)
         {
             return (original + rotation / 60) % neighborCount;
         }
 
+        /// <summary>
+        /// Gets a mirrored index given its original index and the mirroring axii.
+        /// </summary>
+        /// <param name="original">Original index of Tile.</param>
+        /// <param name="mirrorX">Mirror in the X Axis.</param>
+        /// <param name="mirrorY">Mirror in the Y Axis.</param>
+        /// <returns>Mirrored Index of Tile.</returns>
         protected override int GetMirroredIndex(int original, bool mirrorX, bool mirrorY)
         {
             if (mirrorX && mirrorY)

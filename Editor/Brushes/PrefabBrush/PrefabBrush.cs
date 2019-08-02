@@ -2,17 +2,32 @@ using UnityEngine;
 
 namespace UnityEditor.Tilemaps
 {
+    /// <summary>
+    /// This Brush instances and places a randomly selected Prefabs onto the targeted location and parents the instanced object to the paint target. Use this as an example to quickly place an assorted type of GameObjects onto structured locations.
+    /// </summary>
     [CreateAssetMenu(fileName = "Prefab brush", menuName = "Brushes/Prefab brush")]
     [CustomGridBrush(false, true, false, "Prefab Brush")]
     public class PrefabBrush : GridBrush
     {
         private const float k_PerlinOffset = 100000f;
+        /// <summary>
+        /// The selection of Prefabs to paint from
+        /// </summary>
         public GameObject[] m_Prefabs;
+        /// <summary>
+        /// Factor for distribution of choice of Prefabs to paint
+        /// </summary>
         public float m_PerlinScale = 0.5f;
-        public int m_Z;
         private GameObject prev_brushTarget;
         private Vector3Int prev_position;
 
+        /// <summary>
+        /// Paints Prefabs into a given position within the selected layers.
+        /// The PrefabBrush overrides this to provide Prefab painting functionality.
+        /// </summary>
+        /// <param name="gridLayout">Grid used for layout.</param>
+        /// <param name="brushTarget">Target of the paint operation. By default the currently selected GameObject.</param>
+        /// <param name="position">The coordinates of the cell to paint data to.</param>
         public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
             if (position == prev_position)
@@ -29,7 +44,7 @@ namespace UnityEditor.Tilemaps
             if (brushTarget.layer == 31)
                 return;
 
-            int index = Mathf.Clamp(Mathf.FloorToInt(GetPerlinValue(position, m_PerlinScale, k_PerlinOffset)*m_Prefabs.Length), 0, m_Prefabs.Length - 1);
+            int index = Mathf.Clamp(Mathf.FloorToInt(GetPerlinValue(position, m_PerlinScale, k_PerlinOffset) * m_Prefabs.Length), 0, m_Prefabs.Length - 1);
             GameObject prefab = m_Prefabs[index];
             GameObject instance = (GameObject) PrefabUtility.InstantiatePrefab(prefab);
             if (instance != null)
@@ -37,10 +52,17 @@ namespace UnityEditor.Tilemaps
                 Undo.MoveGameObjectToScene(instance, brushTarget.scene, "Paint Prefabs");
                 Undo.RegisterCreatedObjectUndo((Object)instance, "Paint Prefabs");
                 instance.transform.SetParent(brushTarget.transform);
-                instance.transform.position = grid.LocalToWorld(grid.CellToLocalInterpolated(new Vector3Int(position.x, position.y, m_Z) + new Vector3(.5f, .5f, .5f)));
+                instance.transform.position = grid.LocalToWorld(grid.CellToLocalInterpolated(position + new Vector3(.5f, .5f, .5f)));
             }
         }
 
+        /// <summary>
+        /// Erases Prefabs in a given position within the selected layers.
+        /// The PrefabBrush overrides this to provide Prefab erasing functionality.
+        /// </summary>
+        /// <param name="gridLayout">Grid used for layout.</param>
+        /// <param name="brushTarget">Target of the erase operation. By default the currently selected GameObject.</param>
+        /// <param name="position">The coordinates of the cell to erase data from.</param>
         public override void Erase(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
             if (brushTarget)
@@ -52,7 +74,7 @@ namespace UnityEditor.Tilemaps
             if (brushTarget.layer == 31)
                 return;
 
-            Transform erased = GetObjectInCell(grid, brushTarget.transform, new Vector3Int(position.x, position.y, m_Z));
+            Transform erased = GetObjectInCell(grid, brushTarget.transform, position);
             if (erased != null)
                 Undo.DestroyObjectImmediate(erased.gameObject);
         }
@@ -79,6 +101,9 @@ namespace UnityEditor.Tilemaps
         }
     }
 
+    /// <summary>
+    /// The Brush Editor for a Prefab Brush.
+    /// </summary>
     [CustomEditor(typeof(PrefabBrush))]
     public class PrefabBrushEditor : GridBrushEditor
     {
@@ -94,12 +119,14 @@ namespace UnityEditor.Tilemaps
             m_Prefabs = m_SerializedObject.FindProperty("m_Prefabs");
         }
 
+        /// <summary>
+        /// Callback for painting the inspector GUI for the PrefabBrush in the Tile Palette.
+        /// The PrefabBrush Editor overrides this to have a custom inspector for this Brush.
+        /// </summary>
         public override void OnPaintInspectorGUI()
         {
             m_SerializedObject.UpdateIfRequiredOrScript();
             prefabBrush.m_PerlinScale = EditorGUILayout.Slider("Perlin Scale", prefabBrush.m_PerlinScale, 0.001f, 0.999f);
-            prefabBrush.m_Z = EditorGUILayout.IntField("Position Z", prefabBrush.m_Z);
-                
             EditorGUILayout.PropertyField(m_Prefabs, true);
             m_SerializedObject.ApplyModifiedPropertiesWithoutUndo();
         }

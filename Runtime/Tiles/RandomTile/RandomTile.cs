@@ -1,22 +1,31 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-using UnityEngine;
-
 namespace UnityEngine.Tilemaps
 {
+    /// <summary>
+    /// Random Tiles are tiles which pseudo-randomly pick a sprite from a given list of sprites and a target location, and displays that sprite.
+    /// The Sprite displayed for the Tile is randomized based on its location and will be fixed for that particular location.
+    /// </summary>
     [Serializable]
     [CreateAssetMenu(fileName = "New Random Tile", menuName = "Tiles/Random Tile")]
     public class RandomTile : Tile
     {
+        /// <summary>
+        /// The Sprites used for randomizing output.
+        /// </summary>
         [SerializeField]
         public Sprite[] m_Sprites;
 
+        /// <summary>
+        /// Retrieves any tile rendering data from the scripted tile.
+        /// </summary>
+        /// <param name="position">Position of the Tile on the Tilemap.</param>
+        /// <param name="tilemap">The Tilemap the tile is present on.</param>
+        /// <param name="tileData">Data to render the tile.</param>
         public override void GetTileData(Vector3Int location, ITilemap tileMap, ref TileData tileData)
         {
             base.GetTileData(location, tileMap, ref tileData);

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,6 +15,9 @@ namespace UnityEngine.Tilemaps
         Color
     }
 
+    /// <summary>
+    /// A simple MonoBehaviour that stores and provides information based on Grid positions and keywords.
+    /// </summary>
     [Serializable]
     [AddComponentMenu("Tilemap/Grid Information")]
     public class GridInformation : MonoBehaviour, ISerializationCallbackReceiver
@@ -185,36 +187,87 @@ namespace UnityEngine.Tilemaps
             }
         }
 
+        /// <summary>
+        /// This is not supported.
+        /// </summary>
+        /// <param name="position">Position to store information for</param>
+        /// <param name="name">Property name to store information for</param>
+        /// <param name="positionProperty">The information to be stored at the position</param>
+        /// <typeparam name="T">Type of the information to set</typeparam>
+        /// <returns>Whether the information was set</returns>
+        /// <exception cref="NotImplementedException">This is not implemented as only concrete Types are supported</exception>
         public bool SetPositionProperty<T>(Vector3Int position, String name, T positionProperty)
         {
             throw new NotImplementedException("Storing this type is not accepted in GridInformation");
         }
 
+        /// <summary>
+        /// Stores int information at the given position with the given property name
+        /// </summary>
+        /// <param name="position">Position to store information for</param>
+        /// <param name="name">Property name to store information for</param>
+        /// <param name="positionProperty">The information to be stored at the position</param>
+        /// <returns>Whether the information was set</returns>
         public bool SetPositionProperty(Vector3Int position, String name, int positionProperty)
         {
             return SetPositionProperty(position, name, GridInformationType.Integer, positionProperty);
         }
 
+        /// <summary>
+        /// Stores string information at the given position with the given property name
+        /// </summary>
+        /// <param name="position">Position to store information for</param>
+        /// <param name="name">Property name to store information for</param>
+        /// <param name="positionProperty">The information to be stored at the position</param>
+        /// <returns>Whether the information was set</returns>
         public bool SetPositionProperty(Vector3Int position, String name, string positionProperty)
         {
             return SetPositionProperty(position, name, GridInformationType.String, positionProperty);
         }
 
+        /// <summary>
+        /// Stores float information at the given position with the given property name
+        /// </summary>
+        /// <param name="position">Position to store information for</param>
+        /// <param name="name">Property name to store information for</param>
+        /// <param name="positionProperty">The information to be stored at the position</param>
+        /// <returns>Whether the information was set</returns>
         public bool SetPositionProperty(Vector3Int position, String name, float positionProperty)
         {
             return SetPositionProperty(position, name, GridInformationType.Float, positionProperty);
         }
 
+        /// <summary>
+        /// Stores double information at the given position with the given property name
+        /// </summary>
+        /// <param name="position">Position to store information for</param>
+        /// <param name="name">Property name to store information for</param>
+        /// <param name="positionProperty">The information to be stored at the position</param>
+        /// <returns>Whether the information was set</returns>
         public bool SetPositionProperty(Vector3Int position, String name, double positionProperty)
         {
             return SetPositionProperty(position, name, GridInformationType.Double, positionProperty);
         }
 
+        /// <summary>
+        /// Stores UnityEngine.Object information at the given position with the given property name
+        /// </summary>
+        /// <param name="position">Position to store information for</param>
+        /// <param name="name">Property name to store information for</param>
+        /// <param name="positionProperty">The information to be stored at the position</param>
+        /// <returns>Whether the information was set</returns>
         public bool SetPositionProperty(Vector3Int position, String name, UnityEngine.Object positionProperty)
         {
             return SetPositionProperty(position, name, GridInformationType.UnityObject, positionProperty);
         }
 
+        /// <summary>
+        /// Stores color information at the given position with the given property name
+        /// </summary>
+        /// <param name="position">Position to store information for</param>
+        /// <param name="name">Property name to store information for</param>
+        /// <param name="positionProperty">The information to be stored at the position</param>
+        /// <returns>Whether the information was set</returns>
         public bool SetPositionProperty(Vector3Int position, String name, Color positionProperty)
         {
             return SetPositionProperty(position, name, GridInformationType.Color, positionProperty);
@@ -233,12 +286,21 @@ namespace UnityEngine.Tilemaps
                 positionValue.type = dataType;
                 positionValue.data = positionProperty;
 
-	            m_PositionProperties[positionKey] = positionValue;
+                m_PositionProperties[positionKey] = positionValue;
                 return true;
             }
             return false;
         }
 
+        /// <summary>
+        /// Retrieves information stored at the given position with the given property name as the given Type
+        /// </summary>
+        /// <param name="position">Position to retrieve information for</param>
+        /// <param name="name">Property name to retrieve information for</param>
+        /// <param name="defaultValue">Default value if property does not exist at the given position</param>
+        /// <typeparam name="T">Type of the information to retrieve</typeparam>
+        /// <returns>The information stored at the position</returns>
+        /// <exception cref="InvalidCastException">Thrown when information to be retrieved is not the given Type</exception>
         public T GetPositionProperty<T>(Vector3Int position, String name, T defaultValue) where T : UnityEngine.Object
         {
             GridInformationKey positionKey;
@@ -255,6 +317,14 @@ namespace UnityEngine.Tilemaps
             return defaultValue;
         }
 
+        /// <summary>
+        /// Retrieves int information stored at the given position with the given property name
+        /// </summary>
+        /// <param name="position">Position to retrieve information for</param>
+        /// <param name="name">Property name to retrieve information for</param>
+        /// <param name="defaultValue">Default int if property does not exist at the given position</param>
+        /// <returns>The int stored at the position</returns>
+        /// <exception cref="InvalidCastException">Thrown when information to be retrieved is not a int</exception>
         public int GetPositionProperty(Vector3Int position, String name, int defaultValue)
         {
             GridInformationKey positionKey;
@@ -271,6 +341,14 @@ namespace UnityEngine.Tilemaps
             return defaultValue;
         }
 
+        /// <summary>
+        /// Retrieves string information stored at the given position with the given property name
+        /// </summary>
+        /// <param name="position">Position to retrieve information for</param>
+        /// <param name="name">Property name to retrieve information for</param>
+        /// <param name="defaultValue">Default string if property does not exist at the given position</param>
+        /// <returns>The string stored at the position</returns>
+        /// <exception cref="InvalidCastException">Thrown when information to be retrieved is not a string</exception>
         public string GetPositionProperty(Vector3Int position, String name, string defaultValue)
         {
             GridInformationKey positionKey;
@@ -287,6 +365,14 @@ namespace UnityEngine.Tilemaps
             return defaultValue;
         }
 
+        /// <summary>
+        /// Retrieves float information stored at the given position with the given property name
+        /// </summary>
+        /// <param name="position">Position to retrieve information for</param>
+        /// <param name="name">Property name to retrieve information for</param>
+        /// <param name="defaultValue">Default float if property does not exist at the given position</param>
+        /// <returns>The float stored at the position</returns>
+        /// <exception cref="InvalidCastException">Thrown when information to be retrieved is not a float</exception>
         public float GetPositionProperty(Vector3Int position, String name, float defaultValue)
         {
             GridInformationKey positionKey;
@@ -303,6 +389,14 @@ namespace UnityEngine.Tilemaps
             return defaultValue;
         }
 
+        /// <summary>
+        /// Retrieves double information stored at the given position with the given property name
+        /// </summary>
+        /// <param name="position">Position to retrieve information for</param>
+        /// <param name="name">Property name to retrieve information for</param>
+        /// <param name="defaultValue">Default double if property does not exist at the given position</param>
+        /// <returns>The double stored at the position</returns>
+        /// <exception cref="InvalidCastException">Thrown when information to be retrieved is not a double</exception>
         public double GetPositionProperty(Vector3Int position, String name, double defaultValue)
         {
             GridInformationKey positionKey;
@@ -319,6 +413,14 @@ namespace UnityEngine.Tilemaps
             return defaultValue;
         }
 
+        /// <summary>
+        /// Retrieves Color information stored at the given position with the given property name
+        /// </summary>
+        /// <param name="position">Position to retrieve information for</param>
+        /// <param name="name">Property name to retrieve information for</param>
+        /// <param name="defaultValue">Default color if property does not exist at the given position</param>
+        /// <returns>The color stored at the position</returns>
+        /// <exception cref="InvalidCastException">Thrown when information to be retrieved is not a Color</exception>
         public Color GetPositionProperty(Vector3Int position, String name, Color defaultValue)
         {
             GridInformationKey positionKey;
@@ -335,6 +437,12 @@ namespace UnityEngine.Tilemaps
             return defaultValue;
         }
 
+        /// <summary>
+        /// Erases information stored at the given position with the given property name
+        /// </summary>
+        /// <param name="position">Position to erase</param>
+        /// <param name="name">Property name to erase</param>
+        /// <returns>Whether the information was erased</returns>
         public bool ErasePositionProperty(Vector3Int position, String name)
         {
             GridInformationKey positionKey;
@@ -343,11 +451,19 @@ namespace UnityEngine.Tilemaps
             return m_PositionProperties.Remove(positionKey);
         }
 
+        /// <summary>
+        /// Clears all information stored
+        /// </summary>
         public virtual void Reset()
         {
             m_PositionProperties.Clear();
         }
 
+        /// <summary>
+        /// Gets all positions with information with the given property name
+        /// </summary>
+        /// <param name="propertyName">Property name to search for</param>
+        /// <returns>An array of all positions with the property name</returns>
         public Vector3Int[] GetAllPositions(string propertyName)
         {
             return m_PositionProperties.Keys.ToList().FindAll(x => x.name == propertyName).Select(x => x.position).ToArray();

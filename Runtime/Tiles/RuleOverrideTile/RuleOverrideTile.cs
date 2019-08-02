@@ -1,20 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.Tilemaps;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace UnityEngine
+namespace UnityEngine.Tilemaps
 {
+    /// <summary>
+    /// Rule Override Tiles are Tiles which can override a subset of Rules for a given Rule Tile to provide specialised behaviour while keeping most of the Rules originally set in the Rule Tile.
+    /// </summary>
+    [MovedFrom(true, "UnityEngine")]
     [Serializable]
     [CreateAssetMenu(fileName = "New Rule Override Tile", menuName = "Tiles/Rule Override Tile")]
     public class RuleOverrideTile : TileBase
     {
+        /// <summary>
+        /// A data structure storing the Sprite overriding the original RuleTile Sprite
+        /// </summary>
         [Serializable]
         public class TileSpritePair
         {
             public Sprite m_OriginalSprite;
             public Sprite m_OverrideSprite;
         }
+
+        /// <summary>
+        /// A data structure storing the overriding Tiling Rule and its status  
+        /// </summary>
         [Serializable]
         public class OverrideTilingRule
         {
@@ -22,6 +33,10 @@ namespace UnityEngine
             public RuleTile.TilingRule m_TilingRule = new RuleTile.TilingRule();
         }
 
+        /// <summary>
+        /// Gets the overriding Sprite of a given Sprite. 
+        /// </summary>
+        /// <param name="originalSprite">The original Sprite that is overridden</param>
         public Sprite this[Sprite originalSprite]
         {
             get
@@ -59,6 +74,11 @@ namespace UnityEngine
                 }
             }
         }
+
+        /// <summary>
+        /// Gets the overriding Tiling Rule of a given Tiling Rule.
+        /// </summary>
+        /// <param name="originalRule">The original Tiling Rule that is overridden</param>
         public RuleTile.TilingRule this[RuleTile.TilingRule originalRule]
         {
             get
@@ -102,12 +122,33 @@ namespace UnityEngine
             }
         }
 
+        /// <summary>
+        /// The RuleTile to override
+        /// </summary>
         public RuleTile m_Tile;
+        /// <summary>
+        /// Enable this so that this Tile only accepts instances of itself when matching Rules.
+        /// </summary>
         public bool m_OverrideSelf = true;
+        /// <summary>
+        /// Enable Advanced Mode. Enable this if you want to specify which Rules to override.
+        /// </summary>
         public bool m_Advanced;
+        /// <summary>
+        /// A list of Sprite Overrides
+        /// </summary>
         public List<TileSpritePair> m_Sprites = new List<TileSpritePair>();
+        /// <summary>
+        /// A list of Tiling Rule Overrides
+        /// </summary>
         public List<OverrideTilingRule> m_OverrideTilingRules = new List<OverrideTilingRule>();
+        /// <summary>
+        /// The default overriding Tiling Rule
+        /// </summary>
         public OverrideTilingRule m_OverrideDefault = new OverrideTilingRule();
+        /// <summary>
+        /// The default original Tiling Rule
+        /// </summary>
         public RuleTile.TilingRule m_OriginalDefault
         {
             get
@@ -119,6 +160,10 @@ namespace UnityEngine
                 };
             }
         }
+
+        /// <summary>
+        /// Returns the Rule Tile for retrieving TileData
+        /// </summary>
         public RuleTile runtimeTile
         {
             get
@@ -131,23 +176,56 @@ namespace UnityEngine
 
         private RuleTile m_RuntimeTile;
 
+        /// <summary>
+        /// Retrieves any tile animation data from the scripted tile.
+        /// </summary>
+        /// <param name="position">Position of the Tile on the Tilemap.</param>
+        /// <param name="tilemap">The Tilemap the tile is present on.</param>
+        /// <param name="tileAnimationData">Data to run an animation on the tile.</param>
+        /// <returns>Whether the call was successful.</returns>
         public override bool GetTileAnimationData(Vector3Int position, ITilemap tilemap, ref TileAnimationData tileAnimationData)
         {
             return runtimeTile.GetTileAnimationData(position, tilemap, ref tileAnimationData);
         }
+
+        /// <summary>
+        /// Retrieves any tile rendering data from the scripted tile.
+        /// </summary>
+        /// <param name="position">Position of the Tile on the Tilemap.</param>
+        /// <param name="tilemap">The Tilemap the tile is present on.</param>
+        /// <param name="tileData">Data to render the tile.</param>
         public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
         {
             runtimeTile.GetTileData(position, tilemap, ref tileData);
         }
+
+        /// <summary>
+        /// This method is called when the tile is refreshed.
+        /// </summary>
+        /// <param name="location">Position of the Tile on the Tilemap.</param>
+        /// <param name="tileMap">The Tilemap the tile is present on.</param>
         public override void RefreshTile(Vector3Int position, ITilemap tilemap)
         {
             runtimeTile.RefreshTile(position, tilemap);
         }
+
+        /// <summary>
+        /// StartUp is called on the first frame of the running Scene.
+        /// </summary>
+        /// <param name="location">Position of the Tile on the Tilemap.</param>
+        /// <param name="tilemap">The Tilemap the tile is present on.</param>
+        /// <param name="instantiateedGameObject">The GameObject instantiated for the Tile.</param>
+        /// <returns>Whether StartUp was successful</returns>
         public override bool StartUp(Vector3Int position, ITilemap tilemap, GameObject go)
         {
             return runtimeTile.StartUp(position, tilemap, go);
         }
 
+        /// <summary>
+        /// Applies Sprite overrides to this
+        /// </summary>
+        /// <param name="overrides">A list of Sprite overrides to apply</param>
+        /// <exception cref="ArgumentNullException">The input overrides list is not valid</exception>
         public void ApplyOverrides(IList<KeyValuePair<Sprite, Sprite>> overrides)
         {
             if (overrides == null)
@@ -156,6 +234,12 @@ namespace UnityEngine
             for (int i = 0; i < overrides.Count; i++)
                 this[overrides[i].Key] = overrides[i].Value;
         }
+
+        /// <summary>
+        /// Gets Sprite overrides for this
+        /// </summary>
+        /// <param name="overrides">A list of Sprite overrides to fill</param>
+        /// <exception cref="ArgumentNullException">The input overrides list is not valid</exception>
         public void GetOverrides(List<KeyValuePair<Sprite, Sprite>> overrides)
         {
             if (overrides == null)
@@ -179,6 +263,12 @@ namespace UnityEngine
             foreach (Sprite sprite in originalSprites)
                 overrides.Add(new KeyValuePair<Sprite, Sprite>(sprite, this[sprite]));
         }
+
+        /// <summary>
+        /// Applies Tiling Rule overrides to this
+        /// </summary>
+        /// <param name="overrides">A list of Tiling Rule overrides to apply</param>
+        /// <exception cref="ArgumentNullException">The input overrides list is not valid</exception>
         public void ApplyOverrides(IList<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>> overrides)
         {
             if (overrides == null)
@@ -187,6 +277,12 @@ namespace UnityEngine
             for (int i = 0; i < overrides.Count; i++)
                 this[overrides[i].Key] = overrides[i].Value;
         }
+
+        /// <summary>
+        /// Gets Tiling Rule overrides for this
+        /// </summary>
+        /// <param name="overrides">A list of Tiling Rule overrides to fill</param>
+        /// <exception cref="ArgumentNullException">The input overrides list is not valid</exception>
         public void GetOverrides(List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>> overrides)
         {
             if (overrides == null)
@@ -239,14 +335,30 @@ namespace UnityEngine
                 }
             }
         }
+
+        /// <summary>
+        /// Clones a Tiling Rule from a given Tiling Rule
+        /// </summary>
+        /// <param name="from">A Tiling Rule to clone</param>
+        /// <returns>A clone of the given Tiling rule</returns>
         public RuleTile.TilingRule CloneTilingRule(RuleTile.TilingRule from)
         {
             var clone = new RuleTile.TilingRule();
             CopyTilingRule(from, clone, true);
             return clone;
         }
+
+        /// <summary>
+        /// Copies a Tiling Rule from a given Tiling Rule
+        /// </summary>
+        /// <param name="from">A Tiling Rule to copy from</param>
+        /// <param name="to">A Tiling Rule to copy to</param>
+        /// <param name="copyRule"></param>
         public void CopyTilingRule(RuleTile.TilingRule from, RuleTile.TilingRule to, bool copyRule)
         {
+            if (from == null)
+                return;
+
             if (copyRule)
             {
                 to.m_Neighbors = from.m_Neighbors;

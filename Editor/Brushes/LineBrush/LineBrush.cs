@@ -6,14 +6,36 @@ using System.Linq;
 
 namespace UnityEditor.Tilemaps
 {
+    /// <summary>
+    /// This Brush helps draw lines of Tiles onto a Tilemap.
+    /// Use this as an example to modify brush painting behaviour to making painting quicker with less actions.
+    /// </summary>
     [CustomGridBrush(true, false, false, "Line Brush")]
     [CreateAssetMenu(fileName = "New Line Brush", menuName = "Brushes/Line Brush")]
     public class LineBrush : GridBrush
     {
-        public bool lineStartActive = false;
-        public bool fillGaps = false;
+        /// <summary>
+        /// Whether the Line Brush has started drawing a line.
+        /// </summary>
+        public bool lineStartActive;
+        /// <summary>
+        /// Ensures that there are orthogonal connections of Tiles from the start of the line to the end.
+        /// </summary>
+        public bool fillGaps;
+        /// <summary>
+        /// The current starting point of the line.
+        /// </summary>
         public Vector3Int lineStart = Vector3Int.zero;
 
+        /// <summary>
+        /// Paints tiles and GameObjects into a given position within the selected layers.
+        /// The LineBrush overrides this to provide line painting functionality.
+        /// The first paint action sets the starting point of the line.
+        /// The next paint action sets the ending point of the line and paints Tile from start to end.
+        /// </summary>
+        /// <param name="gridLayout">Grid used for layout.</param>
+        /// <param name="brushTarget">Target of the paint operation. By default the currently selected GameObject.</param>
+        /// <param name="position">The coordinates of the cell to paint data to.</param>
         public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
             if (lineStartActive)
@@ -99,7 +121,13 @@ namespace UnityEditor.Tilemaps
             return points;
         }
 
-        // http://ericw.ca/notes/bresenhams-line-algorithm-in-csharp.html
+        /// <summary>
+        /// Gets an enumerable for all the cells directly between two points
+        /// http://ericw.ca/notes/bresenhams-line-algorithm-in-csharp.html
+        /// </summary>
+        /// <param name="p1">A starting point of a line</param>
+        /// <param name="p2">An ending point of a line</param>
+        /// <returns>Gets an enumerable for all the cells directly between two points</returns>
         public static IEnumerable<Vector2Int> GetPointsOnLine(Vector2Int p1, Vector2Int p2)
         {
             int x0 = p1.x;
@@ -147,12 +175,24 @@ namespace UnityEditor.Tilemaps
         }
     }
 
+    /// <summary>
+    /// The Brush Editor for a Line Brush.
+    /// </summary>
     [CustomEditor(typeof(LineBrush))]
     public class LineBrushEditor : GridBrushEditor
     {
         private LineBrush lineBrush { get { return target as LineBrush; } }
         private Tilemap lastTilemap;
 
+        /// <summary>
+        /// Callback for painting the GUI for the GridBrush in the Scene View.
+        /// The CoordinateBrush Editor overrides this to draw the preview of the brush when drawing lines.
+        /// </summary>
+        /// <param name="gridLayout">Grid that the brush is being used on.</param>
+        /// <param name="brushTarget">Target of the GridBrushBase::ref::Tool operation. By default the currently selected GameObject.</param>
+        /// <param name="position">Current selected location of the brush.</param>
+        /// <param name="tool">Current GridBrushBase::ref::Tool selected.</param>
+        /// <param name="executing">Whether brush is being used.</param>
         public override void OnPaintSceneGUI(GridLayout grid, GameObject brushTarget, BoundsInt position, GridBrushBase.Tool tool, bool executing)
         {
             base.OnPaintSceneGUI(grid, brushTarget, position, tool, executing);
@@ -196,6 +236,9 @@ namespace UnityEditor.Tilemaps
             }
         }
 
+        /// <summary>
+        /// Clears all line previews.
+        /// </summary>
         public override void ClearPreview()
         {
             base.ClearPreview();

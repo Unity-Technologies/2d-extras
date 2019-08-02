@@ -6,6 +6,10 @@ using UnityEngine.Tilemaps;
 
 namespace UnityEditor.Tilemaps
 {
+    /// <summary>
+    /// This Brush helps to place random Tiles onto a Tilemap.
+    /// Use this as an example to create brushes which store specific data per brush and to make brushes which randomize behaviour.
+    /// </summary>
     [CustomGridBrush(false, false, false, "Random Brush")]
     [CreateAssetMenu(fileName = "New Random Brush", menuName = "Brushes/Random Brush")]
     public class RandomBrush : GridBrush
@@ -62,18 +66,43 @@ namespace UnityEditor.Tilemaps
             void IDisposable.Dispose() {}
         }
 
+        /// <summary>
+        /// A data structure for storing a set of Tiles used for randomization
+        /// </summary>
         [Serializable]
         public struct RandomTileSet
         {
+            // A set of tiles to be painted as a set
             public TileBase[] randomTiles;
         }
 
+        /// <summary>
+        /// The size of a RandomTileSet
+        /// </summary>
         public Vector3Int randomTileSetSize = Vector3Int.one;
+
+        /// <summary>
+        /// An array of RandomTileSets to choose from when randomizing 
+        /// </summary>
         public RandomTileSet[] randomTileSets;
 
+        /// <summary>
+        /// A flag to determine if picking will add new RandomTileSets 
+        /// </summary>
         public bool pickRandomTiles;
+
+        /// <summary>
+        /// A flag to determine if picking will add to existing RandomTileSets 
+        /// </summary>
         public bool addToRandomTiles;
 
+        /// <summary>
+        /// Paints RandomTileSets into a given position within the selected layers.
+        /// The RandomBrush overrides this to provide randomized painting functionality.
+        /// </summary>
+        /// <param name="gridLayout">Grid used for layout.</param>
+        /// <param name="brushTarget">Target of the paint operation. By default the currently selected GameObject.</param>
+        /// <param name="position">The coordinates of the cell to paint data to.</param>
         public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
             if (randomTileSets != null && randomTileSets.Length > 0)
@@ -99,6 +128,14 @@ namespace UnityEditor.Tilemaps
             }
         }
 
+        /// <summary>
+        /// Picks RandomTileSets given the coordinates of the cells.
+        /// The RandomBrush overrides this to provide picking functionality for RandomTileSets.
+        /// </summary>
+        /// <param name="gridLayout">Grid to pick data from.</param>
+        /// <param name="brushTarget">Target of the picking operation. By default the currently selected GameObject.</param>
+        /// <param name="position">The coordinates of the cells to paint data from.</param>
+        /// <param name="pickStart">Pivot of the picking brush.</param>
         public override void Pick(GridLayout gridLayout, GameObject brushTarget, BoundsInt bounds, Vector3Int pickStart)
         {
             base.Pick(gridLayout, brushTarget, bounds, pickStart);
@@ -137,12 +174,22 @@ namespace UnityEditor.Tilemaps
         }
     }
 
+    /// <summary>
+    /// The Brush Editor for a Random Brush.
+    /// </summary>
     [CustomEditor(typeof(RandomBrush))]
     public class RandomBrushEditor : GridBrushEditor
     {
         private RandomBrush randomBrush { get { return target as RandomBrush; } }
         private GameObject lastBrushTarget;
-        
+
+        /// <summary>
+        /// Paints preview data into a cell of a grid given the coordinates of the cell.
+        /// The RandomBrush Editor overrides this to draw the preview of the brush for RandomTileSets
+        /// </summary>
+        /// <param name="gridLayout">Grid to paint data to.</param>
+        /// <param name="brushTarget">Target of the paint operation. By default the currently selected GameObject.</param>
+        /// <param name="position">The coordinates of the cell to paint data to.</param>
         public override void PaintPreview(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
             if (randomBrush.randomTileSets != null && randomBrush.randomTileSets.Length > 0)
@@ -173,7 +220,10 @@ namespace UnityEditor.Tilemaps
                 base.PaintPreview(grid, brushTarget, position);
             }
         }
-        
+
+        /// <summary>
+        /// Clears all RandomTileSet previews.
+        /// </summary>
         public override void ClearPreview()
         {
             if (lastBrushTarget != null)
@@ -191,7 +241,11 @@ namespace UnityEditor.Tilemaps
                 base.ClearPreview();
             }
         }
-        
+
+        /// <summary>
+        /// Callback for painting the inspector GUI for the RandomBrush in the Tile Palette.
+        /// The RandomBrush Editor overrides this to have a custom inspector for this Brush.
+        /// </summary>
         public override void OnPaintInspectorGUI()
         {
             EditorGUI.BeginChangeCheck();
@@ -224,7 +278,7 @@ namespace UnityEditor.Tilemaps
                                     randomBrush.randomTileSetSize.z;
                     if (randomBrush.randomTileSets[i].randomTiles == null
                         || randomBrush.randomTileSets[i].randomTiles.Length != sizeCount)
-                    randomBrush.randomTileSets[i].randomTiles = new TileBase[sizeCount];
+                        randomBrush.randomTileSets[i].randomTiles = new TileBase[sizeCount];
                 }
             }
 
