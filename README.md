@@ -30,7 +30,7 @@ The following line needs to be added to your `Packages/manifest.json` file in yo
 
 For use with Unity `2019.2.0f1` onwards. 
 
-Please use the `2019.1` branch or the `2019.1` tag for Unity 2019.1 versions. 
+Please use the `2019.1` tag for Unity 2019.1 versions. 
 
 Please use the `2018.3` branch or the `2018.3` tag for Unity 2018.3 versions. 
 
