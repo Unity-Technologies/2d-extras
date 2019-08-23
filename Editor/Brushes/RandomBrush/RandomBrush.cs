@@ -45,7 +45,7 @@ namespace UnityEditor.Tilemaps
                     if (_current.y >= _max.y)
                     {
                         _current.y = _min.y;
-                        _current.z = _delta.z;
+                        _current.z += _delta.z;
                         if (_current.z >= _max.z)
                             return false;
                     }
@@ -152,7 +152,7 @@ namespace UnityEditor.Tilemaps
                         * ((bounds.size.z + randomTileSetSize.z - 1) / randomTileSetSize.z);
             if (addToRandomTiles)
             {
-                i = randomTileSets.Length;
+                i = randomTileSets != null ? randomTileSets.Length : 0;
                 count += i;
             }
             Array.Resize(ref randomTileSets, count);
