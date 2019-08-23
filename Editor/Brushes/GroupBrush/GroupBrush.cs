@@ -20,12 +20,7 @@ namespace UnityEditor.Tilemaps
             set
             {
                 m_Gap = value;
-                if (m_Gap.x < 0)
-                    m_Gap.x = 0;
-                if (m_Gap.y < 0)
-                    m_Gap.y = 0;
-                if (m_Gap.z < 0)
-                    m_Gap.z = 0;
+                OnValidate();
             }
         }
 
@@ -38,16 +33,15 @@ namespace UnityEditor.Tilemaps
             set
             {
                 m_Limit = value;
-                if (m_Limit.x < 0)
-                    m_Limit.x = 0;
-                if (m_Limit.y < 0)
-                    m_Limit.y = 0;
-                if (m_Limit.z < 0)
-                    m_Limit.z = 0;
-                m_VisitedLocations = new BitArray((m_Limit.x * 2 + 1) * (m_Limit.y * 2 + 1) * (m_Limit.z * 2 + 1));
+                OnValidate();
             }
         }
 
+        private int visitedLocationsSize
+        {
+            get { return (m_Limit.x * 2 + 1) * (m_Limit.y * 2 + 1) * (m_Limit.z * 2 + 1); }
+        }
+        
         [SerializeField]
         private Vector3Int m_Gap = Vector3Int.one;
         [SerializeField]
@@ -56,6 +50,24 @@ namespace UnityEditor.Tilemaps
         private BitArray m_VisitedLocations = new BitArray(7 * 7 * 7);
         [SerializeField]
         private Stack<Vector3Int> m_NextPosition = new Stack<Vector3Int>();
+
+        private void OnValidate()
+        {
+            if (m_Gap.x < 0)
+                m_Gap.x = 0;
+            if (m_Gap.y < 0)
+                m_Gap.y = 0;
+            if (m_Gap.z < 0)
+                m_Gap.z = 0;
+            if (m_Limit.x < 0)
+                m_Limit.x = 0;
+            if (m_Limit.y < 0)
+                m_Limit.y = 0;
+            if (m_Limit.z < 0)
+                m_Limit.z = 0;
+            if (m_VisitedLocations.Length != visitedLocationsSize)
+                m_VisitedLocations = new BitArray(visitedLocationsSize);
+        }
 
         /// <summary>
         /// Picks tiles from selected Tilemaps and child GameObjects, given the coordinates of the cells.
