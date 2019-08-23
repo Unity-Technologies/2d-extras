@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace UnityEditor.Tilemaps
 {
@@ -18,8 +20,13 @@ namespace UnityEditor.Tilemaps
         /// Factor for distribution of choice of Prefabs to paint
         /// </summary>
         public float m_PerlinScale = 0.5f;
+        /// <summary>
+        /// Anchor Point of the Instantiated Prefab in the cell when painting
+        /// </summary>
+        public Vector3 m_Anchor = new Vector3(0.5f, 0.5f, 0.5f);
+
         private GameObject prev_brushTarget;
-        private Vector3Int prev_position;
+        private Vector3Int prev_position = Vector3Int.one * Int32.MaxValue;
 
         /// <summary>
         /// Paints Prefabs into a given position within the selected layers.
@@ -52,7 +59,7 @@ namespace UnityEditor.Tilemaps
                 Undo.MoveGameObjectToScene(instance, brushTarget.scene, "Paint Prefabs");
                 Undo.RegisterCreatedObjectUndo((Object)instance, "Paint Prefabs");
                 instance.transform.SetParent(brushTarget.transform);
-                instance.transform.position = grid.LocalToWorld(grid.CellToLocalInterpolated(position + new Vector3(.5f, .5f, .5f)));
+                instance.transform.position = grid.LocalToWorld(grid.CellToLocalInterpolated(position + m_Anchor));
             }
         }
 
@@ -110,6 +117,7 @@ namespace UnityEditor.Tilemaps
         private PrefabBrush prefabBrush { get { return target as PrefabBrush; } }
 
         private SerializedProperty m_Prefabs;
+        private SerializedProperty m_Anchor;
         private SerializedObject m_SerializedObject;
 
         protected override void OnEnable()
@@ -117,6 +125,7 @@ namespace UnityEditor.Tilemaps
             base.OnEnable();
             m_SerializedObject = new SerializedObject(target);
             m_Prefabs = m_SerializedObject.FindProperty("m_Prefabs");
+            m_Anchor = m_SerializedObject.FindProperty("m_Anchor");
         }
 
         /// <summary>
@@ -128,6 +137,7 @@ namespace UnityEditor.Tilemaps
             m_SerializedObject.UpdateIfRequiredOrScript();
             prefabBrush.m_PerlinScale = EditorGUILayout.Slider("Perlin Scale", prefabBrush.m_PerlinScale, 0.001f, 0.999f);
             EditorGUILayout.PropertyField(m_Prefabs, true);
+            EditorGUILayout.PropertyField(m_Anchor);
             m_SerializedObject.ApplyModifiedPropertiesWithoutUndo();
         }
     }

@@ -27,6 +27,11 @@ namespace UnityEditor.Tilemaps
         [HideInInspector]
         private bool m_CanChangeZPosition;
 
+        /// <summary>
+        /// Anchor Point of the Instantiated GameObject in the cell when painting
+        /// </summary>
+        public Vector3 m_Anchor = new Vector3(0.5f, 0.5f, 0.5f);
+
         /// <summary>Size of the brush in cells. </summary>
         public Vector3Int size { get { return m_Size; } set { m_Size = value; SizeUpdated(); } }
         /// <summary>Pivot of the brush. </summary>
@@ -93,7 +98,7 @@ namespace UnityEditor.Tilemaps
         {
             if (cell.gameObject != null)
             {
-                SetSceneCell(grid, parent, position, cell.gameObject, cell.offset, cell.scale, cell.orientation);
+                SetSceneCell(grid, parent, position, cell.gameObject, cell.offset, cell.scale, cell.orientation, m_Anchor);
             }
         }
 
@@ -250,7 +255,7 @@ namespace UnityEditor.Tilemaps
         {
             if (parent != null)
             {
-                Vector3 cellCenter = grid.LocalToWorld(grid.CellToLocalInterpolated(position + new Vector3(.5f, .5f, .5f)));
+                Vector3 cellCenter = grid.LocalToWorld(grid.CellToLocalInterpolated(position + m_Anchor));
                 GameObject go = GetObjectInCell(grid, parent, position);
 
                 if (go != null)
@@ -517,7 +522,7 @@ namespace UnityEditor.Tilemaps
             }
         }
 
-        private static void SetSceneCell(GridLayout grid, Transform parent, Vector3Int position, GameObject go, Vector3 offset, Vector3 scale, Quaternion orientation)
+        private static void SetSceneCell(GridLayout grid, Transform parent, Vector3Int position, GameObject go, Vector3 offset, Vector3 scale, Quaternion orientation, Vector3 anchor)
         {
             if (parent == null || go == null)
                 return;
@@ -536,7 +541,7 @@ namespace UnityEditor.Tilemaps
 
             Undo.RegisterCreatedObjectUndo(instance, "Paint GameObject");
             instance.transform.SetParent(parent);
-            instance.transform.position = grid.LocalToWorld(grid.CellToLocalInterpolated(new Vector3Int(position.x, position.y, position.z) + new Vector3(.5f, .5f, .5f)));
+            instance.transform.position = grid.LocalToWorld(grid.CellToLocalInterpolated(new Vector3Int(position.x, position.y, position.z) + anchor));
             instance.transform.localRotation = orientation;
             instance.transform.localScale = scale;
             instance.transform.Translate(offset);
