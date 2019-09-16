@@ -85,10 +85,6 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The coordinates of the cell to paint data to.</param>
         public override void Paint(GridLayout gridLayout, GameObject brushTarget, Vector3Int position)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
             Vector3Int min = position - pivot;
             BoundsInt bounds = new BoundsInt(min, m_Size);
             BoxFill(gridLayout, brushTarget, bounds);
@@ -111,10 +107,6 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The coordinates of the cell to erase data from.</param>
         public override void Erase(GridLayout gridLayout, GameObject brushTarget, Vector3Int position)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
             Vector3Int min = position - pivot;
             BoundsInt bounds = new BoundsInt(min, m_Size);
             BoxErase(gridLayout, brushTarget, bounds);
@@ -134,10 +126,6 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The bounds to box fill data into.</param>
         public override void BoxFill(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
             if (brushTarget == null)
                 return;
 
@@ -158,10 +146,6 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The bounds to erase data from.</param>
         public override void BoxErase(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
             if (brushTarget == null)
                 return;
 
@@ -187,7 +171,7 @@ namespace UnityEditor.Tilemaps
         /// </summary>
         /// <param name="direction">Direction to rotate by.</param>
         /// <param name="layout">Cell Layout for rotating.</param>
-        public override void Rotate(RotationDirection direction, Grid.CellLayout layout)
+        public override void Rotate(RotationDirection direction, GridLayout.CellLayout layout)
         {
             Vector3Int oldSize = m_Size;
             BrushCell[] oldCells = m_Cells.Clone() as BrushCell[];
@@ -219,7 +203,7 @@ namespace UnityEditor.Tilemaps
         /// <summary>Flips the brush in the given axis.</summary>
         /// <param name="flip">Axis to flip by.</param>
         /// <param name="layout">Cell Layout for flipping.</param>
-        public override void Flip(FlipAxis flip, Grid.CellLayout layout)
+        public override void Flip(FlipAxis flip, GridLayout.CellLayout layout)
         {
             if (flip == FlipAxis.X)
                 FlipX();
@@ -237,10 +221,6 @@ namespace UnityEditor.Tilemaps
         /// <param name="pivot">Pivot of the picking brush.</param>
         public override void Pick(GridLayout gridLayout, GameObject brushTarget, BoundsInt position, Vector3Int pivot)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
             Reset();
             UpdateSizeAndPivot(new Vector3Int(position.size.x, position.size.y, 1), new Vector3Int(pivot.x, pivot.y, 0));
 
@@ -270,6 +250,7 @@ namespace UnityEditor.Tilemaps
                     {
                         GameObject newInstance = Instantiate(go);
                         newInstance.hideFlags = HideFlags.HideAndDontSave;
+                        newInstance.SetActive(false);
                         SetGameObject(brushPosition, newInstance);
                     }
 
@@ -289,10 +270,6 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">Position where the move operation has started.</param>
         public override void MoveStart(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
             Reset();
             UpdateSizeAndPivot(new Vector3Int(position.size.x, position.size.y, 1), Vector3Int.zero);
 
@@ -316,10 +293,6 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">Position where the move operation has ended.</param>
         public override void MoveEnd(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
             Paint(gridLayout, brushTarget, position.min);
             Reset();
         }
@@ -530,17 +503,17 @@ namespace UnityEditor.Tilemaps
             GameObject instance = null;
             if (PrefabUtility.IsPartOfPrefabAsset(go))
             {
-                instance = (GameObject) PrefabUtility.InstantiatePrefab(go);
+                instance = (GameObject) PrefabUtility.InstantiatePrefab(go, parent.root.gameObject.scene);
+                instance.transform.parent = parent;
             }
             else
             {
-                instance = Instantiate(go);
-                instance.hideFlags = HideFlags.None;
+                instance = Instantiate(go, parent);
                 instance.name = go.name;
+                instance.SetActive(true);
             }
 
             Undo.RegisterCreatedObjectUndo(instance, "Paint GameObject");
-            instance.transform.SetParent(parent);
             instance.transform.position = grid.LocalToWorld(grid.CellToLocalInterpolated(new Vector3Int(position.x, position.y, position.z) + anchor));
             instance.transform.localRotation = orientation;
             instance.transform.localScale = scale;

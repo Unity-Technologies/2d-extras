@@ -46,10 +46,6 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The coordinates of the cell to paint data to.</param>
         public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
             TintTextureGenerator generator = GetGenerator(grid);
             if (generator != null)
             {
@@ -68,10 +64,6 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The coordinates of the cell to erase data from.</param>
         public override void Erase(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
             TintTextureGenerator generator = GetGenerator(grid);
             if (generator != null)
             {
@@ -89,10 +81,6 @@ namespace UnityEditor.Tilemaps
         /// <param name="pivot">Pivot of the picking brush.</param>
         public override void Pick(GridLayout grid, GameObject brushTarget, BoundsInt position, Vector3Int pivot)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
             TintTextureGenerator generator = GetGenerator(grid);
             if (generator != null)
             {

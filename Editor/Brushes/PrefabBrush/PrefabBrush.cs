@@ -42,24 +42,21 @@ namespace UnityEditor.Tilemaps
                 return;
             }
             prev_position = position;
-            if (brushTarget) {
+            if (brushTarget) 
+            {
                 prev_brushTarget = brushTarget;
             }
             brushTarget = prev_brushTarget;
 
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
             int index = Mathf.Clamp(Mathf.FloorToInt(GetPerlinValue(position, m_PerlinScale, k_PerlinOffset) * m_Prefabs.Length), 0, m_Prefabs.Length - 1);
             GameObject prefab = m_Prefabs[index];
-            GameObject instance = (GameObject) PrefabUtility.InstantiatePrefab(prefab);
+            Transform targetTransform = brushTarget.transform;
+            GameObject instance = (GameObject) PrefabUtility.InstantiatePrefab(prefab, targetTransform.root.gameObject.scene);
             if (instance != null)
             {
-                Undo.MoveGameObjectToScene(instance, brushTarget.scene, "Paint Prefabs");
                 Undo.RegisterCreatedObjectUndo((Object)instance, "Paint Prefabs");
-                instance.transform.SetParent(brushTarget.transform);
-                instance.transform.position = grid.LocalToWorld(grid.CellToLocalInterpolated(position + m_Anchor));
+                instance.transform.parent = targetTransform;
+                instance.transform.position = grid.LocalToWorld(grid.CellToLocalInterpolated(position + new Vector3(.5f, .5f, .5f)));
             }
         }
 
@@ -77,9 +74,6 @@ namespace UnityEditor.Tilemaps
                 prev_brushTarget = brushTarget;
             }
             brushTarget = prev_brushTarget;
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
 
             Transform erased = GetObjectInCell(grid, brushTarget.transform, position);
             if (erased != null)

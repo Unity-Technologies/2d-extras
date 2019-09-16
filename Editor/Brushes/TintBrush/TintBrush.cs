@@ -24,10 +24,6 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The coordinates of the cell to paint data to.</param>
         public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
             Tilemap tilemap = brushTarget.GetComponent<Tilemap>();
             if (tilemap != null)
             {
@@ -44,10 +40,6 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The coordinates of the cell to erase data from.</param>
         public override void Erase(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
             Tilemap tilemap = brushTarget.GetComponent<Tilemap>();
             if (tilemap != null)
             {
