@@ -37,8 +37,10 @@ namespace UnityEngine.Tilemaps
                 hash ^= location.y;
                 hash = (hash + 0x46ac12fd) + (hash << 7);
                 hash = (hash + 0xbe9730af) ^ (hash << 11);
+                var oldState = Random.state;
                 Random.InitState((int)hash);
                 tileData.sprite = m_Sprites[(int) (m_Sprites.Length * Random.value)];
+                Random.state = oldState;
             }
         }
     }
