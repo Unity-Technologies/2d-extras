@@ -56,6 +56,8 @@ namespace UnityEditor.Tilemaps
             GameObject instance = (GameObject) PrefabUtility.InstantiatePrefab(prefab);
             if (instance != null)
             {
+                Erase(grid, brushTarget, position);
+
                 Undo.MoveGameObjectToScene(instance, brushTarget.scene, "Paint Prefabs");
                 Undo.RegisterCreatedObjectUndo((Object)instance, "Paint Prefabs");
                 instance.transform.SetParent(brushTarget.transform);
