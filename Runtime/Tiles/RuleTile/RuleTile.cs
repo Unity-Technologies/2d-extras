@@ -59,20 +59,11 @@ namespace UnityEngine
         /// The Default Collider Type set when creating a new Rule.
         /// </summary>
         public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
-        /// <summary>
-        /// Returns the instance of this Tile when matching Rules.
-        /// </summary>
-        public TileBase m_Self
-        {
-            get { return m_OverrideSelf ? m_OverrideSelf : this; }
-            set { m_OverrideSelf = value; }
-        }
 
         /// <summary>
         /// A cache for the neighboring Tiles when matching Rules.
         /// </summary>
         protected TileBase[] m_CachedNeighboringTiles = new TileBase[NeighborCount];
-        private TileBase m_OverrideSelf;
         private Quaternion m_GameObjectQuaternion;
 
         /// <summary>
@@ -203,7 +194,7 @@ namespace UnityEngine
         /// <summary>
         /// A list of Tiling Rules for the Rule Tile.
         /// </summary>
-        [HideInInspector] public List<TilingRule> m_TilingRules;
+        [HideInInspector] public List<TilingRule> m_TilingRules = new List<RuleTile.TilingRule>();
 
         /// <summary>
         /// StartUp is called on the first frame of the running Scene.
@@ -403,14 +394,12 @@ namespace UnityEngine
         public virtual bool RuleMatch(int neighbor, TileBase tile)
         {
             if (tile is RuleOverrideTile)
-                tile = (tile as RuleOverrideTile).runtimeTile.m_Self;
-            else if (tile is RuleTile)
-                tile = (tile as RuleTile).m_Self;
+                tile = (tile as RuleOverrideTile).m_InstanceTile;
 
             switch (neighbor)
             {
-                case TilingRule.Neighbor.This: return tile == m_Self;
-                case TilingRule.Neighbor.NotThis: return tile != m_Self;
+                case TilingRule.Neighbor.This: return tile == this;
+                case TilingRule.Neighbor.NotThis: return tile != this;
             }
             return true;
         }

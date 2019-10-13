@@ -116,7 +116,7 @@ namespace UnityEngine.Tilemaps
                     while (m_OverrideTilingRules.Count < index + 1)
                         m_OverrideTilingRules.Add(new OverrideTilingRule());
                     m_OverrideTilingRules[index].m_Enabled = true;
-                    m_OverrideTilingRules[index].m_TilingRule = CloneTilingRule(value);
+                    m_OverrideTilingRules[index].m_TilingRule = CopyTilingRule(value, new RuleTile.TilingRule(), true);
                     m_OverrideTilingRules[index].m_TilingRule.m_Neighbors = null;
                 }
             }
@@ -126,10 +126,6 @@ namespace UnityEngine.Tilemaps
         /// The RuleTile to override
         /// </summary>
         public RuleTile m_Tile;
-        /// <summary>
-        /// Enable this so that this Tile only accepts instances of itself when matching Rules.
-        /// </summary>
-        public bool m_OverrideSelf = true;
         /// <summary>
         /// Enable Advanced Mode. Enable this if you want to specify which Rules to override.
         /// </summary>
@@ -164,17 +160,7 @@ namespace UnityEngine.Tilemaps
         /// <summary>
         /// Returns the Rule Tile for retrieving TileData
         /// </summary>
-        public RuleTile runtimeTile
-        {
-            get
-            {
-                if (!m_RuntimeTile)
-                    Override();
-                return m_RuntimeTile;
-            }
-        }
-
-        private RuleTile m_RuntimeTile;
+        [HideInInspector] public RuleTile m_InstanceTile;
 
         /// <summary>
         /// Retrieves any tile animation data from the scripted tile.
@@ -185,7 +171,9 @@ namespace UnityEngine.Tilemaps
         /// <returns>Whether the call was successful.</returns>
         public override bool GetTileAnimationData(Vector3Int position, ITilemap tilemap, ref TileAnimationData tileAnimationData)
         {
-            return runtimeTile.GetTileAnimationData(position, tilemap, ref tileAnimationData);
+            if (!m_InstanceTile)
+                return false;
+            return m_InstanceTile.GetTileAnimationData(position, tilemap, ref tileAnimationData);
         }
 
         /// <summary>
@@ -196,7 +184,9 @@ namespace UnityEngine.Tilemaps
         /// <param name="tileData">Data to render the tile.</param>
         public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
         {
-            runtimeTile.GetTileData(position, tilemap, ref tileData);
+            if (!m_InstanceTile)
+                return;
+            m_InstanceTile.GetTileData(position, tilemap, ref tileData);
         }
 
         /// <summary>
@@ -206,7 +196,9 @@ namespace UnityEngine.Tilemaps
         /// <param name="tileMap">The Tilemap the tile is present on.</param>
         public override void RefreshTile(Vector3Int position, ITilemap tilemap)
         {
-            runtimeTile.RefreshTile(position, tilemap);
+            if (!m_InstanceTile)
+                return;
+            m_InstanceTile.RefreshTile(position, tilemap);
         }
 
         /// <summary>
@@ -218,7 +210,9 @@ namespace UnityEngine.Tilemaps
         /// <returns>Whether StartUp was successful</returns>
         public override bool StartUp(Vector3Int position, ITilemap tilemap, GameObject go)
         {
-            return runtimeTile.StartUp(position, tilemap, go);
+            if (!m_InstanceTile)
+                return true;
+            return m_InstanceTile.StartUp(position, tilemap, go);
         }
 
         /// <summary>
@@ -303,30 +297,42 @@ namespace UnityEngine.Tilemaps
 
         public void Override()
         {
-            m_RuntimeTile = m_Tile ? Instantiate(m_Tile) : new RuleTile();
-            m_RuntimeTile.m_Self = m_OverrideSelf ? this : m_Tile as TileBase;
+            if (!m_Tile)
+                return;
+
+            var tile = m_InstanceTile;
+
+            tile.m_DefaultSprite = m_Tile.m_DefaultSprite;
+            tile.m_DefaultGameObject = m_Tile.m_DefaultGameObject;
+            tile.m_DefaultColliderType = m_Tile.m_DefaultColliderType;
+
+            tile.m_TilingRules = new List<RuleTile.TilingRule>();
+            if (tile.m_TilingRules != null)
+                foreach (var rule in m_Tile.m_TilingRules)
+                    tile.m_TilingRules.Add(CopyTilingRule(rule, new RuleTile.TilingRule(), true));
+
             if (!m_Advanced)
             {
-                if (m_RuntimeTile.m_DefaultSprite)
-                    m_RuntimeTile.m_DefaultSprite = this[m_RuntimeTile.m_DefaultSprite];
-                if (m_RuntimeTile.m_TilingRules != null)
-                    foreach (RuleTile.TilingRule rule in m_RuntimeTile.m_TilingRules)
-                        for (int i = 0; i < rule.m_Sprites.Length; i++)
-                            if (rule.m_Sprites[i])
-                                rule.m_Sprites[i] = this[rule.m_Sprites[i]];
+                tile.m_DefaultSprite = this[m_Tile.m_DefaultSprite];
+
+                foreach (RuleTile.TilingRule rule in tile.m_TilingRules)
+                    for (int i = 0; i < rule.m_Sprites.Length; i++)
+                        if (rule.m_Sprites[i])
+                            rule.m_Sprites[i] = this[rule.m_Sprites[i]];
             }
             else
             {
                 if (m_OverrideDefault.m_Enabled)
                 {
-                    m_RuntimeTile.m_DefaultSprite = m_OverrideDefault.m_TilingRule.m_Sprites.Length > 0 ? m_OverrideDefault.m_TilingRule.m_Sprites[0] : null;
-                    m_RuntimeTile.m_DefaultColliderType = m_OverrideDefault.m_TilingRule.m_ColliderType;
+                    tile.m_DefaultSprite = m_OverrideDefault.m_TilingRule.m_Sprites.Length > 0 ? m_OverrideDefault.m_TilingRule.m_Sprites[0] : null;
+                    tile.m_DefaultGameObject = m_OverrideDefault.m_TilingRule.m_GameObject;
+                    tile.m_DefaultColliderType = m_OverrideDefault.m_TilingRule.m_ColliderType;
                 }
-                if (m_RuntimeTile.m_TilingRules != null)
+                if (tile.m_TilingRules != null)
                 {
-                    for (int i = 0; i < m_RuntimeTile.m_TilingRules.Count; i++)
+                    for (int i = 0; i < tile.m_TilingRules.Count; i++)
                     {
-                        RuleTile.TilingRule originalRule = m_RuntimeTile.m_TilingRules[i];
+                        RuleTile.TilingRule originalRule = tile.m_TilingRules[i];
                         RuleTile.TilingRule overrideRule = this[m_Tile.m_TilingRules[i]];
                         if (overrideRule == null)
                             continue;
@@ -337,27 +343,15 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        /// Clones a Tiling Rule from a given Tiling Rule
-        /// </summary>
-        /// <param name="from">A Tiling Rule to clone</param>
-        /// <returns>A clone of the given Tiling rule</returns>
-        public RuleTile.TilingRule CloneTilingRule(RuleTile.TilingRule from)
-        {
-            var clone = new RuleTile.TilingRule();
-            CopyTilingRule(from, clone, true);
-            return clone;
-        }
-
-        /// <summary>
         /// Copies a Tiling Rule from a given Tiling Rule
         /// </summary>
         /// <param name="from">A Tiling Rule to copy from</param>
         /// <param name="to">A Tiling Rule to copy to</param>
         /// <param name="copyRule"></param>
-        public void CopyTilingRule(RuleTile.TilingRule from, RuleTile.TilingRule to, bool copyRule)
+        public RuleTile.TilingRule CopyTilingRule(RuleTile.TilingRule from, RuleTile.TilingRule to, bool copyRule)
         {
             if (from == null)
-                return;
+                return null;
 
             if (copyRule)
             {
@@ -371,6 +365,8 @@ namespace UnityEngine.Tilemaps
             to.m_Output = from.m_Output;
             to.m_ColliderType = from.m_ColliderType;
             to.m_RandomTransform = from.m_RandomTransform;
+
+            return to;
         }
     }
 }
