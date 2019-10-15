@@ -24,7 +24,10 @@ Download or clone this repository into your project in the folder `Packages/com.
 
 #### Setup
 The following line needs to be added to your `Packages/manifest.json` file in your Unity Project under the `dependencies` section:
-"com.unity.2d.tilemap.extras": "https://github.com/Unity-Technologies/2d-extras.git#master".
+
+```json
+"com.unity.2d.tilemap.extras": "https://github.com/Unity-Technologies/2d-extras.git#master"
+```
 
 ### Tilemap
 
