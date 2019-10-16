@@ -180,10 +180,11 @@ namespace UnityEditor
 
         public static void DrawCustomFields(Object tile, SerializedObject serializedObject)
         {
-            var baseFields = typeof(RuleTile).GetFields().Select(field => field.Name);
-            var fields = tile.GetType().GetFields().Select(field => field.Name).Where(field => !baseFields.Contains(field));
-            foreach (var field in fields)
-                EditorGUILayout.PropertyField(serializedObject.FindProperty(field), true);
+            var customFields = tile.GetType().GetFields()
+                .Where(field => typeof(RuleTile).GetField(field.Name) == null)
+                .Where(field => field.FieldType.IsSerializable);
+            foreach (var field in customFields)
+                EditorGUILayout.PropertyField(serializedObject.FindProperty(field.Name), true);
         }
 
         internal virtual void RuleOnGUI(Rect rect, int arrowIndex, int neighbor)
