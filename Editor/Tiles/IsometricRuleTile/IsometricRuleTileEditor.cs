@@ -7,7 +7,7 @@ namespace UnityEditor
 {
     [CustomEditor(typeof(IsometricRuleTile), true)]
     [CanEditMultipleObjects]
-    internal class IsometricRuleTileEditor : RuleTileEditor
+    public class IsometricRuleTileEditor : RuleTileEditor
     {
         private static readonly int[, ] s_Arrows =
         {

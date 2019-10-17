@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace UnityEditor
 {
     [CustomEditor(typeof(RuleOverrideTile))]
-    internal class RuleOverrideTileEditor : Editor
+    public class RuleOverrideTileEditor : Editor
     {
 
         public RuleOverrideTile overrideTile { get { return (target as RuleOverrideTile); } }

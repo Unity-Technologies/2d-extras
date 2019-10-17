@@ -6,7 +6,7 @@ namespace UnityEditor
 {
     [CustomEditor(typeof(HexagonalRuleTile), true)]
     [CanEditMultipleObjects]
-    internal class HexagonalRuleTileEditor : RuleTileEditor
+    public class HexagonalRuleTileEditor : RuleTileEditor
     {
         private static readonly Vector2[] s_PointedTopPositions =
         {
