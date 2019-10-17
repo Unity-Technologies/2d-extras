@@ -74,9 +74,6 @@ namespace UnityEditor
 
         public void OnEnable()
         {
-            if (tile.m_TilingRules == null)
-                tile.m_TilingRules = new List<RuleTile.TilingRule>();
-
             m_ReorderableList = new ReorderableList(tile.m_TilingRules, typeof(RuleTile.TilingRule), true, true, true, true);
             m_ReorderableList.drawHeaderCallback = OnDrawHeader;
             m_ReorderableList.drawElementCallback = OnDrawElement;
@@ -171,10 +168,7 @@ namespace UnityEditor
 
             serializedObject.Update();
             EditorGUI.BeginChangeCheck();
-            var baseFields = typeof(RuleTile).GetFields().Select(field => field.Name);
-            var fields = target.GetType().GetFields().Select(field => field.Name).Where(field => !baseFields.Contains(field));
-            foreach (var field in fields)
-                EditorGUILayout.PropertyField(serializedObject.FindProperty(field), true);
+            DrawCustomFields(tile, serializedObject);
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
 
@@ -182,6 +176,15 @@ namespace UnityEditor
 
             if (m_ReorderableList != null && tile.m_TilingRules != null)
                 m_ReorderableList.DoLayoutList();
+        }
+
+        public static void DrawCustomFields(Object tile, SerializedObject serializedObject)
+        {
+            var customFields = tile.GetType().GetFields()
+                .Where(field => typeof(RuleTile).GetField(field.Name) == null)
+                .Where(field => field.FieldType.IsSerializable);
+            foreach (var field in customFields)
+                EditorGUILayout.PropertyField(serializedObject.FindProperty(field.Name), true);
         }
 
         internal virtual void RuleOnGUI(Rect rect, int arrowIndex, int neighbor)

@@ -58,12 +58,22 @@ namespace UnityEditor
             EditorGUI.BeginChangeCheck();
 
             EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Tile"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_OverrideSelf"));
+            if (overrideTile.m_InstanceTile)
+            {
+                SerializedObject instanceTileSerializedObject = new SerializedObject(overrideTile.m_InstanceTile);
+                overrideTile.m_InstanceTile.hideFlags = HideFlags.None;
+                RuleTileEditor.DrawCustomFields(overrideTile.m_InstanceTile, instanceTileSerializedObject);
+                overrideTile.m_InstanceTile.hideFlags = HideFlags.NotEditable;
+                instanceTileSerializedObject.ApplyModifiedProperties();
+            }
             EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Advanced"));
             serializedObject.ApplyModifiedProperties();
 
             if (EditorGUI.EndChangeCheck())
+            {
+                UpdateInstanceTile();
                 SaveTile();
+            }
 
             if (!overrideTile.m_Advanced)
             {
@@ -80,6 +90,7 @@ namespace UnityEditor
                         {
                             RuleOverrideTile tile = targets[i] as RuleOverrideTile;
                             tile.ApplyOverrides(m_Sprites);
+                            SaveTile();
                         }
                     }
                 }
@@ -94,6 +105,46 @@ namespace UnityEditor
                     m_RuleList.DoLayoutList();
                 }
             }
+        }
+
+        private void UpdateInstanceTile()
+        {
+            bool assetChanged = false;
+
+            if (overrideTile.m_InstanceTile)
+            {
+                if (!overrideTile.m_Tile || overrideTile.m_InstanceTile.GetType() != overrideTile.m_Tile.GetType())
+                {
+                    DestroyImmediate(overrideTile.m_InstanceTile, true);
+                    overrideTile.m_InstanceTile = null;
+                    assetChanged = true;
+                }
+            }
+            if (!overrideTile.m_InstanceTile)
+            {
+                if (overrideTile.m_Tile)
+                {
+                    var t = overrideTile.m_Tile.GetType();
+                    RuleTile instanceTile = ScriptableObject.CreateInstance(t) as RuleTile;
+                    instanceTile.hideFlags = HideFlags.NotEditable;
+                    AssetDatabase.AddObjectToAsset(instanceTile, overrideTile);
+                    overrideTile.m_InstanceTile = instanceTile;
+                    assetChanged = true;
+                }
+            }
+
+            if (overrideTile.m_InstanceTile)
+            {
+                string instanceTileName = overrideTile.m_Tile.name + " (Override)";
+                if (overrideTile.m_InstanceTile.name != instanceTileName)
+                {
+                    overrideTile.m_InstanceTile.name = instanceTileName;
+                    assetChanged = true;
+                }
+            }
+
+            if (assetChanged)
+                AssetDatabase.SaveAssets();
         }
 
         private void SaveTile()
@@ -123,7 +174,6 @@ namespace UnityEditor
             if (EditorGUI.EndChangeCheck())
             {
                 m_Sprites[index] = new KeyValuePair<Sprite, Sprite>(originalSprite, overrideSprite);
-                SaveTile();
             }
         }
         private void DrawSpriteHeader(Rect rect)
