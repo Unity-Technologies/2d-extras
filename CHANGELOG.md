@@ -3,6 +3,15 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.2.0] - 2019-10-17
+### Changed
+- [PrefabBrush] Erase GameObjects at target position before painting
+- [RuleTileEditor] Made RuleTileEditor and children public
+- [RuleTile] Roll back m_Self to this.
+- [RuleOverrideTile] Remove m_OverrideSelf property.
+- [RuleOverrideTile] Inherit custom properties from custom RuleTile.
+- [RuleOverrideTile] Change m_RuntimeTile to m_InstanceTile.
+
 ## [1.1.0] - 2019-08-23
 ### Changed
 - Validate Gap and Limit for GroupBrush
