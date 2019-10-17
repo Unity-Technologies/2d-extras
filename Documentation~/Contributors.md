@@ -15,5 +15,7 @@ Thank you to all who have contributed to this repository!
 - CraigGraff
 - Autofire
 - AVChemodanov
+- ream88
+- Quickz
 
 If anybody has been missed, please do let us know!
