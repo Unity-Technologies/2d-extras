@@ -31,13 +31,13 @@ namespace UnityEngine
 
         private static readonly int[,] RotatedOrMirroredIndexes =
         {
-            {2, 4, 7, 1, 6, 0, 3, 5}, // 90
-            {7, 6, 5, 4, 3, 2, 1, 0}, // 180, XY
-            {5, 3, 0, 6, 1, 7, 4, 2}, // 270
-            {2, 1, 0, 4, 3, 7, 6, 5}, // X
-            {5, 6, 7, 3, 4, 0, 1, 2}, // Y
+            {4, 9, 13, 18, 23, 3, 8, 12, 17, 22, 2, 7, 16, 21, 1, 6, 11, 15, 20, 0, 5, 10, 14, 19 }, // 90
+            {23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9 , 8, 7, 6, 5, 4, 3, 2, 1, 0}, //180, XY
+            {19, 14, 10, 5, 0, 20, 15, 11, 6, 1, 21, 16, 7, 2, 22, 17, 12, 8, 3, 23, 18, 13, 9, 4}, //270
+            {4, 3, 2, 1, 0, 9, 8, 7, 6, 5, 13, 12, 11, 10, 18, 17, 16, 15, 14, 23, 22, 21, 20, 19 }, //X
+            {19, 20, 21, 21, 23, 14, 15, 16, 17, 18, 10, 11, 12, 13, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4 } //Y
         };
-        private static readonly int NeighborCount = 8;
+        private static readonly int NeighborCount = 24;
 
         /// <summary>
         /// Returns the number of neighbors a Rule Tile can have.
@@ -311,9 +311,9 @@ namespace UnityEngine
         {
             if (m_TilingRules != null && m_TilingRules.Count > 0)
             {
-                for (int y = -1; y <= 1; y++)
+                for (int y = -2; y <= 2; y++)
                 {
-                    for (int x = -1; x <= 1; x++)
+                    for (int x = -2; x <= 2; x++)
                     {
                         base.RefreshTile(location + new Vector3Int(x, y, 0), tileMap);
                     }
@@ -462,9 +462,9 @@ namespace UnityEngine
                 m_CachedNeighboringTiles = new TileBase[neighborCount];
 
             int index = 0;
-            for (int y = 1; y >= -1; y--)
+            for (int y = 2; y >= -2; y--)
             {
-                for (int x = -1; x <= 1; x++)
+                for (int x = -2; x <= 2; x++)
                 {
                     if (x != 0 || y != 0)
                     {

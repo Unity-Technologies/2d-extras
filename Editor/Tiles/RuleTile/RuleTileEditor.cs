@@ -110,8 +110,8 @@ namespace UnityEditor
             float height = rect.height - k_PaddingBetweenRules;
             float matrixWidth = k_DefaultElementHeight;
 
-            Rect inspectorRect = new Rect(rect.xMin, yPos, rect.width - matrixWidth * 2f - 20f, height);
-            Rect matrixRect = new Rect(rect.xMax - matrixWidth * 2f - 10f, yPos, matrixWidth, k_DefaultElementHeight);
+            Rect inspectorRect = new Rect(rect.xMin, yPos, rect.width - matrixWidth * 2f - 40f, height);
+            Rect matrixRect = new Rect(rect.xMax - matrixWidth * 2f - 32f, yPos, matrixWidth + 20, k_DefaultElementHeight + 20);
             Rect spriteRect = new Rect(rect.xMax - matrixWidth - 5f, yPos, matrixWidth, k_DefaultElementHeight);
 
             EditorGUI.BeginChangeCheck();
@@ -269,33 +269,42 @@ namespace UnityEditor
             return Event.current.button == 1 ? -1 : 1;
         }
 
+        private static readonly int[,] s_ArrowsLookup =
+        {
+            {0, 0, 1, 2, 2 },
+            {0, 0, 1, 2, 2 },
+            {3, 3, 9, 5, 5 },
+            {6, 6, 7, 8, 8 },
+            {6, 6, 7, 8, 8 },
+        };
+
         internal virtual void RuleMatrixOnGUI(RuleTile tile, Rect rect, RuleTile.TilingRule tilingRule)
         {
             Handles.color = EditorGUIUtility.isProSkin ? new Color(1f, 1f, 1f, 0.2f) : new Color(0f, 0f, 0f, 0.2f);
             int index = 0;
-            float w = rect.width / 3f;
-            float h = rect.height / 3f;
+            float w = rect.width / 5f;
+            float h = rect.height / 5f;
 
-            for (int y = 0; y <= 3; y++)
+            for (int y = 0; y <= 5; y++)
             {
                 float top = rect.yMin + y * h;
                 Handles.DrawLine(new Vector3(rect.xMin, top), new Vector3(rect.xMax, top));
             }
-            for (int x = 0; x <= 3; x++)
+            for (int x = 0; x <= 5; x++)
             {
                 float left = rect.xMin + x * w;
                 Handles.DrawLine(new Vector3(left, rect.yMin), new Vector3(left, rect.yMax));
             }
             Handles.color = Color.white;
 
-            for (int y = 0; y <= 2; y++)
+            for (int y = 0; y <= 4; y++)
             {
-                for (int x = 0; x <= 2; x++)
+                for (int x = 0; x <= 4; x++)
                 {
                     Rect r = new Rect(rect.xMin + x * w, rect.yMin + y * h, w - 1, h - 1);
-                    if (x != 1 || y != 1)
+                    if (x != 2 || y != 2)
                     {
-                        RuleOnGUI(r, y * 3 + x, tilingRule.m_Neighbors[index]);
+                        RuleOnGUI(r, s_ArrowsLookup[y, x], tilingRule.m_Neighbors[index]);
                         RuleNeighborUpdate(r, tilingRule, index);
 
                         index++;
