@@ -230,7 +230,7 @@ namespace UnityEditor
                     RuleTileEditor.RuleInspectorOnGUI(inspectorRect, originalRule);
                 else
                     RuleOriginalDefaultInspectorOnGUI(inspectorRect, originalRule);
-                ruleTileEditor.RuleMatrixOnGUI(overrideTile.m_Tile, matrixRect, originalRule);
+                ruleTileEditor.RuleMatrixOnGUI(overrideTile.m_Tile, matrixRect, originalRule.bounds, originalRule);
                 RuleTileEditor.SpriteOnGUI(spriteRect, originalRule);
 
                 DestroyImmediate(ruleTileEditor);

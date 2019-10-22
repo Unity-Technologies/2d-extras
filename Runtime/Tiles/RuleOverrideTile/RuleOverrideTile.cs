@@ -297,7 +297,7 @@ namespace UnityEngine.Tilemaps
 
         public void Override()
         {
-            if (!m_Tile)
+            if (!m_Tile || !m_InstanceTile)
                 return;
 
             var tile = m_InstanceTile;
@@ -306,10 +306,9 @@ namespace UnityEngine.Tilemaps
             tile.m_DefaultGameObject = m_Tile.m_DefaultGameObject;
             tile.m_DefaultColliderType = m_Tile.m_DefaultColliderType;
 
-            tile.m_TilingRules = new List<RuleTile.TilingRule>();
-            if (tile.m_TilingRules != null)
-                foreach (var rule in m_Tile.m_TilingRules)
-                    tile.m_TilingRules.Add(CopyTilingRule(rule, new RuleTile.TilingRule(), true));
+            tile.m_TilingRules.Clear();
+            foreach (var rule in m_Tile.m_TilingRules)
+                tile.m_TilingRules.Add(CopyTilingRule(rule, new RuleTile.TilingRule(), true));
 
             if (!m_Advanced)
             {
@@ -328,16 +327,13 @@ namespace UnityEngine.Tilemaps
                     tile.m_DefaultGameObject = m_OverrideDefault.m_TilingRule.m_GameObject;
                     tile.m_DefaultColliderType = m_OverrideDefault.m_TilingRule.m_ColliderType;
                 }
-                if (tile.m_TilingRules != null)
+                for (int i = 0; i < tile.m_TilingRules.Count; i++)
                 {
-                    for (int i = 0; i < tile.m_TilingRules.Count; i++)
-                    {
-                        RuleTile.TilingRule originalRule = tile.m_TilingRules[i];
-                        RuleTile.TilingRule overrideRule = this[m_Tile.m_TilingRules[i]];
-                        if (overrideRule == null)
-                            continue;
-                        CopyTilingRule(overrideRule, originalRule, false);
-                    }
+                    RuleTile.TilingRule originalRule = tile.m_TilingRules[i];
+                    RuleTile.TilingRule overrideRule = this[m_Tile.m_TilingRules[i]];
+                    if (overrideRule == null)
+                        continue;
+                    CopyTilingRule(overrideRule, originalRule, false);
                 }
             }
         }
@@ -356,6 +352,7 @@ namespace UnityEngine.Tilemaps
             if (copyRule)
             {
                 to.m_Neighbors = from.m_Neighbors;
+                to.m_NeighborPositions = from.m_NeighborPositions;
                 to.m_RuleTransform = from.m_RuleTransform;
             }
             to.m_Sprites = from.m_Sprites.Clone() as Sprite[];

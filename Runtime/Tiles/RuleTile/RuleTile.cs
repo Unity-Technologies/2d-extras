@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine.Tilemaps;
 
@@ -29,24 +30,6 @@ namespace UnityEngine
         /// </summary>
         public virtual Type m_NeighborType { get { return typeof(TilingRule.Neighbor); } }
 
-        private static readonly int[,] RotatedOrMirroredIndexes =
-        {
-            {2, 4, 7, 1, 6, 0, 3, 5}, // 90
-            {7, 6, 5, 4, 3, 2, 1, 0}, // 180, XY
-            {5, 3, 0, 6, 1, 7, 4, 2}, // 270
-            {2, 1, 0, 4, 3, 7, 6, 5}, // X
-            {5, 6, 7, 3, 4, 0, 1, 2}, // Y
-        };
-        private static readonly int NeighborCount = 8;
-
-        /// <summary>
-        /// Returns the number of neighbors a Rule Tile can have.
-        /// </summary>
-        public virtual int neighborCount
-        {
-            get { return NeighborCount; }
-        }
-
         /// <summary>
         /// The Default Sprite set when creating a new Rule.
         /// </summary>
@@ -60,11 +43,23 @@ namespace UnityEngine
         /// </summary>
         public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
 
-        /// <summary>
-        /// A cache for the neighboring Tiles when matching Rules.
-        /// </summary>
-        protected TileBase[] m_CachedNeighboringTiles = new TileBase[NeighborCount];
         private Quaternion m_GameObjectQuaternion;
+
+        public virtual int m_RotationAngle => 90;
+        public virtual Vector3Int[] m_NearbyNeighborPositions => new Vector3Int[] {
+            new Vector3Int(-1, 1, 0),
+            new Vector3Int(0, 1, 0),
+            new Vector3Int(1, 1, 0),
+            new Vector3Int(-1, 0, 0),
+            new Vector3Int(1, 0, 0),
+            new Vector3Int(-1, -1, 0),
+            new Vector3Int(0, -1, 0),
+            new Vector3Int(1, -1, 0),
+        };
+        public virtual bool IsNearbyNeighborPosition(Vector3Int position)
+        {
+            return position.x >= -1 && position.x <= 1 && position.y >= -1 && position.y <= 1;
+        }
 
         /// <summary>
         /// The data structure holding the Rule information for matching Rule Tiles with
@@ -76,7 +71,21 @@ namespace UnityEngine
             /// <summary>
             /// The matching Rule conditions for each of its neighboring Tiles.
             /// </summary>
-            public int[] m_Neighbors;
+            public List<int> m_Neighbors = new List<int>();
+            /// <summary>
+            /// * Preset this list to RuleTile backward compatible, but not support for HexagonalRuleTile backward compatible.
+            /// </summary>
+            public List<Vector3Int> m_NeighborPositions = new List<Vector3Int>()
+            {
+                new Vector3Int(-1, 1, 0),
+                new Vector3Int(0, 1, 0),
+                new Vector3Int(1, 1, 0),
+                new Vector3Int(-1, 0, 0),
+                new Vector3Int(1, 0, 0),
+                new Vector3Int(-1, -1, 0),
+                new Vector3Int(0, -1, 0),
+                new Vector3Int(1, -1, 0),
+            };
             /// <summary>
             /// The output Sprites for this Rule.
             /// </summary>
@@ -110,21 +119,48 @@ namespace UnityEngine
             /// </summary>
             public Transform m_RandomTransform;
 
+            public BoundsInt bounds
+            {
+                get
+                {
+                    BoundsInt bounds = new BoundsInt(Vector3Int.zero, Vector3Int.one);
+                    foreach (var neighbor in GetNeighbors())
+                    {
+                        bounds.xMin = Mathf.Min(bounds.xMin, neighbor.Key.x);
+                        bounds.yMin = Mathf.Min(bounds.yMin, neighbor.Key.y);
+                        bounds.xMax = Mathf.Max(bounds.xMax, neighbor.Key.x + 1);
+                        bounds.yMax = Mathf.Max(bounds.yMax, neighbor.Key.y + 1);
+                    }
+                    return bounds;
+                }
+            }
+
             /// <summary>
             /// Constructor for Tiling Rule. This defaults to a Single Output.
             /// </summary>
             public TilingRule()
             {
                 m_Output = OutputSprite.Single;
-                m_Neighbors = new int[NeighborCount];
                 m_Sprites = new Sprite[1];
                 m_GameObject = null;
                 m_AnimationSpeed = 1f;
                 m_PerlinScale = 0.5f;
                 m_ColliderType = Tile.ColliderType.Sprite;
+            }
 
-                for (int i = 0; i < m_Neighbors.Length; i++)
-                    m_Neighbors[i] = Neighbor.DontCare;
+            public Dictionary<Vector3Int, int> GetNeighbors()
+            {
+                Dictionary<Vector3Int, int> dict = new Dictionary<Vector3Int, int>();
+
+                for (int i = 0; i < m_Neighbors.Count && i < m_NeighborPositions.Count; i++)
+                    dict.Add(m_NeighborPositions[i], m_Neighbors[i]);
+
+                return dict;
+            }
+            public void ApplyNeighbors(Dictionary<Vector3Int, int> dict)
+            {
+                m_NeighborPositions = dict.Keys.ToList();
+                m_Neighbors = dict.Values.ToList();
             }
 
             /// <summary>
@@ -132,10 +168,6 @@ namespace UnityEngine
             /// </summary>
             public class Neighbor
             {
-                /// <summary>
-                /// The Rule Tile will not care about the contents of the cell in that direction
-                /// </summary>
-                public const int DontCare = 0;
                 /// <summary>
                 /// The Rule Tile will check if the contents of the cell in that direction is an instance of this Rule Tile.
                 /// If not, the rule will fail.
@@ -183,7 +215,7 @@ namespace UnityEngine
                 /// <summary>
                 /// A Random Sprite will be output.
                 /// </summary>
-                Random, 
+                Random,
                 /// <summary>
                 /// A Sprite Animation will be output.
                 /// </summary>
@@ -195,6 +227,56 @@ namespace UnityEngine
         /// A list of Tiling Rules for the Rule Tile.
         /// </summary>
         [HideInInspector] public List<TilingRule> m_TilingRules = new List<RuleTile.TilingRule>();
+
+        public List<Vector3Int> remoteNeighborPositions
+        {
+            get
+            {
+                if (!m_RemoteNeighborPositionsInit)
+                    UpdateRemoteRulePositions();
+
+                return m_RemoteNeighborPositions;
+            }
+        }
+
+        private List<Vector3Int> m_RemoteNeighborPositions;
+        private bool m_RemoteNeighborPositionsInit;
+
+        public void UpdateRemoteRulePositions()
+        {
+            Dictionary<Vector3Int, bool> positions = new Dictionary<Vector3Int, bool>();
+
+            foreach (TilingRule rule in m_TilingRules)
+            {
+                foreach (var neighbor in rule.GetNeighbors())
+                {
+                    Vector3Int position = neighbor.Key;
+                    if (!IsNearbyNeighborPosition(position))
+                    {
+                        positions[position] = true;
+
+                        // Check rule against rotations of 0, 90, 180, 270
+                        if (rule.m_RuleTransform == TilingRule.Transform.Rotated)
+                        {
+                            for (int angle = 0; angle < 360; angle += m_RotationAngle)
+                            {
+                                positions[GetRotatedPosition(position, angle)] = true;
+                            }
+                        }
+
+                        // Check rule against x-axis, y-axis mirror
+                        positions[GetMirroredPosition(
+                            position,
+                            rule.m_RuleTransform == TilingRule.Transform.MirrorX,
+                            rule.m_RuleTransform == TilingRule.Transform.MirrorY)
+                        ] = true;
+                    }
+                }
+            }
+
+            m_RemoteNeighborPositions = positions.Keys.ToList();
+            m_RemoteNeighborPositionsInit = true;
+        }
 
         /// <summary>
         /// StartUp is called on the first frame of the running Scene.
@@ -223,8 +305,6 @@ namespace UnityEngine
         /// <param name="tileData">Data to render the tile.</param>
         public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
         {
-            TileBase[] neighboringTiles = null;
-            GetMatchingNeighboringTiles(tilemap, position, ref neighboringTiles);
             var iden = Matrix4x4.identity;
 
             tileData.sprite = m_DefaultSprite;
@@ -236,7 +316,7 @@ namespace UnityEngine
             foreach (TilingRule rule in m_TilingRules)
             {
                 Matrix4x4 transform = iden;
-                if (RuleMatches(rule, ref neighboringTiles, ref transform))
+                if (RuleMatches(rule, position, tilemap, ref transform))
                 {
                     switch (rule.m_Output)
                     {
@@ -283,15 +363,13 @@ namespace UnityEngine
         /// <returns>Whether the call was successful.</returns>
         public override bool GetTileAnimationData(Vector3Int position, ITilemap tilemap, ref TileAnimationData tileAnimationData)
         {
-            TileBase[] neighboringTiles = null;
             var iden = Matrix4x4.identity;
             foreach (TilingRule rule in m_TilingRules)
             {
                 if (rule.m_Output == TilingRule.OutputSprite.Animation)
                 {
                     Matrix4x4 transform = iden;
-                    GetMatchingNeighboringTiles(tilemap, position, ref neighboringTiles);
-                    if (RuleMatches(rule, ref neighboringTiles, ref transform))
+                    if (RuleMatches(rule, position, tilemap, ref transform))
                     {
                         tileAnimationData.animatedSprites = rule.m_Sprites;
                         tileAnimationData.animationSpeed = rule.m_AnimationSpeed;
@@ -306,22 +384,53 @@ namespace UnityEngine
         /// This method is called when the tile is refreshed.
         /// </summary>
         /// <param name="location">Position of the Tile on the Tilemap.</param>
-        /// <param name="tileMap">The Tilemap the tile is present on.</param>
-        public override void RefreshTile(Vector3Int location, ITilemap tileMap)
+        /// <param name="tilemap">The Tilemap the tile is present on.</param>
+        public override void RefreshTile(Vector3Int location, ITilemap tilemap)
         {
-            if (m_TilingRules != null && m_TilingRules.Count > 0)
+            base.RefreshTile(location, tilemap);
+            RefreshNearTiles(location, tilemap);
+            RefreshRemoteTiles(location, tilemap);
+        }
+
+        public void RefreshNearTiles(Vector3Int location, ITilemap tilemap)
+        {
+            foreach (Vector3Int offset in m_NearbyNeighborPositions)
             {
-                for (int y = -1; y <= 1; y++)
+                base.RefreshTile(location + offset, tilemap);
+            }
+        }
+
+        private TileBase[] m_CacheUsedTiles = new TileBase[0];
+        public void RefreshRemoteTiles(Vector3Int location, ITilemap tilemap)
+        {
+            Tilemap tilemap_2 = tilemap.GetComponent<Tilemap>();
+
+            if (!tilemap_2)
+                return;
+
+            int usedTilesCount = tilemap_2.GetUsedTilesCount();
+            if (m_CacheUsedTiles.Length < usedTilesCount)
+                m_CacheUsedTiles = new TileBase[usedTilesCount];
+
+            tilemap_2.GetUsedTilesNonAlloc(m_CacheUsedTiles);
+
+            foreach (TileBase usedTile in m_CacheUsedTiles)
+            {
+                if (!usedTile)
+                    break;
+
+                if (!(usedTile is RuleTile))
+                    continue;
+
+                RuleTile tile = usedTile as RuleTile;
+                foreach (Vector3Int offset in tile.remoteNeighborPositions)
                 {
-                    for (int x = -1; x <= 1; x++)
+                    Vector3Int remotePosition = GetOffsetPositionReverse(location, offset);
+                    if (tilemap.GetTile(remotePosition) == tile)
                     {
-                        base.RefreshTile(location + new Vector3Int(x, y, 0), tileMap);
+                        base.RefreshTile(remotePosition, tilemap);
                     }
                 }
-            }
-            else
-            {
-                base.RefreshTile(location, tileMap);
             }
         }
 
@@ -329,33 +438,46 @@ namespace UnityEngine
         /// Does a Rule Match given a Tiling Rule and neighboring Tiles.
         /// </summary>
         /// <param name="rule">The Tiling Rule to match with.</param>
-        /// <param name="neighboringTiles">The neighboring Tiles to match with.</param>
+        /// <param name="tilemap">The tilemap to match with.</param>
         /// <param name="transform">A transform matrix which will match the Rule.</param>
         /// <returns>True if there is a match, False if not.</returns>
-        protected virtual bool RuleMatches(TilingRule rule, ref TileBase[] neighboringTiles, ref Matrix4x4 transform)
+        protected virtual bool RuleMatches(TilingRule rule, Vector3Int position, ITilemap tilemap, ref Matrix4x4 transform)
         {
-            // Check rule against rotations of 0, 90, 180, 270
-            for (int angle = 0; angle <= (rule.m_RuleTransform == TilingRule.Transform.Rotated ? 270 : 0); angle += 90)
+            if (RuleMatches(rule, position, tilemap, 0))
             {
-                if (RuleMatches(rule, ref neighboringTiles, angle))
+                transform = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, 0f), Vector3.one);
+                return true;
+            }
+
+            // Check rule against rotations of 0, 90, 180, 270
+            if (rule.m_RuleTransform == TilingRule.Transform.Rotated)
+            {
+                for (int angle = m_RotationAngle; angle < 360; angle += m_RotationAngle)
                 {
-                    transform = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), Vector3.one);
+                    if (RuleMatches(rule, position, tilemap, angle))
+                    {
+                        transform = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), Vector3.one);
+                        return true;
+                    }
+                }
+            }
+            // Check rule against x-axis mirror
+            else if (rule.m_RuleTransform == TilingRule.Transform.MirrorX)
+            {
+                if (RuleMatches(rule, position, tilemap, true, false))
+                {
+                    transform = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(-1f, 1f, 1f));
                     return true;
                 }
             }
-
-            // Check rule against x-axis mirror
-            if ((rule.m_RuleTransform == TilingRule.Transform.MirrorX) && RuleMatches(rule, ref neighboringTiles, true, false))
-            {
-                transform = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(-1f, 1f, 1f));
-                return true;
-            }
-
             // Check rule against y-axis mirror
-            if ((rule.m_RuleTransform == TilingRule.Transform.MirrorY) && RuleMatches(rule, ref neighboringTiles, false, true))
+            else if (rule.m_RuleTransform == TilingRule.Transform.MirrorY)
             {
-                transform = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1f, -1f, 1f));
-                return true;
+                if (RuleMatches(rule, position, tilemap, false, true))
+                {
+                    transform = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1f, -1f, 1f));
+                    return true;
+                }
             }
 
             return false;
@@ -389,17 +511,17 @@ namespace UnityEngine
         /// Checks if there is a match given the neighbor matching rule and a Tile.
         /// </summary>
         /// <param name="neighbor">Neighbor matching rule.</param>
-        /// <param name="tile">Tile to match.</param>
+        /// <param name="other">Tile to match.</param>
         /// <returns>True if there is a match, False if not.</returns>
-        public virtual bool RuleMatch(int neighbor, TileBase tile)
+        public virtual bool RuleMatch(int neighbor, TileBase other)
         {
-            if (tile is RuleOverrideTile)
-                tile = (tile as RuleOverrideTile).m_InstanceTile;
+            if (other is RuleOverrideTile)
+                other = (other as RuleOverrideTile).m_InstanceTile;
 
             switch (neighbor)
             {
-                case TilingRule.Neighbor.This: return tile == this;
-                case TilingRule.Neighbor.NotThis: return tile != this;
+                case TilingRule.Neighbor.This: return other == this;
+                case TilingRule.Neighbor.NotThis: return other != this;
             }
             return true;
         }
@@ -408,16 +530,17 @@ namespace UnityEngine
         /// Checks if there is a match given the neighbor matching rule and a Tile with a rotation angle.
         /// </summary>
         /// <param name="rule">Neighbor matching rule.</param>
-        /// <param name="neighboringTiles">Tile to match.</param>
+        /// <param name="tilemap">Tilemap to match.</param>
         /// <param name="angle">Rotation angle for matching.</param>
         /// <returns>True if there is a match, False if not.</returns>
-        protected bool RuleMatches(TilingRule rule, ref TileBase[] neighboringTiles, int angle)
+        protected bool RuleMatches(TilingRule rule, Vector3Int position, ITilemap tilemap, int angle)
         {
-            for (int i = 0; i < neighborCount; ++i)
+            for (int i = 0; i < rule.m_Neighbors.Count && i < rule.m_NeighborPositions.Count; i++)
             {
-                int index = GetRotatedIndex(i, angle);
-                TileBase tile = neighboringTiles[index];
-                if (!RuleMatch(rule.m_Neighbors[i], tile))
+                int neighbor = rule.m_Neighbors[i];
+                Vector3Int positionOffset = GetRotatedPosition(rule.m_NeighborPositions[i], angle);
+                TileBase other = tilemap.GetTile(GetOffsetPosition(position, positionOffset));
+                if (!RuleMatch(neighbor, other))
                 {
                     return false;
                 }
@@ -429,17 +552,18 @@ namespace UnityEngine
         /// Checks if there is a match given the neighbor matching rule and a Tile with mirrored axii.
         /// </summary>
         /// <param name="rule">Neighbor matching rule.</param>
-        /// <param name="neighboringTiles">Tile to match.</param>
+        /// <param name="tilemap">Tilemap to match.</param>
         /// <param name="mirrorX">Mirror X Axis for matching.</param>
         /// <param name="mirrorY">Mirror Y Axis for matching.</param>
         /// <returns>True if there is a match, False if not.</returns>
-        protected bool RuleMatches(TilingRule rule, ref TileBase[] neighboringTiles, bool mirrorX, bool mirrorY)
+        protected bool RuleMatches(TilingRule rule, Vector3Int position, ITilemap tilemap, bool mirrorX, bool mirrorY)
         {
-            for (int i = 0; i < neighborCount; ++i)
+            for (int i = 0; i < rule.m_Neighbors.Count && i < rule.m_NeighborPositions.Count; i++)
             {
-                int index = GetMirroredIndex(i, mirrorX, mirrorY);
-                TileBase tile = neighboringTiles[index];
-                if (!RuleMatch(rule.m_Neighbors[i], tile))
+                int neighbor = rule.m_Neighbors[i];
+                Vector3Int positionOffset = GetMirroredPosition(rule.m_NeighborPositions[i], mirrorX, mirrorY);
+                TileBase other = tilemap.GetTile(GetOffsetPosition(position, positionOffset));
+                if (!RuleMatch(neighbor, other))
                 {
                     return false;
                 }
@@ -448,78 +572,51 @@ namespace UnityEngine
         }
 
         /// <summary>
-        /// Gets and caches the neighboring Tiles around the given Tile on the Tilemap.
+        /// Gets a rotated position given its original position and the rotation in degrees. 
         /// </summary>
-        /// <param name="tilemap">The Tilemap the tile is present on.</param>
-        /// <param name="position">Position of the Tile on the Tilemap.</param>
-        /// <param name="neighboringTiles">An array storing the neighboring Tiles</param>
-        protected virtual void GetMatchingNeighboringTiles(ITilemap tilemap, Vector3Int position, ref TileBase[] neighboringTiles)
-        {
-            if (neighboringTiles != null)
-                return;
-
-            if (m_CachedNeighboringTiles == null || m_CachedNeighboringTiles.Length < neighborCount)
-                m_CachedNeighboringTiles = new TileBase[neighborCount];
-
-            int index = 0;
-            for (int y = 1; y >= -1; y--)
-            {
-                for (int x = -1; x <= 1; x++)
-                {
-                    if (x != 0 || y != 0)
-                    {
-                        Vector3Int tilePosition = new Vector3Int(position.x + x, position.y + y, position.z);
-                        m_CachedNeighboringTiles[index++] = tilemap.GetTile(tilePosition);
-                    }
-                }
-            }
-            neighboringTiles = m_CachedNeighboringTiles;
-        }
-
-        /// <summary>
-        /// Gets a rotated index given its original index and the rotation in degrees. 
-        /// </summary>
-        /// <param name="original">Original index of Tile.</param>
+        /// <param name="position">Original position of Tile.</param>
         /// <param name="rotation">Rotation in degrees.</param>
-        /// <returns>Rotated Index of Tile.</returns>
-        protected virtual int GetRotatedIndex(int original, int rotation)
+        /// <returns>Rotated position of Tile.</returns>
+        protected virtual Vector3Int GetRotatedPosition(Vector3Int position, int rotation)
         {
             switch (rotation)
             {
                 case 0:
-                    return original;
+                    return position;
                 case 90:
-                    return RotatedOrMirroredIndexes[0, original];
+                    return new Vector3Int(position.y, -position.x, 0);
                 case 180:
-                    return RotatedOrMirroredIndexes[1, original];
+                    return new Vector3Int(-position.x, -position.y, 0);
                 case 270:
-                    return RotatedOrMirroredIndexes[2, original];
+                    return new Vector3Int(-position.y, position.x, 0);
             }
-            return original;
+            return position;
         }
 
         /// <summary>
-        /// Gets a mirrored index given its original index and the mirroring axii.
+        /// Gets a mirrored position given its original position and the mirroring axii.
         /// </summary>
-        /// <param name="original">Original index of Tile.</param>
+        /// <param name="position">Original position of Tile.</param>
         /// <param name="mirrorX">Mirror in the X Axis.</param>
         /// <param name="mirrorY">Mirror in the Y Axis.</param>
-        /// <returns>Mirrored Index of Tile.</returns>
-        protected virtual int GetMirroredIndex(int original, bool mirrorX, bool mirrorY)
+        /// <returns>Mirrored position of Tile.</returns>
+        protected virtual Vector3Int GetMirroredPosition(Vector3Int position, bool mirrorX, bool mirrorY)
         {
-            if (mirrorX && mirrorY)
-            {
-                return RotatedOrMirroredIndexes[1, original];
-            }
             if (mirrorX)
-            {
-                return RotatedOrMirroredIndexes[3, original];
-            }
+                position.x *= -1;
             if (mirrorY)
-            {
-                return RotatedOrMirroredIndexes[4, original];
-            }
-            return original;
+                position.y *= -1;
+            return position;
+        }
+
+        protected virtual Vector3Int GetOffsetPosition(Vector3Int location, Vector3Int offset)
+        {
+            return location + offset;
+        }
+
+        protected virtual Vector3Int GetOffsetPositionReverse(Vector3Int position, Vector3Int offset)
+        {
+            return position - offset;
         }
     }
 }
