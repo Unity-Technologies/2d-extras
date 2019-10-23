@@ -83,9 +83,8 @@ namespace UnityEditor
             m_ReorderableList.onAddCallback = OnAddElement;
         }
 
-        public virtual BoundsInt GetRuleGUIBounds(RuleTile.TilingRule rule)
+        public virtual BoundsInt GetRuleGUIBounds(BoundsInt bounds, RuleTile.TilingRule rule)
         {
-            BoundsInt bounds = rule.bounds;
             if (extendNeighbor)
             {
                 bounds.xMin--;
@@ -108,7 +107,7 @@ namespace UnityEditor
         private float GetElementHeight(int index)
         {
             RuleTile.TilingRule rule = tile.m_TilingRules[index];
-            BoundsInt bounds = GetRuleGUIBounds(rule);
+            BoundsInt bounds = GetRuleGUIBounds(rule.GetBounds(), rule);
 
             float inspectorHeight = k_DefaultElementHeight + k_PaddingBetweenRules;
             float matrixHeight = GetMatrixSize(bounds).y + 10f;
@@ -129,7 +128,7 @@ namespace UnityEditor
             return Mathf.Max(inspectorHeight, matrixHeight);
         }
 
-        protected virtual Vector2 GetMatrixSize(BoundsInt bounds)
+        public virtual Vector2 GetMatrixSize(BoundsInt bounds)
         {
             return new Vector2(bounds.size.x * k_SingleLineHeight, bounds.size.y * k_SingleLineHeight);
         }
@@ -137,7 +136,7 @@ namespace UnityEditor
         protected virtual void OnDrawElement(Rect rect, int index, bool isactive, bool isfocused)
         {
             RuleTile.TilingRule rule = tile.m_TilingRules[index];
-            BoundsInt bounds = GetRuleGUIBounds(rule);
+            BoundsInt bounds = GetRuleGUIBounds(rule.GetBounds(), rule);
 
             float yPos = rect.yMin + 2f;
             float height = rect.height - k_PaddingBetweenRules;
@@ -430,12 +429,12 @@ namespace UnityEditor
             }
         }
 
-        public static void SpriteOnGUI(Rect rect, RuleTile.TilingRule tilingRule)
+        public virtual void SpriteOnGUI(Rect rect, RuleTile.TilingRule tilingRule)
         {
             tilingRule.m_Sprites[0] = EditorGUI.ObjectField(new Rect(rect.xMax - rect.height, rect.yMin, rect.height, rect.height), tilingRule.m_Sprites[0], typeof(Sprite), false) as Sprite;
         }
 
-        public static void RuleInspectorOnGUI(Rect rect, RuleTile.TilingRule tilingRule)
+        public virtual void RuleInspectorOnGUI(Rect rect, RuleTile.TilingRule tilingRule)
         {
             float y = rect.yMin;
             EditorGUI.BeginChangeCheck();

@@ -14,7 +14,7 @@ namespace UnityEditor
             return s_Arrows[base.GetArrowIndex(position)];
         }
 
-        protected override Vector2 GetMatrixSize(BoundsInt bounds)
+        public override Vector2 GetMatrixSize(BoundsInt bounds)
         {
             float p = Mathf.Pow(2, 0.5f);
             float w = (bounds.size.x / p + bounds.size.y / p) * k_SingleLineHeight;

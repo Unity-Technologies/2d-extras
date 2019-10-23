@@ -46,9 +46,8 @@ namespace UnityEditor
             return -1;
         }
 
-        public override BoundsInt GetRuleGUIBounds(RuleTile.TilingRule rule)
+        public override BoundsInt GetRuleGUIBounds(BoundsInt bounds, RuleTile.TilingRule rule)
         {
-            BoundsInt bounds = rule.bounds;
             foreach (var n in rule.GetNeighbors())
             {
                 if (n.Key.x == bounds.xMax - 1 && n.Key.y % 2 != 0)
@@ -71,7 +70,7 @@ namespace UnityEditor
             return bounds;
         }
 
-        protected override Vector2 GetMatrixSize(BoundsInt bounds)
+        public override Vector2 GetMatrixSize(BoundsInt bounds)
         {
             var hexTile = tile as HexagonalRuleTile;
             Vector2 size = base.GetMatrixSize(bounds);

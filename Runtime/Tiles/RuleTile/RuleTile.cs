@@ -119,22 +119,6 @@ namespace UnityEngine
             /// </summary>
             public Transform m_RandomTransform;
 
-            public BoundsInt bounds
-            {
-                get
-                {
-                    BoundsInt bounds = new BoundsInt(Vector3Int.zero, Vector3Int.one);
-                    foreach (var neighbor in GetNeighbors())
-                    {
-                        bounds.xMin = Mathf.Min(bounds.xMin, neighbor.Key.x);
-                        bounds.yMin = Mathf.Min(bounds.yMin, neighbor.Key.y);
-                        bounds.xMax = Mathf.Max(bounds.xMax, neighbor.Key.x + 1);
-                        bounds.yMax = Mathf.Max(bounds.yMax, neighbor.Key.y + 1);
-                    }
-                    return bounds;
-                }
-            }
-
             /// <summary>
             /// Constructor for Tiling Rule. This defaults to a Single Output.
             /// </summary>
@@ -161,6 +145,19 @@ namespace UnityEngine
             {
                 m_NeighborPositions = dict.Keys.ToList();
                 m_Neighbors = dict.Values.ToList();
+            }
+
+            public BoundsInt GetBounds()
+            {
+                BoundsInt bounds = new BoundsInt(Vector3Int.zero, Vector3Int.one);
+                foreach (var neighbor in GetNeighbors())
+                {
+                    bounds.xMin = Mathf.Min(bounds.xMin, neighbor.Key.x);
+                    bounds.yMin = Mathf.Min(bounds.yMin, neighbor.Key.y);
+                    bounds.xMax = Mathf.Max(bounds.xMax, neighbor.Key.x + 1);
+                    bounds.yMax = Mathf.Max(bounds.yMax, neighbor.Key.y + 1);
+                }
+                return bounds;
             }
 
             /// <summary>
