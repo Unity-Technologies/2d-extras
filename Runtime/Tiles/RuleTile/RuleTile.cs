@@ -43,8 +43,6 @@ namespace UnityEngine
         /// </summary>
         public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
 
-        private Quaternion m_GameObjectQuaternion;
-
         public virtual int m_RotationAngle => 90;
         public virtual Vector3Int[] m_NearbyNeighborPositions => new Vector3Int[] {
             new Vector3Int(-1, 1, 0),
@@ -286,9 +284,23 @@ namespace UnityEngine
         {
             if (instantiatedGameObject != null)
             {
+                var iden = Matrix4x4.identity;
+                Quaternion gameObjectQuaternion = new Quaternion();
+
+                foreach (TilingRule rule in m_TilingRules)
+                {
+                    Matrix4x4 transform = iden;
+                    if (RuleMatches(rule, location, tilemap, ref transform))
+                    {
+                        // Converts the tile's rotation matrix to a quaternion to be used by the instantiated Game Object
+                        gameObjectQuaternion = Quaternion.LookRotation(new Vector3(transform.m02, transform.m12, transform.m22), new Vector3(transform.m01, transform.m11, transform.m21));
+                        break;
+                    }
+                }
+
                 Tilemap tmpMap = tilemap.GetComponent<Tilemap>();
                 instantiatedGameObject.transform.position = tmpMap.LocalToWorld(tmpMap.CellToLocalInterpolated(location + tmpMap.tileAnchor));
-                instantiatedGameObject.transform.rotation = m_GameObjectQuaternion;
+                instantiatedGameObject.transform.rotation = gameObjectQuaternion;
             }
 
             return true;
@@ -331,9 +343,6 @@ namespace UnityEngine
                     tileData.transform = transform;
                     tileData.gameObject = rule.m_GameObject;
                     tileData.colliderType = rule.m_ColliderType;
-
-                    // Converts the tile's rotation matrix to a quaternion to be used by the instantiated Game Object
-                    m_GameObjectQuaternion = Quaternion.LookRotation(new Vector3(transform.m02, transform.m12, transform.m22), new Vector3(transform.m01, transform.m11, transform.m21));
                     break;
                 }
             }
