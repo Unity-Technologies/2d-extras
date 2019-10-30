@@ -11,12 +11,27 @@ namespace UnityEditor
     {
 
         public RuleOverrideTile overrideTile { get { return (target as RuleOverrideTile); } }
+        public RuleTileEditor ruleTileEditor
+        {
+            get
+            {
+                if (m_RuleTileEditorTile != overrideTile.m_Tile)
+                {
+                    DestroyImmediate(m_RuleTileEditor);
+                    m_RuleTileEditor = Editor.CreateEditor(overrideTile.m_Tile) as RuleTileEditor;
+                    m_RuleTileEditorTile = overrideTile.m_Tile;
+                }
+                return m_RuleTileEditor;
+            }
+        }
 
         private List<KeyValuePair<Sprite, Sprite>> m_Sprites;
         private List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>> m_Rules;
 
         ReorderableList m_SpriteList;
         ReorderableList m_RuleList;
+        RuleTileEditor m_RuleTileEditor;
+        RuleTile m_RuleTileEditorTile;
 
         private float k_DefaultElementHeight { get { return RuleTileEditor.k_DefaultElementHeight; } }
         private float k_PaddingBetweenRules { get { return RuleTileEditor.k_PaddingBetweenRules; } }
@@ -49,6 +64,12 @@ namespace UnityEditor
                 m_RuleList.drawElementCallback = DrawRuleElement;
                 m_RuleList.elementHeightCallback = GetRuleElementHeight;
             }
+        }
+
+        void OnDisable()
+        {
+            DestroyImmediate(ruleTileEditor);
+            m_RuleTileEditorTile = null;
         }
 
         public override void OnInspectorGUI()
@@ -220,20 +241,31 @@ namespace UnityEditor
                 float height = rect.height - k_PaddingBetweenRules;
                 float matrixWidth = k_DefaultElementHeight;
 
+                BoundsInt ruleBounds = originalRule.GetBounds();
+                BoundsInt ruleGuiBounds = ruleTileEditor.GetRuleGUIBounds(ruleBounds, originalRule);
+                Vector2 matrixSize = ruleTileEditor.GetMatrixSize(ruleGuiBounds);
+                Vector2 matrixSizeRate = matrixSize / Mathf.Max(matrixSize.x, matrixSize.y);
+                Vector2 matrixRectSize = new Vector2(matrixWidth * matrixSizeRate.x, k_DefaultElementHeight * matrixSizeRate.y);
+                Vector2 matrixRectPosition = new Vector2(rect.xMax - matrixWidth * 2f - 10f, yPos);
+                matrixRectPosition.x += (matrixWidth - matrixRectSize.x) * 0.5f;
+                matrixRectPosition.y += (k_DefaultElementHeight - matrixRectSize.y) * 0.5f;
+
                 Rect inspectorRect = new Rect(rect.xMin, yPos, rect.width - matrixWidth * 2f - 20f, height);
-                Rect matrixRect = new Rect(rect.xMax - matrixWidth * 2f - 10f, yPos, matrixWidth, k_DefaultElementHeight);
+                Rect matrixRect = new Rect(matrixRectPosition, matrixRectSize);
                 Rect spriteRect = new Rect(rect.xMax - matrixWidth - 5f, yPos, matrixWidth, k_DefaultElementHeight);
 
-                RuleTileEditor ruleTileEditor = Editor.CreateEditor(overrideTile.m_Tile) as RuleTileEditor;
 
                 if (!isDefault)
-                    RuleTileEditor.RuleInspectorOnGUI(inspectorRect, originalRule);
+                {
+                    ruleTileEditor.RuleInspectorOnGUI(inspectorRect, originalRule);
+                    ruleTileEditor.RuleMatrixOnGUI(overrideTile.m_Tile, matrixRect, ruleGuiBounds, originalRule);
+                }
                 else
+                {
                     RuleOriginalDefaultInspectorOnGUI(inspectorRect, originalRule);
-                ruleTileEditor.RuleMatrixOnGUI(overrideTile.m_Tile, matrixRect, originalRule);
-                RuleTileEditor.SpriteOnGUI(spriteRect, originalRule);
+                }
 
-                DestroyImmediate(ruleTileEditor);
+                ruleTileEditor.SpriteOnGUI(spriteRect, originalRule);
             }
         }
         private void DrawOverrideElement(Rect rect, RuleTile.TilingRule originalRule)
@@ -248,7 +280,7 @@ namespace UnityEditor
             RuleOverrideInspectorOnGUI(inspectorRect, originalRule);
             RuleTile.TilingRule overrideRule = overrideTile[originalRule];
             if (overrideRule != null)
-                RuleTileEditor.SpriteOnGUI(spriteRect, overrideRule);
+                ruleTileEditor.SpriteOnGUI(spriteRect, overrideRule);
         }
         private void RuleOriginalDefaultInspectorOnGUI(Rect rect, RuleTile.TilingRule originalRule)
         {
@@ -339,7 +371,7 @@ namespace UnityEditor
 
             RuleOverrideDefaultInspectorOnGUI(inspectorRect, originalRule);
             if (overrideTile.m_OverrideDefault.m_Enabled)
-                RuleTileEditor.SpriteOnGUI(spriteRect, overrideTile.m_OverrideDefault.m_TilingRule);
+                ruleTileEditor.SpriteOnGUI(spriteRect, overrideTile.m_OverrideDefault.m_TilingRule);
         }
         private void RuleOverrideDefaultInspectorOnGUI(Rect rect, RuleTile.TilingRule overrideRule)
         {

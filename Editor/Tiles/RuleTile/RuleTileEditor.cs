@@ -64,13 +64,14 @@ namespace UnityEditor
             }
         }
 
-        private RuleTile tile { get { return (target as RuleTile); } }
+        public RuleTile tile { get { return (target as RuleTile); } }
         private ReorderableList m_ReorderableList;
+        public bool extendNeighbor;
 
-        internal const float k_DefaultElementHeight = 48f;
-        internal const float k_PaddingBetweenRules = 26f;
-        internal const float k_SingleLineHeight = 16f;
-        internal const float k_LabelWidth = 80f;
+        public const float k_DefaultElementHeight = 48f;
+        public const float k_PaddingBetweenRules = 26f;
+        public const float k_SingleLineHeight = 16f;
+        public const float k_LabelWidth = 80f;
 
         public void OnEnable()
         {
@@ -82,6 +83,22 @@ namespace UnityEditor
             m_ReorderableList.onAddCallback = OnAddElement;
         }
 
+        public virtual BoundsInt GetRuleGUIBounds(BoundsInt bounds, RuleTile.TilingRule rule)
+        {
+            if (extendNeighbor)
+            {
+                bounds.xMin--;
+                bounds.yMin--;
+                bounds.xMax++;
+                bounds.yMax++;
+            }
+            bounds.xMin = Mathf.Min(bounds.xMin, -1);
+            bounds.yMin = Mathf.Min(bounds.yMin, -1);
+            bounds.xMax = Mathf.Max(bounds.xMax, 2);
+            bounds.yMax = Mathf.Max(bounds.yMax, 2);
+            return bounds;
+        }
+
         private void ListUpdated(ReorderableList list)
         {
             SaveTile();
@@ -89,34 +106,49 @@ namespace UnityEditor
 
         private float GetElementHeight(int index)
         {
-            if (tile.m_TilingRules != null && tile.m_TilingRules.Count > 0)
+            RuleTile.TilingRule rule = tile.m_TilingRules[index];
+            BoundsInt bounds = GetRuleGUIBounds(rule.GetBounds(), rule);
+
+            float inspectorHeight = k_DefaultElementHeight + k_PaddingBetweenRules;
+            float matrixHeight = GetMatrixSize(bounds).y + 10f;
+
+            if (index < tile.m_TilingRules.Count)
             {
                 switch (tile.m_TilingRules[index].m_Output)
                 {
                     case RuleTile.TilingRule.OutputSprite.Random:
-                        return k_DefaultElementHeight + k_SingleLineHeight * (tile.m_TilingRules[index].m_Sprites.Length + 3) + k_PaddingBetweenRules;
+                        inspectorHeight = k_DefaultElementHeight + k_SingleLineHeight * (tile.m_TilingRules[index].m_Sprites.Length + 3) + k_PaddingBetweenRules;
+                        break;
                     case RuleTile.TilingRule.OutputSprite.Animation:
-                        return k_DefaultElementHeight + k_SingleLineHeight * (tile.m_TilingRules[index].m_Sprites.Length + 2) + k_PaddingBetweenRules;
+                        inspectorHeight = k_DefaultElementHeight + k_SingleLineHeight * (tile.m_TilingRules[index].m_Sprites.Length + 2) + k_PaddingBetweenRules;
+                        break;
                 }
             }
-            return k_DefaultElementHeight + k_PaddingBetweenRules;
+
+            return Mathf.Max(inspectorHeight, matrixHeight);
         }
 
-        private void OnDrawElement(Rect rect, int index, bool isactive, bool isfocused)
+        public virtual Vector2 GetMatrixSize(BoundsInt bounds)
+        {
+            return new Vector2(bounds.size.x * k_SingleLineHeight, bounds.size.y * k_SingleLineHeight);
+        }
+
+        protected virtual void OnDrawElement(Rect rect, int index, bool isactive, bool isfocused)
         {
             RuleTile.TilingRule rule = tile.m_TilingRules[index];
+            BoundsInt bounds = GetRuleGUIBounds(rule.GetBounds(), rule);
 
             float yPos = rect.yMin + 2f;
             float height = rect.height - k_PaddingBetweenRules;
-            float matrixWidth = k_DefaultElementHeight;
+            Vector2 matrixSize = GetMatrixSize(bounds);
 
-            Rect inspectorRect = new Rect(rect.xMin, yPos, rect.width - matrixWidth * 2f - 20f, height);
-            Rect matrixRect = new Rect(rect.xMax - matrixWidth * 2f - 10f, yPos, matrixWidth, k_DefaultElementHeight);
-            Rect spriteRect = new Rect(rect.xMax - matrixWidth - 5f, yPos, matrixWidth, k_DefaultElementHeight);
+            Rect spriteRect = new Rect(rect.xMax - k_DefaultElementHeight - 5f, yPos, k_DefaultElementHeight, k_DefaultElementHeight);
+            Rect matrixRect = new Rect(rect.xMax - matrixSize.x - spriteRect.width - 10f, yPos, matrixSize.x, matrixSize.y);
+            Rect inspectorRect = new Rect(rect.xMin, yPos, rect.width - matrixSize.x - spriteRect.width - 20f, height);
 
             EditorGUI.BeginChangeCheck();
             RuleInspectorOnGUI(inspectorRect, rule);
-            RuleMatrixOnGUI(tile, matrixRect, rule);
+            RuleMatrixOnGUI(tile, matrixRect, bounds, rule);
             SpriteOnGUI(spriteRect, rule);
             if (EditorGUI.EndChangeCheck())
                 SaveTile();
@@ -132,7 +164,7 @@ namespace UnityEditor
             tile.m_TilingRules.Add(rule);
         }
 
-        private void SaveTile()
+        public void SaveTile()
         {
             EditorUtility.SetDirty(target);
             SceneView.RepaintAll();
@@ -155,6 +187,17 @@ namespace UnityEditor
         private void OnDrawHeader(Rect rect)
         {
             GUI.Label(rect, "Tiling Rules");
+
+            Rect toggleRect = new Rect(rect.xMax - rect.height, rect.y, rect.height, rect.height);
+            Rect toggleLabelRect = new Rect(rect.x, rect.y, rect.width - toggleRect.width - 5f, rect.height);
+
+            extendNeighbor = EditorGUI.Toggle(toggleRect, extendNeighbor);
+            EditorGUI.LabelField(toggleLabelRect, "Extend Neighbor", new GUIStyle()
+            {
+                alignment = TextAnchor.MiddleRight,
+                fontStyle = FontStyle.Bold,
+                fontSize = 10,
+            });
         }
 
         public override void OnInspectorGUI()
@@ -174,7 +217,7 @@ namespace UnityEditor
 
             EditorGUILayout.Space();
 
-            if (m_ReorderableList != null && tile.m_TilingRules != null)
+            if (m_ReorderableList != null)
                 m_ReorderableList.DoLayoutList();
         }
 
@@ -182,19 +225,48 @@ namespace UnityEditor
         {
             var customFields = tile.GetType().GetFields()
                 .Where(field => typeof(RuleTile).GetField(field.Name) == null)
+                .Where(field => !field.IsStatic)
                 .Where(field => field.FieldType.IsSerializable);
             foreach (var field in customFields)
                 EditorGUILayout.PropertyField(serializedObject.FindProperty(field.Name), true);
         }
+    
+        public virtual int GetArrowIndex(Vector3Int position)
+        {
+            if (Mathf.Abs(position.x) == Mathf.Abs(position.y))
+            {
+                if (position.x < 0 && position.y > 0)
+                    return 0;
+                else if (position.x > 0 && position.y > 0)
+                    return 2;
+                else if (position.x < 0 && position.y < 0)
+                    return 6;
+                else if (position.x > 0 && position.y < 0)
+                    return 8;
+            }
+            else if (Mathf.Abs(position.x) > Mathf.Abs(position.y))
+            {
+                if (position.x > 0)
+                    return 5;
+                else
+                    return 3;
+            }
+            else
+            {
+                if (position.y > 0)
+                    return 1;
+                else
+                    return 7;
+            }
+            return -1;
+        }
 
-        internal virtual void RuleOnGUI(Rect rect, int arrowIndex, int neighbor)
+        public virtual void RuleOnGUI(Rect rect, Vector3Int position, int neighbor)
         {
             switch (neighbor)
             {
-                case RuleTile.TilingRule.Neighbor.DontCare:
-                    break;
                 case RuleTile.TilingRule.Neighbor.This:
-                    GUI.DrawTexture(rect, arrows[arrowIndex]);
+                    GUI.DrawTexture(rect, arrows[GetArrowIndex(position)]);
                     break;
                 case RuleTile.TilingRule.Neighbor.NotThis:
                     GUI.DrawTexture(rect, arrows[9]);
@@ -206,6 +278,10 @@ namespace UnityEditor
                     GUI.Label(rect, neighbor.ToString(), style);
                     break;
             }
+        }
+
+        public void RuleTooltipOnGUI(Rect rect, int neighbor)
+        {
             var allConsts = tile.m_NeighborType.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.FlattenHierarchy);
             foreach (var c in allConsts)
             {
@@ -217,7 +293,7 @@ namespace UnityEditor
             }
         }
 
-        internal virtual void RuleTransformOnGUI(Rect rect, RuleTile.TilingRule.Transform ruleTransform)
+        public virtual void RuleTransformOnGUI(Rect rect, RuleTile.TilingRule.Transform ruleTransform)
         {
             switch (ruleTransform)
             {
@@ -233,33 +309,67 @@ namespace UnityEditor
             }
         }
 
-        internal void RuleNeighborUpdate(Rect rect, RuleTile.TilingRule tilingRule, int index)
+        public bool RuleNeighborUpdate(Rect rect, RuleTile.TilingRule tilingRule, Dictionary<Vector3Int, int> neighbors
+, Vector3Int position)
         {
             if (Event.current.type == EventType.MouseDown && ContainsMousePosition(rect))
             {
                 var allConsts = tile.m_NeighborType.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
-                var neighbors = allConsts.Select(c => (int)c.GetValue(null)).ToList();
-                neighbors.Sort();
+                var neighborConsts = allConsts.Select(c => (int)c.GetValue(null)).ToList();
+                neighborConsts.Sort();
 
-                int oldIndex = neighbors.IndexOf(tilingRule.m_Neighbors[index]);
-                int newIndex = (int)Mathf.Repeat(oldIndex + GetMouseChange(), neighbors.Count);
-                tilingRule.m_Neighbors[index] = neighbors[newIndex];
+                if (neighbors.ContainsKey(position))
+                {
+                    int oldIndex = neighborConsts.IndexOf(neighbors[position]);
+                    int newIndex = oldIndex + GetMouseChange();
+                    if (newIndex >= 0 && newIndex < neighborConsts.Count)
+                    {
+                        newIndex = (int)Mathf.Repeat(newIndex, neighborConsts.Count);
+                        neighbors[position] = neighborConsts[newIndex];
+                    }
+                    else
+                    {
+                        neighbors.Remove(position);
+                    }
+                }
+                else
+                {
+                    int mouseChange = GetMouseChange();
+                    if (mouseChange == 1)
+                    {
+                        neighbors.Add(position, neighborConsts[0]);
+                    }
+                    else
+                    {
+                        neighbors.Add(position, neighborConsts[neighborConsts.Count - 1]);
+                    }
+                }
+                tilingRule.ApplyNeighbors(neighbors);
+
                 GUI.changed = true;
                 Event.current.Use();
+
+                return true;
             }
+
+            return false;
         }
 
-        internal void RuleTransformUpdate(Rect rect, RuleTile.TilingRule tilingRule)
+        public bool RuleTransformUpdate(Rect rect, RuleTile.TilingRule tilingRule)
         {
             if (Event.current.type == EventType.MouseDown && ContainsMousePosition(rect))
             {
                 tilingRule.m_RuleTransform = (RuleTile.TilingRule.Transform)(int)Mathf.Repeat((int)tilingRule.m_RuleTransform + GetMouseChange(), 4);
                 GUI.changed = true;
                 Event.current.Use();
+
+                return true;
             }
+
+            return false;
         }
 
-        internal virtual bool ContainsMousePosition(Rect rect)
+        public virtual bool ContainsMousePosition(Rect rect)
         {
             return rect.Contains(Event.current.mousePosition);
         }
@@ -269,52 +379,62 @@ namespace UnityEditor
             return Event.current.button == 1 ? -1 : 1;
         }
 
-        internal virtual void RuleMatrixOnGUI(RuleTile tile, Rect rect, RuleTile.TilingRule tilingRule)
+        public virtual void RuleMatrixOnGUI(RuleTile tile, Rect rect, BoundsInt bounds, RuleTile.TilingRule tilingRule)
         {
             Handles.color = EditorGUIUtility.isProSkin ? new Color(1f, 1f, 1f, 0.2f) : new Color(0f, 0f, 0f, 0.2f);
-            int index = 0;
-            float w = rect.width / 3f;
-            float h = rect.height / 3f;
+            float w = rect.width / bounds.size.x;
+            float h = rect.height / bounds.size.y;
 
-            for (int y = 0; y <= 3; y++)
+            for (int y = 0; y <= bounds.size.y; y++)
             {
                 float top = rect.yMin + y * h;
                 Handles.DrawLine(new Vector3(rect.xMin, top), new Vector3(rect.xMax, top));
             }
-            for (int x = 0; x <= 3; x++)
+            for (int x = 0; x <= bounds.size.x; x++)
             {
                 float left = rect.xMin + x * w;
                 Handles.DrawLine(new Vector3(left, rect.yMin), new Vector3(left, rect.yMax));
             }
             Handles.color = Color.white;
 
-            for (int y = 0; y <= 2; y++)
-            {
-                for (int x = 0; x <= 2; x++)
-                {
-                    Rect r = new Rect(rect.xMin + x * w, rect.yMin + y * h, w - 1, h - 1);
-                    if (x != 1 || y != 1)
-                    {
-                        RuleOnGUI(r, y * 3 + x, tilingRule.m_Neighbors[index]);
-                        RuleNeighborUpdate(r, tilingRule, index);
+            var neighbors = tilingRule.GetNeighbors();
 
-                        index++;
+            for (int y = bounds.yMin; y < bounds.yMax; y++)
+            {
+                for (int x = bounds.xMin; x < bounds.xMax; x++)
+                {
+                    Vector3Int pos = new Vector3Int(x, y, 0);
+                    Rect r = new Rect(rect.xMin + (x - bounds.xMin) * w, rect.yMin + (-y + bounds.yMax - 1) * h, w - 1, h - 1);
+                    if (x != 0 || y != 0)
+                    {
+                        if (neighbors.ContainsKey(pos))
+                        {
+                            RuleOnGUI(r, pos, neighbors[pos]);
+                            RuleTooltipOnGUI(r, neighbors[pos]);
+                        }
+                        if (RuleNeighborUpdate(r, tilingRule, neighbors, pos))
+                        {
+                            tile.UpdateRemoteRulePositions();
+                        }
                     }
                     else
                     {
                         RuleTransformOnGUI(r, tilingRule.m_RuleTransform);
-                        RuleTransformUpdate(r, tilingRule);
+                        if (RuleTransformUpdate(r, tilingRule))
+                        {
+                            tile.UpdateRemoteRulePositions();
+                        }
                     }
                 }
             }
         }
 
-        internal static void SpriteOnGUI(Rect rect, RuleTile.TilingRule tilingRule)
+        public virtual void SpriteOnGUI(Rect rect, RuleTile.TilingRule tilingRule)
         {
             tilingRule.m_Sprites[0] = EditorGUI.ObjectField(new Rect(rect.xMax - rect.height, rect.yMin, rect.height, rect.height), tilingRule.m_Sprites[0], typeof(Sprite), false) as Sprite;
         }
 
-        internal static void RuleInspectorOnGUI(Rect rect, RuleTile.TilingRule tilingRule)
+        public virtual void RuleInspectorOnGUI(Rect rect, RuleTile.TilingRule tilingRule)
         {
             float y = rect.yMin;
             EditorGUI.BeginChangeCheck();

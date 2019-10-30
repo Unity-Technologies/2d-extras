@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Reflection;
 using UnityEngine;
 
 namespace UnityEditor
@@ -8,41 +6,116 @@ namespace UnityEditor
     [CanEditMultipleObjects]
     public class HexagonalRuleTileEditor : RuleTileEditor
     {
-        private static readonly Vector2[] s_PointedTopPositions =
-        {
-            new Vector2(2f, 1f), new Vector2(1.5f, 2f), new Vector2(0.5f, 2f), new Vector2(0f, 1f), new Vector2(0.5f, 0f), new Vector2(1.5f, 0f)
-        };
-        private static readonly int[] s_PointedTopArrows = {5, 8, 6, 3, 0, 2};
-        private static readonly Vector2[] s_FlatTopPositions =
-        {
-            new Vector2(1f, 0f), new Vector2(2f, 0.5f), new Vector2(2f, 1.5f), new Vector2(1f, 2f), new Vector2(0f, 1.5f), new Vector2(0f, 0.5f)
-        };
-        private static readonly int[] s_FlatTopArrows = {1, 2, 8, 7, 6, 0};
 
-        internal override void RuleMatrixOnGUI(RuleTile ruleTile, Rect rect, RuleTile.TilingRule tilingRule)
+        public override int GetArrowIndex(Vector3Int position)
         {
-            var hexTile = (HexagonalRuleTile) ruleTile;
+            var hexTile = tile as HexagonalRuleTile;
+
+            if (position.y % 2 != 0)
+            {
+                position *= 2;
+                position.x += 1;
+            }
+
+            if (position.x == 0)
+            {
+                if (position.y > 0)
+                    return hexTile.m_FlatTop ? 3 : 1;
+                else
+                    return hexTile.m_FlatTop ? 5 : 7;
+            }
+            else if (position.y == 0)
+            {
+                if (position.x > 0)
+                    return hexTile.m_FlatTop ? 1 : 5;
+                else
+                    return hexTile.m_FlatTop ? 7 : 3;
+            }
+            else
+            {
+                if (position.x < 0 && position.y > 0)
+                    return hexTile.m_FlatTop ? 6 : 0;
+                else if (position.x > 0 && position.y > 0)
+                    return hexTile.m_FlatTop ? 0 : 2;
+                else if (position.x < 0 && position.y < 0)
+                    return hexTile.m_FlatTop ? 8 : 6;
+                else if (position.x > 0 && position.y < 0)
+                    return hexTile.m_FlatTop ? 2 : 8;
+            }
+
+            return -1;
+        }
+
+        public override BoundsInt GetRuleGUIBounds(BoundsInt bounds, RuleTile.TilingRule rule)
+        {
+            foreach (var n in rule.GetNeighbors())
+            {
+                if (n.Key.x == bounds.xMax - 1 && n.Key.y % 2 != 0)
+                {
+                    bounds.xMax++;
+                    break;
+                }
+            }
+            if (extendNeighbor)
+            {
+                bounds.xMin--;
+                bounds.yMin--;
+                bounds.xMax++;
+                bounds.yMax++;
+            }
+            bounds.xMin = Mathf.Min(bounds.xMin, -1);
+            bounds.yMin = Mathf.Min(bounds.yMin, -1);
+            bounds.xMax = Mathf.Max(bounds.xMax, 2);
+            bounds.yMax = Mathf.Max(bounds.yMax, 2);
+            return bounds;
+        }
+
+        public override Vector2 GetMatrixSize(BoundsInt bounds)
+        {
+            var hexTile = tile as HexagonalRuleTile;
+            Vector2 size = base.GetMatrixSize(bounds);
+
+            if (hexTile.m_FlatTop)
+            {
+                float x = size.x;
+                float y = size.y;
+                size.x = y;
+                size.y = x;
+            }
+
+            return size;
+        }
+
+        public override void RuleMatrixOnGUI(RuleTile tile, Rect rect, BoundsInt bounds, RuleTile.TilingRule tilingRule)
+        {
+            var hexTile = tile as HexagonalRuleTile;
             bool flatTop = hexTile.m_FlatTop;
 
             Handles.color = EditorGUIUtility.isProSkin ? new Color(1f, 1f, 1f, 0.2f) : new Color(0f, 0f, 0f, 0.2f);
-            float w = rect.width / 3f;
-            float h = rect.height / 3f;
-            
+            float w = rect.width / (flatTop ? bounds.size.y : bounds.size.x);
+            float h = rect.height / (flatTop ? bounds.size.x : bounds.size.y);
+
             // Grid
             if (flatTop)
             {
-                for (int x = 0; x <= 3; x++)
+                for (int y = 0; y <= bounds.size.y; y++)
                 {
-                    float left = rect.xMin + x * w;
-                    float offset = x % 3 > 0 ? 0 : h / 2;
+                    float left = rect.xMin + y * w;
+                    float offset = 0;
+
+                    if (y == 0 && bounds.yMax % 2 == 0)
+                        offset = h / 2;
+                    else if (y == bounds.size.y && bounds.yMin % 2 != 0)
+                        offset = h / 2;
+
                     Handles.DrawLine(new Vector3(left, rect.yMin + offset), new Vector3(left, rect.yMax - offset));
 
-                    if (x < 3)
+                    if (y < bounds.size.y)
                     {
-                        bool noOffset = x % 2 > 0;
-                        for (int y = 0; y < (noOffset ? 4 : 3); y++)
+                        bool noOffset = (y + bounds.yMax) % 2 != 0;
+                        for (int x = 0; x < (noOffset ? (bounds.size.x + 1) : bounds.size.x); x++)
                         {
-                            float top = rect.yMin + y * h + (noOffset ? 0 : h / 2);
+                            float top = rect.yMin + x * h + (noOffset ? 0 : h / 2);
                             Handles.DrawLine(new Vector3(left, top), new Vector3(left + w, top));
                         }
                     }
@@ -50,16 +123,22 @@ namespace UnityEditor
             }
             else
             {
-                for (int y = 0; y <= 3; y++)
+                for (int y = 0; y <= bounds.size.y; y++)
                 {
                     float top = rect.yMin + y * h;
-                    float offset = y % 3 > 0 ? 0 : w / 2;
+                    float offset = 0;
+
+                    if (y == 0 && bounds.yMax % 2 == 0)
+                        offset = w / 2;
+                    else if (y == bounds.size.y && bounds.yMin % 2 != 0)
+                        offset = w / 2;
+
                     Handles.DrawLine(new Vector3(rect.xMin + offset, top), new Vector3(rect.xMax - offset, top));
 
-                    if (y < 3)
+                    if (y < bounds.size.y)
                     {
-                        bool noOffset = y % 2 > 0;
-                        for (int x = 0; x < (noOffset ? 4 : 3); x++)
+                        bool noOffset = (y + bounds.yMax) % 2 != 0;
+                        for (int x = 0; x < (noOffset ? (bounds.size.x + 1) : bounds.size.x); x++)
                         {
                             float left = rect.xMin + x * w + (noOffset ? 0 : w / 2);
                             Handles.DrawLine(new Vector3(left, top), new Vector3(left, top + h));
@@ -67,22 +146,55 @@ namespace UnityEditor
                     }
                 }
             }
-            
+
+            var neighbors = tilingRule.GetNeighbors();
+
             // Icons
             Handles.color = Color.white;
-            for (int index = 0; index < hexTile.neighborCount; ++index)
+            for (int y = bounds.yMin; y < bounds.yMax; y++)
             {
-                Vector2 position = flatTop ? s_FlatTopPositions[index] : s_PointedTopPositions[index];
-                int arrowIndex = flatTop ? s_FlatTopArrows[index] : s_PointedTopArrows[index];
-                Rect r = new Rect(rect.xMin + position.x * w, rect.yMin + position.y * h, w - 1, h - 1);
-                RuleOnGUI(r, arrowIndex, tilingRule.m_Neighbors[index]);
-                RuleNeighborUpdate(r, tilingRule, index);
-            }
-            // Center
-            {
-                Rect r = new Rect(rect.xMin + w, rect.yMin + h, w - 1, h - 1);
-                RuleTransformOnGUI(r, tilingRule.m_RuleTransform);
-                RuleTransformUpdate(r, tilingRule);
+                int xMax = y % 2 == 0 ? bounds.xMax : (bounds.xMax - 1);
+                for (int x = bounds.xMin; x < xMax; x++)
+                {
+                    Vector3Int pos = new Vector3Int(x, y, 0);
+                    Vector2 offset = new Vector2(x - bounds.xMin, -y + bounds.yMax - 1);
+                    Rect r;
+
+                    if (flatTop)
+                        r = new Rect(rect.xMin + offset.y * w, rect.yMax - offset.x * h - h, w - 1, h - 1);
+                    else
+                        r = new Rect(rect.xMin + offset.x * w, rect.yMin + offset.y * h, w - 1, h - 1);
+
+                    if (y % 2 != 0)
+                    {
+                        if (flatTop)
+                            r.y -= h / 2;
+                        else
+                            r.x += w / 2;
+                    }
+
+                    if (x != 0 || y != 0)
+                    {
+                        if (neighbors.ContainsKey(pos))
+                        {
+                            RuleOnGUI(r, pos, neighbors[pos]);
+                            RuleTooltipOnGUI(r, neighbors[pos]);
+                        }
+                        if (RuleNeighborUpdate(r, tilingRule, neighbors, pos))
+                        {
+                            tile.UpdateRemoteRulePositions();
+                        }
+                    }
+                    else
+                    {
+                        // Center
+                        RuleTransformOnGUI(r, tilingRule.m_RuleTransform);
+                        if (RuleTransformUpdate(r, tilingRule))
+                        {
+                            tile.UpdateRemoteRulePositions();
+                        }
+                    }
+                }
             }
         }
     }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace UnityEditor
 {
@@ -9,65 +6,98 @@ namespace UnityEditor
     [CanEditMultipleObjects]
     public class IsometricRuleTileEditor : RuleTileEditor
     {
-        private static readonly int[, ] s_Arrows =
-        {
-            { 3, 0, 1 },
-            { 6, 9, 2 },
-            { 7, 8, 5 },
-        };
 
-        internal override void RuleMatrixOnGUI(RuleTile ruleTile, Rect rect, RuleTile.TilingRule tilingRule)
+        private static readonly int[] s_Arrows = { 7, 8, 5, 6, -1, 2, 3, 0, 1 };
+
+        public override int GetArrowIndex(Vector3Int position)
+        {
+            return s_Arrows[base.GetArrowIndex(position)];
+        }
+
+        public override Vector2 GetMatrixSize(BoundsInt bounds)
+        {
+            float p = Mathf.Pow(2, 0.5f);
+            float w = (bounds.size.x / p + bounds.size.y / p) * k_SingleLineHeight;
+            return new Vector2(w, w);
+        }
+
+        public override void RuleMatrixOnGUI(RuleTile ruleTile, Rect rect, BoundsInt bounds, RuleTile.TilingRule tilingRule)
         {
             Handles.color = EditorGUIUtility.isProSkin ? new Color(1f, 1f, 1f, 0.2f) : new Color(0f, 0f, 0f, 0.2f);
-            int index = 0;
-            float w = rect.width / 3f;
-            float h = rect.height / 3f;
-            
+            float w = rect.width / bounds.size.x;
+            float h = rect.height / bounds.size.y;
+
             // Grid
-            for (int y = 0; y <= 3; y++)
+            float d = rect.width / (bounds.size.x + bounds.size.y);
+            for (int y = 0; y <= bounds.size.y; y++)
             {
-                float left = rect.xMin + (y * rect.width) / 6;
-                float right = left + rect.width / 2;
-                float bottom = rect.yMin + (y * rect.height) / 6;
-                float top = bottom + rect.height / 2;
-                Handles.DrawLine(new Vector3(left, top), new Vector3(right, bottom));
+                float left = rect.xMin + d * y;
+                float right = rect.xMax - d * (bounds.size.y - y);
+                float top = rect.yMin + d * y;
+                float bottom = rect.yMax - d * (bounds.size.y - y);
+                Handles.DrawLine(new Vector3(left, bottom), new Vector3(right, top));
             }
-            for (int x = 0; x <= 3; x++)
+            for (int x = 0; x <= bounds.size.x; x++)
             {
-                float left = rect.xMin + (x * rect.width) / 6;
-                float right = left + rect.width / 2;
-                float top = rect.yMax - (x * rect.height) / 6;
-                float bottom = top - rect.height / 2;
+                float left = rect.xMin + d * x;
+                float right = rect.xMax - d * (bounds.size.x - x);
+                float top = rect.yMax - d * x;
+                float bottom = rect.yMin + d * (bounds.size.x - x);
                 Handles.DrawLine(new Vector3(left, bottom), new Vector3(right, top));
             }
             Handles.color = Color.white;
 
-            // Icons
-            for (int y = 0; y <= 2; y++)
-            {
-                for (int x = 0; x <= 2; x++)
-                {
-                    Rect r = new Rect(
-                        rect.xMin + ((x + y) * rect.width) / 6, 
-                        rect.yMin + ((2 - x + y) * rect.height) / 6, 
-                        w - 1, h - 1);
-                    if (x != 1 || y != 1)
-                    {
-                        RuleOnGUI(r, s_Arrows[y, x], tilingRule.m_Neighbors[index]);
-                        RuleNeighborUpdate(r, tilingRule, index);
+            var neighbors = tilingRule.GetNeighbors();
 
-                        index++;
+            // Icons
+            float iconSize = rect.width / (bounds.size.x + bounds.size.y);
+            var rect2 = new Rect(rect);
+            rect2.xMin += iconSize * 0.5f;
+            rect2.xMax -= iconSize * 0.5f;
+            rect2.yMin += iconSize * 0.5f;
+            rect2.yMax -= iconSize * 0.5f;
+            iconSize = rect2.width / (bounds.size.x + bounds.size.y - 1);
+            float p = Mathf.Pow(2, 0.5f);
+
+            for (int y = bounds.yMin; y < bounds.yMax; y++)
+            {
+                for (int x = bounds.xMin; x < bounds.xMax; x++)
+                {
+                    Vector3Int pos = new Vector3Int(x, y, 0);
+                    Vector3Int offset = new Vector3Int(pos.x - bounds.xMin, pos.y - bounds.yMin, 0);
+                    Rect r = new Rect(
+                        rect2.xMin + iconSize * (offset.x + offset.y) - iconSize * 0.5f + d * 0.5f,
+                        rect2.yMin + iconSize * (offset.y - offset.x) + rect2.height - bounds.size.y * iconSize,
+                        iconSize, iconSize
+                    );
+                    Vector2 center = r.center;
+                    r.size *= p;
+                    r.center = center;
+                    if (x != 0 || y != 0)
+                    {
+                        if (neighbors.ContainsKey(pos))
+                        {
+                            RuleOnGUI(r, pos, neighbors[pos]);
+                            RuleTooltipOnGUI(r, neighbors[pos]);
+                        }
+                        if (RuleNeighborUpdate(r, tilingRule, neighbors, pos))
+                        {
+                            tile.UpdateRemoteRulePositions();
+                        }
                     }
                     else
                     {
                         RuleTransformOnGUI(r, tilingRule.m_RuleTransform);
-                        RuleTransformUpdate(r, tilingRule);
+                        if (RuleTransformUpdate(r, tilingRule))
+                        {
+                            tile.UpdateRemoteRulePositions();
+                        }
                     }
                 }
             }
         }
 
-        internal override bool ContainsMousePosition(Rect rect)
+        public override bool ContainsMousePosition(Rect rect)
         {
             var center = rect.center;
             var halfWidth = rect.width / 2;
