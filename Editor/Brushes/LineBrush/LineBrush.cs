@@ -28,6 +28,12 @@ namespace UnityEditor.Tilemaps
         public Vector3Int lineStart = Vector3Int.zero;
 
         /// <summary>
+        /// Indicates whether the brush is currently
+        /// moving something using the "Move selection with active brush" tool.
+        /// </summary>
+        public bool IsMoving { get; private set; }
+
+        /// <summary>
         /// Paints tiles and GameObjects into a given position within the selected layers.
         /// The LineBrush overrides this to provide line painting functionality.
         /// The first paint action sets the starting point of the line.
@@ -54,11 +60,27 @@ namespace UnityEditor.Tilemaps
                 }
                 lineStartActive = false;
             }
+            else if (IsMoving)
+            {
+                base.Paint(grid, brushTarget, position);
+            }
             else
             {
                 lineStart = position;
                 lineStartActive = true;
             }
+        }
+
+        public override void MoveStart(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
+        {
+            base.MoveStart(gridLayout, brushTarget, position);
+            IsMoving = true;
+        }
+
+        public override void MoveEnd(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
+        {
+            base.MoveEnd(gridLayout, brushTarget, position);
+            IsMoving = false;
         }
 
         /// <summary>
