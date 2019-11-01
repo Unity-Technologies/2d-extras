@@ -135,18 +135,14 @@ namespace UnityEngine
         /// <returns>A random transform matrix.</returns>
         protected override Matrix4x4 ApplyRandomTransform(TilingRule.Transform type, Matrix4x4 original, float perlinScale, Vector3Int position)
         {
-            float perlin = GetPerlinValue(position, perlinScale, 200000f);
             switch (type)
             {
-                case TilingRule.Transform.MirrorX:
-                    return original * Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(perlin < 0.5 ? 1f : -1f, 1f, 1f));
-                case TilingRule.Transform.MirrorY:
-                    return original * Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1f, perlin < 0.5 ? 1f : -1f, 1f));
                 case TilingRule.Transform.Rotated:
+                    float perlin = GetPerlinValue(position, perlinScale, 200000f);
                     int angle = Mathf.Clamp(Mathf.FloorToInt(perlin * neighborCount), 0, neighborCount - 1) * (360 / neighborCount);
                     return Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), Vector3.one);
             }
-            return original;
+            return base.ApplyRandomTransform(type, original, perlinScale, position);
         }
 
         /// <summary>
