@@ -257,18 +257,28 @@ namespace UnityEngine
                         // Check rule against rotations of 0, 90, 180, 270
                         if (rule.m_RuleTransform == TilingRule.Transform.Rotated)
                         {
-                            for (int angle = 0; angle < 360; angle += m_RotationAngle)
+                            for (int angle = m_RotationAngle; angle < 360; angle += m_RotationAngle)
                             {
                                 positions[GetRotatedPosition(position, angle)] = true;
                             }
                         }
-
                         // Check rule against x-axis, y-axis mirror
-                        positions[GetMirroredPosition(
-                            position,
-                            rule.m_RuleTransform == TilingRule.Transform.MirrorX || rule.m_RuleTransform == TilingRule.Transform.MirrorXY,
-                            rule.m_RuleTransform == TilingRule.Transform.MirrorY || rule.m_RuleTransform == TilingRule.Transform.MirrorXY)
-                        ] = true;
+                        else if (rule.m_RuleTransform == TilingRule.Transform.MirrorXY)
+                        {
+                            positions[GetMirroredPosition(position, true, true)] = true;
+                            positions[GetMirroredPosition(position, true, false)] = true;
+                            positions[GetMirroredPosition(position, false, true)] = true;
+                        }
+                        // Check rule against x-axis mirror
+                        else if (rule.m_RuleTransform == TilingRule.Transform.MirrorX)
+                        {
+                            positions[GetMirroredPosition(position, true, false)] = true;
+                        }
+                        // Check rule against y-axis mirror
+                        else if (rule.m_RuleTransform == TilingRule.Transform.MirrorY)
+                        {
+                            positions[GetMirroredPosition(position, false, true)] = true;
+                        }
                     }
                 }
             }
@@ -471,6 +481,7 @@ namespace UnityEngine
                     }
                 }
             }
+            // Check rule against x-axis, y-axis mirror
             else if (rule.m_RuleTransform == TilingRule.Transform.MirrorXY)
             {
                 if (RuleMatches(rule, position, tilemap, true, true))
