@@ -32,16 +32,16 @@ namespace UnityEditor
             for (int y = 0; y <= bounds.size.y; y++)
             {
                 float left = rect.xMin + d * y;
-                float right = rect.xMax - d * (bounds.size.y - y);
                 float top = rect.yMin + d * y;
+                float right = rect.xMax - d * (bounds.size.y - y);
                 float bottom = rect.yMax - d * (bounds.size.y - y);
                 Handles.DrawLine(new Vector3(left, bottom), new Vector3(right, top));
             }
             for (int x = 0; x <= bounds.size.x; x++)
             {
                 float left = rect.xMin + d * x;
-                float right = rect.xMax - d * (bounds.size.x - x);
                 float top = rect.yMax - d * x;
+                float right = rect.xMax - d * (bounds.size.x - x);
                 float bottom = rect.yMin + d * (bounds.size.x - x);
                 Handles.DrawLine(new Vector3(left, bottom), new Vector3(right, top));
             }
@@ -53,8 +53,8 @@ namespace UnityEditor
             float iconSize = rect.width / (bounds.size.x + bounds.size.y);
             var rect2 = new Rect(rect);
             rect2.xMin += iconSize * 0.5f;
-            rect2.xMax -= iconSize * 0.5f;
             rect2.yMin += iconSize * 0.5f;
+            rect2.xMax -= iconSize * 0.5f;
             rect2.yMax -= iconSize * 0.5f;
             iconSize = rect2.width / (bounds.size.x + bounds.size.y - 1);
             float p = Mathf.Pow(2, 0.5f);

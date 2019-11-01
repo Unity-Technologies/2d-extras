@@ -25,12 +25,6 @@ namespace UnityEngine
     public class HexagonalRuleTile : RuleTile
     {
 
-        /// <summary>
-        /// Returns the number of neighbors a Rule Tile can have.
-        /// </summary>
-        public int neighborCount => 6;
-
-        public override int m_RotationAngle => 60;
         public override Vector3Int[] m_NearbyNeighborPositions => new Vector3Int[] {
             new Vector3Int(-1, 1, 0),
             new Vector3Int(0, 1, 0),
@@ -123,26 +117,6 @@ namespace UnityEngine
                 location.x -= 1;
 
             return location;
-        }
-
-        /// <summary>
-        /// Returns a random transform matrix given the random transform rule.
-        /// </summary>
-        /// <param name="type">Random transform rule.</param>
-        /// <param name="original">The original transform matrix.</param>
-        /// <param name="perlinScale">The Perlin Scale factor of the Tile.</param>
-        /// <param name="position">Position of the Tile on the Tilemap.</param>
-        /// <returns>A random transform matrix.</returns>
-        protected override Matrix4x4 ApplyRandomTransform(TilingRule.Transform type, Matrix4x4 original, float perlinScale, Vector3Int position)
-        {
-            switch (type)
-            {
-                case TilingRule.Transform.Rotated:
-                    float perlin = GetPerlinValue(position, perlinScale, 200000f);
-                    int angle = Mathf.Clamp(Mathf.FloorToInt(perlin * neighborCount), 0, neighborCount - 1) * (360 / neighborCount);
-                    return Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), Vector3.one);
-            }
-            return base.ApplyRandomTransform(type, original, perlinScale, position);
         }
 
         /// <summary>

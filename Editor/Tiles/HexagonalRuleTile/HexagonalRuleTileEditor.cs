@@ -56,34 +56,14 @@ namespace UnityEditor
                     break;
                 }
             }
-            if (extendNeighbor)
-            {
-                bounds.xMin--;
-                bounds.yMin--;
-                bounds.xMax++;
-                bounds.yMax++;
-            }
-            bounds.xMin = Mathf.Min(bounds.xMin, -1);
-            bounds.yMin = Mathf.Min(bounds.yMin, -1);
-            bounds.xMax = Mathf.Max(bounds.xMax, 2);
-            bounds.yMax = Mathf.Max(bounds.yMax, 2);
-            return bounds;
+            return base.GetRuleGUIBounds(bounds, rule);
         }
 
         public override Vector2 GetMatrixSize(BoundsInt bounds)
         {
             var hexTile = tile as HexagonalRuleTile;
             Vector2 size = base.GetMatrixSize(bounds);
-
-            if (hexTile.m_FlatTop)
-            {
-                float x = size.x;
-                float y = size.y;
-                size.x = y;
-                size.y = x;
-            }
-
-            return size;
+            return hexTile.m_FlatTop ? new Vector2(size.y, size.x) : size;
         }
 
         public override void RuleMatrixOnGUI(RuleTile tile, Rect rect, BoundsInt bounds, RuleTile.TilingRule tilingRule)
@@ -158,12 +138,8 @@ namespace UnityEditor
                 {
                     Vector3Int pos = new Vector3Int(x, y, 0);
                     Vector2 offset = new Vector2(x - bounds.xMin, -y + bounds.yMax - 1);
-                    Rect r;
-
-                    if (flatTop)
-                        r = new Rect(rect.xMin + offset.y * w, rect.yMax - offset.x * h - h, w - 1, h - 1);
-                    else
-                        r = new Rect(rect.xMin + offset.x * w, rect.yMin + offset.y * h, w - 1, h - 1);
+                    Rect r = flatTop ? new Rect(rect.xMin + offset.y * w, rect.yMax - offset.x * h - h, w - 1, h - 1)
+                        : new Rect(rect.xMin + offset.x * w, rect.yMin + offset.y * h, w - 1, h - 1);
 
                     if (y % 2 != 0)
                     {
@@ -187,7 +163,6 @@ namespace UnityEditor
                     }
                     else
                     {
-                        // Center
                         RuleTransformOnGUI(r, tilingRule.m_RuleTransform);
                         if (RuleTransformUpdate(r, tilingRule))
                         {
