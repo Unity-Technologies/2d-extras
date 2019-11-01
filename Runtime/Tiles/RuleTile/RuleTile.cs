@@ -195,7 +195,11 @@ namespace UnityEngine
                 /// <summary>
                 /// The Rule Tile will mirror in the Y axis and match its neighbors.
                 /// </summary>
-                MirrorY
+                MirrorY,
+                /// <summary>
+                /// The Rule Tile will mirror in the X or Y axis and match its neighbors.
+                /// </summary>
+                MirrorXY
             }
 
             /// <summary>
@@ -262,8 +266,8 @@ namespace UnityEngine
                         // Check rule against x-axis, y-axis mirror
                         positions[GetMirroredPosition(
                             position,
-                            rule.m_RuleTransform == TilingRule.Transform.MirrorX,
-                            rule.m_RuleTransform == TilingRule.Transform.MirrorY)
+                            rule.m_RuleTransform == TilingRule.Transform.MirrorX || rule.m_RuleTransform == TilingRule.Transform.MirrorXY,
+                            rule.m_RuleTransform == TilingRule.Transform.MirrorY || rule.m_RuleTransform == TilingRule.Transform.MirrorXY)
                         ] = true;
                     }
                 }
@@ -467,6 +471,24 @@ namespace UnityEngine
                     }
                 }
             }
+            else if (rule.m_RuleTransform == TilingRule.Transform.MirrorXY)
+            {
+                if (RuleMatches(rule, position, tilemap, true, true))
+                {
+                    transform = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(-1f, -1f, 1f));
+                    return true;
+                }
+                if (RuleMatches(rule, position, tilemap, true, false))
+                {
+                    transform = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(-1f, 1f, 1f));
+                    return true;
+                }
+                if (RuleMatches(rule, position, tilemap, false, true))
+                {
+                    transform = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1f, -1f, 1f));
+                    return true;
+                }
+            }
             // Check rule against x-axis mirror
             else if (rule.m_RuleTransform == TilingRule.Transform.MirrorX)
             {
@@ -502,6 +524,8 @@ namespace UnityEngine
             float perlin = GetPerlinValue(position, perlinScale, 200000f);
             switch (type)
             {
+                case TilingRule.Transform.MirrorXY:
+                    return original * Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(Math.Abs(perlin - 0.5) > 0.25 ? 1f : -1f, perlin < 0.5 ? 1f : -1f, 1f));
                 case TilingRule.Transform.MirrorX:
                     return original * Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(perlin < 0.5 ? 1f : -1f, 1f, 1f));
                 case TilingRule.Transform.MirrorY:
