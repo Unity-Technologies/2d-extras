@@ -3,6 +3,19 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.3.0] - 2019-11-01
+- [RuleTile] changed from using index to using position.
+- [RuleTile] Additional storage rule position.
+- [RuleTile] Delete DontCare rule.
+- [RuleTile] Rule list increased Extend Neighbor toggle. When selected, it will increase the rule range that can be set.
+- [RuleTile] No longer fixed to checking around 8 rules.
+- [RuleTile] RefreshTile() will refresh affected remote Tiles.
+- [RuleTile] Delete GetMatchingNeighboringTiles(), no longer get nearby Tiles in advance, the performance is affected. (may be changed to cache later)
+- [IsometricRuleTile] Rewrite.
+- [HexagonalRuleTile] Rewrite.
+- [LineBrush] Fix for Tiles disappear after selection and drag with LineBrush
+- [RuleTile] Add MirrorXY Transform Rule
+
 ## [1.2.0] - 2019-10-17
 ### Changed
 - [PrefabBrush] Erase GameObjects at target position before painting
