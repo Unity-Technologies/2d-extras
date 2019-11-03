@@ -83,7 +83,7 @@ namespace UnityEditor
             m_ReorderableList.drawHeaderCallback = OnDrawHeader;
             m_ReorderableList.drawElementCallback = OnDrawElement;
             m_ReorderableList.elementHeightCallback = GetElementHeight;
-            m_ReorderableList.onReorderCallback = ListUpdated;
+            m_ReorderableList.onChangedCallback = ListUpdated;
             m_ReorderableList.onAddCallback = OnAddElement;
         }
 
