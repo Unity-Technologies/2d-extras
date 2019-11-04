@@ -43,11 +43,8 @@ namespace UnityEngine
         /// </summary>
         public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
 
-        /// <summary>
-        /// Returns the number of neighbors a Rule Tile can have.
-        /// </summary>
-        public virtual int m_NeighborCount => m_NearbyNeighborPositions.Length; // 8
-        public virtual int m_RotationAngle => 360 / m_NeighborCount; // 90
+        public virtual int m_RotationAngle => 90;
+        public int m_RotationCount => 360 / m_RotationAngle;
         public virtual Vector3Int[] m_NearbyNeighborPositions => new Vector3Int[] {
             new Vector3Int(-1, 1, 0),
             new Vector3Int(0, 1, 0),
@@ -546,7 +543,7 @@ namespace UnityEngine
                 case TilingRule.Transform.MirrorY:
                     return original * Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1f, perlin < 0.5 ? 1f : -1f, 1f));
                 case TilingRule.Transform.Rotated:
-                    int angle = Mathf.Clamp(Mathf.FloorToInt(perlin * m_NeighborCount), 0, m_NeighborCount - 1) * m_RotationAngle;
+                    int angle = Mathf.Clamp(Mathf.FloorToInt(perlin * m_RotationCount), 0, m_RotationCount - 1) * m_RotationAngle;
                     return Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), Vector3.one);
             }
             return original;

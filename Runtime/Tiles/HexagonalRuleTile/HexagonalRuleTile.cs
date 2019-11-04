@@ -25,6 +25,7 @@ namespace UnityEngine
     public class HexagonalRuleTile : RuleTile
     {
 
+        public override int m_RotationAngle => 60;
         public override Vector3Int[] m_NearbyNeighborPositions => new Vector3Int[] {
             new Vector3Int(-1, 1, 0),
             new Vector3Int(0, 1, 0),
