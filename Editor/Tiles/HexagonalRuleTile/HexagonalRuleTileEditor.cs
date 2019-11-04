@@ -158,7 +158,7 @@ namespace UnityEditor
                         }
                         if (RuleNeighborUpdate(r, tilingRule, neighbors, pos))
                         {
-                            tile.UpdateRemoteRulePositions();
+                            tile.UpdateNeighborPositions();
                         }
                     }
                     else
@@ -166,7 +166,7 @@ namespace UnityEditor
                         RuleTransformOnGUI(r, tilingRule.m_RuleTransform);
                         if (RuleTransformUpdate(r, tilingRule))
                         {
-                            tile.UpdateRemoteRulePositions();
+                            tile.UpdateNeighborPositions();
                         }
                     }
                 }

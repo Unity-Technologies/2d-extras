@@ -26,18 +26,6 @@ namespace UnityEngine
     {
 
         public override int m_RotationAngle => 60;
-        public override Vector3Int[] m_NearbyNeighborPositions => new Vector3Int[] {
-            new Vector3Int(-1, 1, 0),
-            new Vector3Int(0, 1, 0),
-            new Vector3Int(-1, 0, 0),
-            new Vector3Int(1, 0, 0),
-            new Vector3Int(-1, -1, 0),
-            new Vector3Int(0, -1, 0),
-        };
-        public override bool IsNearbyNeighborPosition(Vector3Int position)
-        {
-            return (position.x >= -1 && position.x <= 0 && position.y >= -1 && position.y <= 1) || position == Vector3Int.right;
-        }
 
         private static float[] m_CosAngleArr1 = {
             Mathf.Cos(0 * Mathf.Deg2Rad),
