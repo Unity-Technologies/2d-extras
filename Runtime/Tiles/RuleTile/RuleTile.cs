@@ -229,6 +229,8 @@ namespace UnityEngine
 
         public void UpdateNeighborPositions()
         {
+            m_CacheTilemapsNeighborPositions.Clear();
+
             HashSet<Vector3Int> positions = m_NeighborPositions;
             positions.Clear();
 
