@@ -83,7 +83,7 @@ namespace UnityEditor
             m_ReorderableList.drawHeaderCallback = OnDrawHeader;
             m_ReorderableList.drawElementCallback = OnDrawElement;
             m_ReorderableList.elementHeightCallback = GetElementHeight;
-            m_ReorderableList.onReorderCallback = ListUpdated;
+            m_ReorderableList.onChangedCallback = ListUpdated;
             m_ReorderableList.onAddCallback = OnAddElement;
         }
 
@@ -424,7 +424,7 @@ namespace UnityEditor
                         }
                         if (RuleNeighborUpdate(r, tilingRule, neighbors, pos))
                         {
-                            tile.UpdateRemoteRulePositions();
+                            tile.UpdateNeighborPositions();
                         }
                     }
                     else
@@ -432,7 +432,7 @@ namespace UnityEditor
                         RuleTransformOnGUI(r, tilingRule.m_RuleTransform);
                         if (RuleTransformUpdate(r, tilingRule))
                         {
-                            tile.UpdateRemoteRulePositions();
+                            tile.UpdateNeighborPositions();
                         }
                     }
                 }

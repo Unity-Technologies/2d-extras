@@ -44,20 +44,7 @@ namespace UnityEngine
         public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
 
         public virtual int m_RotationAngle => 90;
-        public virtual Vector3Int[] m_NearbyNeighborPositions => new Vector3Int[] {
-            new Vector3Int(-1, 1, 0),
-            new Vector3Int(0, 1, 0),
-            new Vector3Int(1, 1, 0),
-            new Vector3Int(-1, 0, 0),
-            new Vector3Int(1, 0, 0),
-            new Vector3Int(-1, -1, 0),
-            new Vector3Int(0, -1, 0),
-            new Vector3Int(1, -1, 0),
-        };
-        public virtual bool IsNearbyNeighborPosition(Vector3Int position)
-        {
-            return position.x >= -1 && position.x <= 1 && position.y >= -1 && position.y <= 1;
-        }
+        public int m_RotationCount => 360 / m_RotationAngle;
 
         /// <summary>
         /// The data structure holding the Rule information for matching Rule Tiles with
@@ -227,54 +214,60 @@ namespace UnityEngine
         /// </summary>
         [HideInInspector] public List<TilingRule> m_TilingRules = new List<RuleTile.TilingRule>();
 
-        public List<Vector3Int> remoteNeighborPositions
+        public HashSet<Vector3Int> neighborPositions
         {
             get
             {
-                if (!m_RemoteNeighborPositionsInit)
-                    UpdateRemoteRulePositions();
+                if (m_NeighborPositions.Count == 0)
+                    UpdateNeighborPositions();
 
-                return m_RemoteNeighborPositions;
+                return m_NeighborPositions;
             }
         }
 
-        private List<Vector3Int> m_RemoteNeighborPositions;
-        private bool m_RemoteNeighborPositionsInit;
+        private HashSet<Vector3Int> m_NeighborPositions = new HashSet<Vector3Int>();
 
-        public void UpdateRemoteRulePositions()
+        public void UpdateNeighborPositions()
         {
-            Dictionary<Vector3Int, bool> positions = new Dictionary<Vector3Int, bool>();
+            m_CacheTilemapsNeighborPositions.Clear();
+
+            HashSet<Vector3Int> positions = m_NeighborPositions;
+            positions.Clear();
 
             foreach (TilingRule rule in m_TilingRules)
             {
                 foreach (var neighbor in rule.GetNeighbors())
                 {
                     Vector3Int position = neighbor.Key;
-                    if (!IsNearbyNeighborPosition(position))
+                    positions.Add(position);
+
+                    // Check rule against rotations of 0, 90, 180, 270
+                    if (rule.m_RuleTransform == TilingRule.Transform.Rotated)
                     {
-                        positions[position] = true;
-
-                        // Check rule against rotations of 0, 90, 180, 270
-                        if (rule.m_RuleTransform == TilingRule.Transform.Rotated)
+                        for (int angle = m_RotationAngle; angle < 360; angle += m_RotationAngle)
                         {
-                            for (int angle = 0; angle < 360; angle += m_RotationAngle)
-                            {
-                                positions[GetRotatedPosition(position, angle)] = true;
-                            }
+                            positions.Add(GetRotatedPosition(position, angle));
                         }
-
-                        // Check rule against x-axis, y-axis mirror
-                        positions[GetMirroredPosition(
-                            position,
-                            rule.m_RuleTransform == TilingRule.Transform.MirrorX || rule.m_RuleTransform == TilingRule.Transform.MirrorXY,
-                            rule.m_RuleTransform == TilingRule.Transform.MirrorY || rule.m_RuleTransform == TilingRule.Transform.MirrorXY)
-                        ] = true;
+                    }
+                    // Check rule against x-axis, y-axis mirror
+                    else if (rule.m_RuleTransform == TilingRule.Transform.MirrorXY)
+                    {
+                        positions.Add(GetMirroredPosition(position, true, true));
+                        positions.Add(GetMirroredPosition(position, true, false));
+                        positions.Add(GetMirroredPosition(position, false, true));
+                    }
+                    // Check rule against x-axis mirror
+                    else if (rule.m_RuleTransform == TilingRule.Transform.MirrorX)
+                    {
+                        positions.Add(GetMirroredPosition(position, true, false));
+                    }
+                    // Check rule against y-axis mirror
+                    else if (rule.m_RuleTransform == TilingRule.Transform.MirrorY)
+                    {
+                        positions.Add(GetMirroredPosition(position, false, true));
                     }
                 }
             }
-
-            m_RemoteNeighborPositions = positions.Keys.ToList();
-            m_RemoteNeighborPositionsInit = true;
         }
 
         /// <summary>
@@ -364,6 +357,70 @@ namespace UnityEngine
             return Mathf.PerlinNoise((position.x + offset) * scale, (position.y + offset) * scale);
         }
 
+        static Dictionary<Tilemap, KeyValuePair<HashSet<TileBase>, HashSet<Vector3Int>>> m_CacheTilemapsNeighborPositions = new Dictionary<Tilemap, KeyValuePair<HashSet<TileBase>, HashSet<Vector3Int>>>();
+        static TileBase[] m_AllocatedUsedTileArr = new TileBase[0];
+
+        static bool IsTilemapUsedTilesChange(Tilemap tilemap)
+        {
+            if (!m_CacheTilemapsNeighborPositions.ContainsKey(tilemap))
+                return true;
+
+            var oldUsedTiles = m_CacheTilemapsNeighborPositions[tilemap].Key;
+            int newUsedTilesCount = tilemap.GetUsedTilesCount();
+
+            if (newUsedTilesCount != oldUsedTiles.Count)
+                return true;
+
+            if (m_AllocatedUsedTileArr.Length < newUsedTilesCount)
+                m_AllocatedUsedTileArr = new TileBase[newUsedTilesCount];
+
+            tilemap.GetUsedTilesNonAlloc(m_AllocatedUsedTileArr);
+
+            for (int i = 0; i < newUsedTilesCount; i++)
+            {
+                TileBase newUsedTile = m_AllocatedUsedTileArr[i];
+                if (!oldUsedTiles.Contains(newUsedTile))
+                    return true;
+            }
+
+            return false;
+        }
+        static void CachingTilemapNeighborPositions(Tilemap tilemap)
+        {
+            int usedTileCount = tilemap.GetUsedTilesCount();
+            HashSet<TileBase> usedTiles = new HashSet<TileBase>();
+            HashSet<Vector3Int> neighborPositions = new HashSet<Vector3Int>();
+
+            if (m_AllocatedUsedTileArr.Length < usedTileCount)
+                m_AllocatedUsedTileArr = new TileBase[usedTileCount];
+
+            tilemap.GetUsedTilesNonAlloc(m_AllocatedUsedTileArr);
+
+            for (int i = 0; i < usedTileCount; i++)
+            {
+                TileBase tile = m_AllocatedUsedTileArr[i];
+                usedTiles.Add(tile);
+                RuleTile ruleTile = null;
+
+                if (tile is RuleTile)
+                    ruleTile = tile as RuleTile;
+                else if (tile is RuleOverrideTile)
+                    ruleTile = (tile as RuleOverrideTile).m_Tile;
+
+                if (ruleTile)
+                    foreach (Vector3Int neighborPosition in ruleTile.neighborPositions)
+                        neighborPositions.Add(neighborPosition);
+            }
+
+            m_CacheTilemapsNeighborPositions[tilemap] = new KeyValuePair<HashSet<TileBase>, HashSet<Vector3Int>>(usedTiles, neighborPositions);
+        }
+        static void ReleaseDestroyedTilemapCacheData()
+        {
+            m_CacheTilemapsNeighborPositions = m_CacheTilemapsNeighborPositions
+                .Where(data => data.Key != null)
+                .ToDictionary(data => data.Key, data => data.Value);
+        }
+
         /// <summary>
         /// Retrieves any tile animation data from the scripted tile.
         /// </summary>
@@ -398,49 +455,29 @@ namespace UnityEngine
         public override void RefreshTile(Vector3Int location, ITilemap tilemap)
         {
             base.RefreshTile(location, tilemap);
-            RefreshNearTiles(location, tilemap);
-            RefreshRemoteTiles(location, tilemap);
-        }
 
-        public void RefreshNearTiles(Vector3Int location, ITilemap tilemap)
-        {
-            foreach (Vector3Int offset in m_NearbyNeighborPositions)
-            {
-                base.RefreshTile(location + offset, tilemap);
-            }
-        }
-
-        private TileBase[] m_CacheUsedTiles = new TileBase[0];
-        public void RefreshRemoteTiles(Vector3Int location, ITilemap tilemap)
-        {
             Tilemap tilemap_2 = tilemap.GetComponent<Tilemap>();
 
-            if (!tilemap_2)
-                return;
+            ReleaseDestroyedTilemapCacheData(); // Prevent memory leak
 
-            int usedTilesCount = tilemap_2.GetUsedTilesCount();
-            if (m_CacheUsedTiles.Length < usedTilesCount)
-                m_CacheUsedTiles = new TileBase[usedTilesCount];
+            if (IsTilemapUsedTilesChange(tilemap_2))
+                CachingTilemapNeighborPositions(tilemap_2);
 
-            tilemap_2.GetUsedTilesNonAlloc(m_CacheUsedTiles);
-
-            foreach (TileBase usedTile in m_CacheUsedTiles)
+            HashSet<Vector3Int> neighborPositions = m_CacheTilemapsNeighborPositions[tilemap_2].Value;
+            foreach (Vector3Int offset in neighborPositions)
             {
-                if (!usedTile)
-                    break;
+                Vector3Int position = GetOffsetPositionReverse(location, offset);
+                TileBase tile = tilemap_2.GetTile(position);
+                RuleTile ruleTile = null;
 
-                if (!(usedTile is RuleTile))
-                    continue;
+                if (tile is RuleTile)
+                    ruleTile = tile as RuleTile;
+                else if (tile is RuleOverrideTile)
+                    ruleTile = (tile as RuleOverrideTile).m_Tile;
 
-                RuleTile tile = usedTile as RuleTile;
-                foreach (Vector3Int offset in tile.remoteNeighborPositions)
-                {
-                    Vector3Int remotePosition = GetOffsetPositionReverse(location, offset);
-                    if (tilemap.GetTile(remotePosition) == tile)
-                    {
-                        base.RefreshTile(remotePosition, tilemap);
-                    }
-                }
+                if (ruleTile)
+                    if (ruleTile.neighborPositions.Contains(offset))
+                        base.RefreshTile(position, tilemap);
             }
         }
 
@@ -471,6 +508,7 @@ namespace UnityEngine
                     }
                 }
             }
+            // Check rule against x-axis, y-axis mirror
             else if (rule.m_RuleTransform == TilingRule.Transform.MirrorXY)
             {
                 if (RuleMatches(rule, position, tilemap, true, true))
@@ -531,7 +569,7 @@ namespace UnityEngine
                 case TilingRule.Transform.MirrorY:
                     return original * Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1f, perlin < 0.5 ? 1f : -1f, 1f));
                 case TilingRule.Transform.Rotated:
-                    int angle = Mathf.Clamp(Mathf.FloorToInt(perlin * 4), 0, 3) * 90;
+                    int angle = Mathf.Clamp(Mathf.FloorToInt(perlin * m_RotationCount), 0, m_RotationCount - 1) * m_RotationAngle;
                     return Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), Vector3.one);
             }
             return original;
