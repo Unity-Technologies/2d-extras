@@ -3,7 +3,20 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.3.1] - 2019-11-06
+### Changed
+- [RuleTile] Simplified
+- [RuleTile] Caching all RuleTile neighbor positions for Tilemap to speedup refresh affected tiles
+
+### Fixed
+- [RuleTile] Fix remote positions missing of MirrorXY (#148)
+- [HexagonalRuleTile] Fix ApplyRandomTransform() of HexagonalRuleTile missing MirrorXY case
+- [RuleOverrideTile] Fix RuleOverrideTile does not refresh when add/remove rule
+- [RuleTile] Fix random rotation calculation mistake
+- [RuleTile] Fix cache data will not update when rule change
+
 ## [1.3.0] - 2019-11-01
+### Changed
 - [RuleTile] changed from using index to using position.
 - [RuleTile] Additional storage rule position.
 - [RuleTile] Delete DontCare rule.
