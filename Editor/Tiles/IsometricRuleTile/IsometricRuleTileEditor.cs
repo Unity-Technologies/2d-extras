@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace UnityEditor
 {
@@ -60,8 +60,8 @@ namespace UnityEditor
                     Vector3Int pos = new Vector3Int(x, y, 0);
                     Vector3Int offset = new Vector3Int(pos.x - bounds.xMin, pos.y - bounds.yMin, 0);
                     Rect r = new Rect(
-                        rect.xMin + rect.size.x + iconSize * (offset.x - offset.y - 0.5f - bounds.size.x),
-                        rect.yMin + rect.size.y - iconSize * (offset.x + offset.y + 1.5f),
+                        rect.xMin + rect.size.x - iconSize * (offset.y - offset.x + 0.5f + bounds.size.x),
+                        rect.yMin + rect.size.y - iconSize * (offset.y + offset.x + 1.5f),
                         iconSize, iconSize
                     );
                     Vector2 center = r.center;
