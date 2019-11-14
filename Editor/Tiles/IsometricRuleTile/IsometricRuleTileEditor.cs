@@ -7,7 +7,7 @@ namespace UnityEditor
     public class IsometricRuleTileEditor : RuleTileEditor
     {
 
-        private static readonly int[] s_Arrows = { 7, 8, 5, 6, -1, 2, 3, 0, 1 };
+        private static readonly int[] s_Arrows = { 3, 0, 1, 6, -1, 2, 7, 8, 5 };
 
         public override int GetArrowIndex(Vector3Int position)
         {
@@ -50,14 +50,8 @@ namespace UnityEditor
             var neighbors = tilingRule.GetNeighbors();
 
             // Icons
-            float iconSize = rect.width / (bounds.size.x + bounds.size.y);
-            var rect2 = new Rect(rect);
-            rect2.xMin += iconSize * 0.5f;
-            rect2.yMin += iconSize * 0.5f;
-            rect2.xMax -= iconSize * 0.5f;
-            rect2.yMax -= iconSize * 0.5f;
-            iconSize = rect2.width / (bounds.size.x + bounds.size.y - 1);
-            float p = Mathf.Pow(2, 0.5f);
+            float iconSize = (rect.width - d) / (bounds.size.x + bounds.size.y - 1);
+            float iconScale = Mathf.Pow(2, 0.5f);
 
             for (int y = bounds.yMin; y < bounds.yMax; y++)
             {
@@ -66,12 +60,12 @@ namespace UnityEditor
                     Vector3Int pos = new Vector3Int(x, y, 0);
                     Vector3Int offset = new Vector3Int(pos.x - bounds.xMin, pos.y - bounds.yMin, 0);
                     Rect r = new Rect(
-                        rect2.xMin + iconSize * (offset.x + offset.y) - iconSize * 0.5f + d * 0.5f,
-                        rect2.yMin + iconSize * (offset.y - offset.x) + rect2.height - bounds.size.y * iconSize,
+                        rect.xMin + rect.size.x - iconSize * (offset.y - offset.x + 0.5f + bounds.size.x),
+                        rect.yMin + rect.size.y - iconSize * (offset.y + offset.x + 1.5f),
                         iconSize, iconSize
                     );
                     Vector2 center = r.center;
-                    r.size *= p;
+                    r.size *= iconScale;
                     r.center = center;
                     if (x != 0 || y != 0)
                     {
