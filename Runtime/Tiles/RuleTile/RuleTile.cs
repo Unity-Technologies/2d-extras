@@ -281,6 +281,8 @@ namespace UnityEngine
         {
             if (instantiatedGameObject != null)
             {
+                Tilemap tmpMap = tilemap.GetComponent<Tilemap>();
+                
                 var iden = Matrix4x4.identity;
                 Quaternion gameObjectQuaternion = new Quaternion();
 
@@ -289,15 +291,17 @@ namespace UnityEngine
                     Matrix4x4 transform = iden;
                     if (RuleMatches(rule, location, tilemap, ref transform))
                     {
+                        transform = tmpMap.orientationMatrix * transform;
+                        
                         // Converts the tile's rotation matrix to a quaternion to be used by the instantiated Game Object
                         gameObjectQuaternion = Quaternion.LookRotation(new Vector3(transform.m02, transform.m12, transform.m22), new Vector3(transform.m01, transform.m11, transform.m21));
                         break;
                     }
                 }
-
-                Tilemap tmpMap = tilemap.GetComponent<Tilemap>();
-                instantiatedGameObject.transform.position = tmpMap.LocalToWorld(tmpMap.CellToLocalInterpolated(location + tmpMap.tileAnchor));
-                instantiatedGameObject.transform.rotation = gameObjectQuaternion;
+                
+                instantiatedGameObject.transform.localPosition = tmpMap.CellToLocalInterpolated(location + tmpMap.tileAnchor) + tmpMap.orientationMatrix.MultiplyPoint3x4(Vector3.zero);
+                instantiatedGameObject.transform.localRotation = gameObjectQuaternion;
+                instantiatedGameObject.transform.localScale = tmpMap.orientationMatrix.lossyScale;
             }
 
             return true;
