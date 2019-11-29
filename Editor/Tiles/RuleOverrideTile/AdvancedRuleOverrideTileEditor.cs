@@ -47,47 +47,44 @@ namespace UnityEditor
             GUI.Label(rect, "Overrides", EditorStyles.label);
         }
 
-        void DrawOverrideToggle(Rect rect, RuleTile.TilingRule originalRule, RuleTile.TilingRule overrideRule)
-        {
-            EditorGUI.BeginChangeCheck();
-
-            bool enabled = EditorGUI.Toggle(new Rect(rect.xMin, rect.yMin, rect.width, k_SingleLineHeight), overrideRule != null);
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                if (enabled)
-                    overrideTile[originalRule] = originalRule;
-                else
-                    overrideTile[originalRule] = null;
-            }
-        }
-
         void DrawElement(Rect rect, int index, bool selected, bool focused)
         {
             RuleTile.TilingRule originalRule = m_Rules[index].Key;
             RuleTile.TilingRule overrideRule = m_Rules[index].Value;
 
-            float matrixWidth = k_DefaultElementHeight;
+            DrawToggleInternal(new Rect(rect.xMin, rect.yMin, 16, rect.height));
+            DrawRuleInternal(new Rect(rect.xMin + 16, rect.yMin, rect.width - 16, rect.height));
 
-            float xMax = rect.xMax;
-            rect.xMax = rect.xMin + 16f;
+            void DrawToggleInternal(Rect r)
+            {
+                EditorGUI.BeginChangeCheck();
 
-            DrawOverrideToggle(rect, originalRule, overrideRule);
+                bool enabled = EditorGUI.Toggle(new Rect(r.xMin, r.yMin, r.width, k_SingleLineHeight), overrideRule != null);
 
-            rect.xMin = rect.xMax;
-            rect.xMax = xMax;
+                if (EditorGUI.EndChangeCheck())
+                {
+                    if (enabled)
+                        overrideTile[originalRule] = originalRule;
+                    else
+                        overrideTile[originalRule] = null;
 
-            EditorGUI.BeginChangeCheck();
+                    SaveTile();
+                }
+            }
+            void DrawRuleInternal(Rect r)
+            {
+                EditorGUI.BeginChangeCheck();
 
-            bool isOverride = overrideRule != null;
-            bool isDefault = index == overrideTile.m_Tile.m_TilingRules.Count;
-            if (isDefault)
-                DrawDefaultRule(rect, isOverride ? overrideRule : originalRule, isOverride);
-            else
-                DrawRule(rect, isOverride ? overrideRule : originalRule, isOverride);
+                bool isOverride = overrideRule != null;
+                bool isDefault = index == overrideTile.m_Tile.m_TilingRules.Count;
+                if (isDefault)
+                    DrawDefaultRule(r, isOverride ? overrideRule : originalRule, isOverride);
+                else
+                    DrawRule(r, isOverride ? overrideRule : originalRule, isOverride);
 
-            if (EditorGUI.EndChangeCheck())
-                SaveTile();
+                if (EditorGUI.EndChangeCheck())
+                    SaveTile();
+            }
         }
 
         void DrawRule(Rect rect, RuleTile.TilingRule rule, bool isOverride)
