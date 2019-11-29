@@ -178,11 +178,11 @@ namespace UnityEditor
 
         public static void UpdateAffectedOverrideTiles(RuleTile target)
         {
-            string[] overrideTileGuids = AssetDatabase.FindAssets("t:RuleOverrideTile");
+            string[] overrideTileGuids = AssetDatabase.FindAssets("t:" + typeof(RuleOverrideTileBase).Name);
             foreach (string overrideTileGuid in overrideTileGuids)
             {
                 string overrideTilePath = AssetDatabase.GUIDToAssetPath(overrideTileGuid);
-                RuleOverrideTile overrideTile = AssetDatabase.LoadAssetAtPath<RuleOverrideTile>(overrideTilePath);
+                RuleOverrideTileBase overrideTile = AssetDatabase.LoadAssetAtPath<RuleOverrideTileBase>(overrideTilePath);
                 if (overrideTile.m_Tile == target)
                 {
                     if (overrideTile.m_InstanceTile)
