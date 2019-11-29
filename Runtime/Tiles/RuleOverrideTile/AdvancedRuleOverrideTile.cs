@@ -36,7 +36,7 @@ namespace UnityEngine.Tilemaps
                 if (value != null)
                 {
                     var overrideRule = new RuleTile.TilingRule();
-                    CopyTilingRule(value, overrideRule, true);
+                    CopyTilingRule(value, overrideRule);
                     m_OverrideTilingRules.Add(overrideRule);
                 }
             }
@@ -104,7 +104,7 @@ namespace UnityEngine.Tilemaps
 
             tile.m_TilingRules.Clear();
             foreach (var rule in m_Tile.m_TilingRules)
-                tile.m_TilingRules.Add(CopyTilingRule(rule, new RuleTile.TilingRule(), true));
+                tile.m_TilingRules.Add(CopyTilingRule(rule, new RuleTile.TilingRule()));
 
             var overrideDefaultRule = m_OverrideDefaultTilingRule;
             if (overrideDefaultRule != null)
@@ -118,7 +118,7 @@ namespace UnityEngine.Tilemaps
                 RuleTile.TilingRule originalRule = tile.m_TilingRules[i];
                 RuleTile.TilingRule overrideRule = this[m_Tile.m_TilingRules[i]];
                 if (overrideRule != null)
-                    CopyTilingRule(overrideRule, originalRule, false);
+                    CopyTilingRule(overrideRule, originalRule);
             }
         }
     }

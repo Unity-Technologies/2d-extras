@@ -199,7 +199,7 @@ namespace UnityEngine.Tilemaps
 
             tile.m_TilingRules.Clear();
             foreach (var rule in m_Tile.m_TilingRules)
-                tile.m_TilingRules.Add(CopyTilingRule(rule, new RuleTile.TilingRule(), true));
+                tile.m_TilingRules.Add(CopyTilingRule(rule, new RuleTile.TilingRule()));
 
             tile.m_DefaultSprite = this[m_Tile.m_DefaultSprite];
             tile.m_DefaultGameObject = this[m_Tile.m_DefaultGameObject];
