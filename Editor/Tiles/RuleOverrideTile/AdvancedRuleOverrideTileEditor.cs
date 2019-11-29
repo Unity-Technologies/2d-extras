@@ -36,13 +36,10 @@ namespace UnityEditor
         {
             base.OnInspectorGUI();
 
-            using (new EditorGUI.DisabledScope(overrideTile.m_Tile == null))
-            {
-                overrideTile.GetOverrides(m_Rules);
+            overrideTile.GetOverrides(m_Rules);
 
-                m_RuleList.list = m_Rules;
-                m_RuleList.DoLayoutList();
-            }
+            m_RuleList.list = m_Rules;
+            m_RuleList.DoLayoutList();
         }
 
         void DrawHeader(Rect rect)

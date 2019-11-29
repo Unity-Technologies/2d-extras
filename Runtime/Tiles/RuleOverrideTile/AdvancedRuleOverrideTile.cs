@@ -86,9 +86,9 @@ namespace UnityEngine.Tilemaps
                     RuleTile.TilingRule overrideRule = this[originalRule];
                     overrides.Add(new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>(originalRule, overrideRule));
                 }
-            }
 
-            overrides.Add(new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>(m_OriginalDefaultTilingRule, m_OverrideDefaultTilingRule));
+                overrides.Add(new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>(m_OriginalDefaultTilingRule, m_OverrideDefaultTilingRule));
+            }
         }
 
         public override void Override()
