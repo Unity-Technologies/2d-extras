@@ -109,7 +109,7 @@ namespace UnityEditor
                 Rect spriteRect = new Rect(rect.xMax - matrixWidth - 5f, yPos, matrixWidth, k_DefaultElementHeight);
 
                 ruleTileEditor.RuleInspectorOnGUI(inspectorRect, rule);
-                ruleTileEditor.RuleMatrixOnGUI(overrideTile.m_Tile, matrixRect, ruleGuiBounds, rule);
+                ruleTileEditor.RuleMatrixOnGUI(overrideTile.m_InstanceTile, matrixRect, ruleGuiBounds, rule);
                 ruleTileEditor.SpriteOnGUI(spriteRect, rule);
             }
         }

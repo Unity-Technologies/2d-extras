@@ -15,7 +15,7 @@ namespace UnityEditor
                 if (m_RuleTileEditorTile != overrideTile.m_Tile)
                 {
                     DestroyImmediate(m_RuleTileEditor);
-                    m_RuleTileEditor = Editor.CreateEditor(overrideTile.m_Tile) as RuleTileEditor;
+                    m_RuleTileEditor = Editor.CreateEditor(overrideTile.m_InstanceTile) as RuleTileEditor;
                     m_RuleTileEditorTile = overrideTile.m_Tile;
                 }
                 return m_RuleTileEditor;
