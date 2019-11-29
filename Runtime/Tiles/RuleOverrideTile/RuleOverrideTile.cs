@@ -11,7 +11,7 @@ namespace UnityEngine.Tilemaps
     [MovedFrom(true, "UnityEngine")]
     [Serializable]
     [CreateAssetMenu(fileName = "New Rule Override Tile", menuName = "Tiles/Rule Override Tile")]
-    public class RuleOverrideTile : RuleOverrideTileBase, IRuleOverrideTile<Sprite>, IRuleOverrideTile<GameObject>
+    public class RuleOverrideTile : RuleOverrideTileBase, IRuleOverrideTile<Sprite, Sprite>, IRuleOverrideTile<GameObject, GameObject>
     {
 
         [Serializable]
@@ -199,7 +199,11 @@ namespace UnityEngine.Tilemaps
 
             tile.m_TilingRules.Clear();
             foreach (var rule in m_Tile.m_TilingRules)
-                tile.m_TilingRules.Add(CopyTilingRule(rule, new RuleTile.TilingRule()));
+            {
+                var overrideRule = new RuleTile.TilingRule();
+                CopyTilingRule(rule, overrideRule);
+                tile.m_TilingRules.Add(overrideRule);
+            }
 
             tile.m_DefaultSprite = this[m_Tile.m_DefaultSprite];
             tile.m_DefaultGameObject = this[m_Tile.m_DefaultGameObject];

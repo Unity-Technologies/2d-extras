@@ -445,18 +445,14 @@ namespace UnityEditor
             }
         }
 
-        public virtual void SpriteOnGUI(Rect rect, RuleTile.TilingRule tilingRule)
+        public virtual void SpriteOnGUI(Rect rect, RuleTile.TilingRuleOutput tilingRule)
         {
             tilingRule.m_Sprites[0] = EditorGUI.ObjectField(new Rect(rect.xMax - rect.height, rect.yMin, rect.height, rect.height), tilingRule.m_Sprites[0], typeof(Sprite), false) as Sprite;
         }
 
-        public virtual void RuleInspectorOnGUI(Rect rect, RuleTile.TilingRule tilingRule)
+        public void RuleInspectorOnGUI(Rect rect, RuleTile.TilingRuleOutput tilingRule)
         {
             float y = rect.yMin;
-            EditorGUI.BeginChangeCheck();
-            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Rule");
-            tilingRule.m_RuleTransform = (RuleTile.TilingRule.Transform)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_RuleTransform);
-            y += k_SingleLineHeight;
             GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Game Object");
             tilingRule.m_GameObject = (GameObject)EditorGUI.ObjectField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), "", tilingRule.m_GameObject, typeof(GameObject), false);
             y += k_SingleLineHeight;

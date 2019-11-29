@@ -11,7 +11,7 @@ namespace UnityEditor
 
         public new AdvancedRuleOverrideTile overrideTile { get { return (target as AdvancedRuleOverrideTile); } }
 
-        List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>> m_Rules = new List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>>();
+        List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>> m_Rules = new List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>>();
         ReorderableList m_RuleList;
 
         static float k_DefaultElementHeight { get { return RuleTileEditor.k_DefaultElementHeight; } }
@@ -50,7 +50,7 @@ namespace UnityEditor
         void DrawElement(Rect rect, int index, bool selected, bool focused)
         {
             RuleTile.TilingRule originalRule = m_Rules[index].Key;
-            RuleTile.TilingRule overrideRule = m_Rules[index].Value;
+            RuleTile.TilingRuleOutput overrideRule = m_Rules[index].Value;
 
             DrawToggleInternal(new Rect(rect.xMin, rect.yMin, 16, rect.height));
             DrawRuleInternal(new Rect(rect.xMin + 16, rect.yMin, rect.width - 16, rect.height));
@@ -80,14 +80,14 @@ namespace UnityEditor
                 if (isDefault)
                     DrawDefaultRule(r, isOverride ? overrideRule : originalRule, isOverride);
                 else
-                    DrawRule(r, isOverride ? overrideRule : originalRule, isOverride);
+                    DrawRule(r, isOverride ? overrideRule : originalRule, isOverride, originalRule);
 
                 if (EditorGUI.EndChangeCheck())
                     SaveTile();
             }
         }
 
-        void DrawRule(Rect rect, RuleTile.TilingRule rule, bool isOverride)
+        void DrawRule(Rect rect, RuleTile.TilingRuleOutput rule, bool isOverride, RuleTile.TilingRule originalRule)
         {
             using (new EditorGUI.DisabledScope(!isOverride))
             {
@@ -95,8 +95,8 @@ namespace UnityEditor
                 float height = rect.height - k_PaddingBetweenRules;
                 float matrixWidth = k_DefaultElementHeight;
 
-                BoundsInt ruleBounds = rule.GetBounds();
-                BoundsInt ruleGuiBounds = ruleTileEditor.GetRuleGUIBounds(ruleBounds, rule);
+                BoundsInt ruleBounds = originalRule.GetBounds();
+                BoundsInt ruleGuiBounds = ruleTileEditor.GetRuleGUIBounds(ruleBounds, originalRule);
                 Vector2 matrixSize = ruleTileEditor.GetMatrixSize(ruleGuiBounds);
                 Vector2 matrixSizeRate = matrixSize / Mathf.Max(matrixSize.x, matrixSize.y);
                 Vector2 matrixRectSize = new Vector2(matrixWidth * matrixSizeRate.x, k_DefaultElementHeight * matrixSizeRate.y);
@@ -109,12 +109,14 @@ namespace UnityEditor
                 Rect spriteRect = new Rect(rect.xMax - matrixWidth - 5f, yPos, matrixWidth, k_DefaultElementHeight);
 
                 ruleTileEditor.RuleInspectorOnGUI(inspectorRect, rule);
-                ruleTileEditor.RuleMatrixOnGUI(overrideTile.m_InstanceTile, matrixRect, ruleGuiBounds, rule);
                 ruleTileEditor.SpriteOnGUI(spriteRect, rule);
+
+                using (new EditorGUI.DisabledScope(true))
+                    ruleTileEditor.RuleMatrixOnGUI(overrideTile.m_InstanceTile, matrixRect, ruleGuiBounds, originalRule);
             }
         }
 
-        void DrawDefaultRule(Rect rect, RuleTile.TilingRule rule, bool isOverride)
+        void DrawDefaultRule(Rect rect, RuleTile.TilingRuleOutput rule, bool isOverride)
         {
             using (new EditorGUI.DisabledScope(!isOverride))
             {
@@ -130,7 +132,7 @@ namespace UnityEditor
             }
         }
 
-        void DefaultRuleOnGUI(Rect rect, RuleTile.TilingRule rule)
+        void DefaultRuleOnGUI(Rect rect, RuleTile.TilingRuleOutput rule)
         {
             float y = rect.yMin;
 
@@ -163,7 +165,7 @@ namespace UnityEditor
             }
         }
 
-        float GetRuleElementHeight(RuleTile.TilingRule rule)
+        float GetRuleElementHeight(RuleTile.TilingRuleOutput rule)
         {
             float height = k_DefaultElementHeight + k_PaddingBetweenRules;
             if (rule != null)

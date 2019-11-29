@@ -51,31 +51,16 @@ namespace UnityEngine
         /// its neighbors.
         /// </summary>
         [Serializable]
-        public class TilingRule
+        public class TilingRuleOutput
         {
+
+            public static System.Random m_RandomID = new System.Random();
+
             public int m_InstanceID = m_RandomID.Next(1, int.MaxValue);
-            /// <summary>
-            /// The matching Rule conditions for each of its neighboring Tiles.
-            /// </summary>
-            public List<int> m_Neighbors = new List<int>();
-            /// <summary>
-            /// * Preset this list to RuleTile backward compatible, but not support for HexagonalRuleTile backward compatible.
-            /// </summary>
-            public List<Vector3Int> m_NeighborPositions = new List<Vector3Int>()
-            {
-                new Vector3Int(-1, 1, 0),
-                new Vector3Int(0, 1, 0),
-                new Vector3Int(1, 1, 0),
-                new Vector3Int(-1, 0, 0),
-                new Vector3Int(1, 0, 0),
-                new Vector3Int(-1, -1, 0),
-                new Vector3Int(0, -1, 0),
-                new Vector3Int(1, -1, 0),
-            };
             /// <summary>
             /// The output Sprites for this Rule.
             /// </summary>
-            public Sprite[] m_Sprites;
+            public Sprite[] m_Sprites = new Sprite[1];
             /// <summary>
             /// The output GameObject for this Rule.
             /// </summary>
@@ -83,70 +68,23 @@ namespace UnityEngine
             /// <summary>
             /// The output Animation Speed for this Rule.
             /// </summary>
-            public float m_AnimationSpeed;
+            public float m_AnimationSpeed = 1f;
             /// <summary>
             /// The perlin scale factor for this Rule.
             /// </summary>
-            public float m_PerlinScale;
-            /// <summary>
-            /// The transform matching Rule for this Rule.
-            /// </summary>
-            public Transform m_RuleTransform;
+            public float m_PerlinScale = 0.5f;
             /// <summary>
             /// The output type for this Rule.
             /// </summary>
-            public OutputSprite m_Output;
+            public OutputSprite m_Output = OutputSprite.Single;
             /// <summary>
             /// The output Collider Type for this Rule.
             /// </summary>
-            public Tile.ColliderType m_ColliderType;
+            public Tile.ColliderType m_ColliderType = Tile.ColliderType.Sprite;
             /// <summary>
             /// The randomized transform output for this Rule.
             /// </summary>
             public Transform m_RandomTransform;
-
-            static System.Random m_RandomID = new System.Random();
-
-            /// <summary>
-            /// Constructor for Tiling Rule. This defaults to a Single Output.
-            /// </summary>
-            public TilingRule()
-            {
-                m_Output = OutputSprite.Single;
-                m_Sprites = new Sprite[1];
-                m_GameObject = null;
-                m_AnimationSpeed = 1f;
-                m_PerlinScale = 0.5f;
-                m_ColliderType = Tile.ColliderType.Sprite;
-            }
-
-            public Dictionary<Vector3Int, int> GetNeighbors()
-            {
-                Dictionary<Vector3Int, int> dict = new Dictionary<Vector3Int, int>();
-
-                for (int i = 0; i < m_Neighbors.Count && i < m_NeighborPositions.Count; i++)
-                    dict.Add(m_NeighborPositions[i], m_Neighbors[i]);
-
-                return dict;
-            }
-            public void ApplyNeighbors(Dictionary<Vector3Int, int> dict)
-            {
-                m_NeighborPositions = dict.Keys.ToList();
-                m_Neighbors = dict.Values.ToList();
-            }
-
-            public BoundsInt GetBounds()
-            {
-                BoundsInt bounds = new BoundsInt(Vector3Int.zero, Vector3Int.one);
-                foreach (var neighbor in GetNeighbors())
-                {
-                    bounds.xMin = Mathf.Min(bounds.xMin, neighbor.Key.x);
-                    bounds.yMin = Mathf.Min(bounds.yMin, neighbor.Key.y);
-                    bounds.xMax = Mathf.Max(bounds.xMax, neighbor.Key.x + 1);
-                    bounds.yMax = Mathf.Max(bounds.yMax, neighbor.Key.y + 1);
-                }
-                return bounds;
-            }
 
             /// <summary>
             /// The enumeration for matching Neighbors when matching Rule Tiles
@@ -209,6 +147,62 @@ namespace UnityEngine
                 /// A Sprite Animation will be output.
                 /// </summary>
                 Animation
+            }
+        }
+
+        [Serializable]
+        public class TilingRule : TilingRuleOutput
+        {
+            /// <summary>
+            /// The matching Rule conditions for each of its neighboring Tiles.
+            /// </summary>
+            public List<int> m_Neighbors = new List<int>();
+            /// <summary>
+            /// * Preset this list to RuleTile backward compatible, but not support for HexagonalRuleTile backward compatible.
+            /// </summary>
+            public List<Vector3Int> m_NeighborPositions = new List<Vector3Int>()
+            {
+                new Vector3Int(-1, 1, 0),
+                new Vector3Int(0, 1, 0),
+                new Vector3Int(1, 1, 0),
+                new Vector3Int(-1, 0, 0),
+                new Vector3Int(1, 0, 0),
+                new Vector3Int(-1, -1, 0),
+                new Vector3Int(0, -1, 0),
+                new Vector3Int(1, -1, 0),
+            };
+            /// <summary>
+            /// The transform matching Rule for this Rule.
+            /// </summary>
+            public Transform m_RuleTransform;
+
+            public Dictionary<Vector3Int, int> GetNeighbors()
+            {
+                Dictionary<Vector3Int, int> dict = new Dictionary<Vector3Int, int>();
+
+                for (int i = 0; i < m_Neighbors.Count && i < m_NeighborPositions.Count; i++)
+                    dict.Add(m_NeighborPositions[i], m_Neighbors[i]);
+
+                return dict;
+            }
+
+            public void ApplyNeighbors(Dictionary<Vector3Int, int> dict)
+            {
+                m_NeighborPositions = dict.Keys.ToList();
+                m_Neighbors = dict.Values.ToList();
+            }
+
+            public BoundsInt GetBounds()
+            {
+                BoundsInt bounds = new BoundsInt(Vector3Int.zero, Vector3Int.one);
+                foreach (var neighbor in GetNeighbors())
+                {
+                    bounds.xMin = Mathf.Min(bounds.xMin, neighbor.Key.x);
+                    bounds.yMin = Mathf.Min(bounds.yMin, neighbor.Key.y);
+                    bounds.xMax = Mathf.Max(bounds.xMax, neighbor.Key.x + 1);
+                    bounds.yMax = Mathf.Max(bounds.yMax, neighbor.Key.y + 1);
+                }
+                return bounds;
             }
         }
 

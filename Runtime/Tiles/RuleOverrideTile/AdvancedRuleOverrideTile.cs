@@ -10,10 +10,10 @@ namespace UnityEngine.Tilemaps
     [MovedFrom(true, "UnityEngine")]
     [Serializable]
     [CreateAssetMenu(fileName = "New Advanced Rule Override Tile", menuName = "Tiles/Advanced Rule Override Tile")]
-    public class AdvancedRuleOverrideTile : RuleOverrideTileBase, IRuleOverrideTile<RuleTile.TilingRule>
+    public class AdvancedRuleOverrideTile : RuleOverrideTileBase, IRuleOverrideTile<RuleTile.TilingRule, RuleTile.TilingRuleOutput>
     {
 
-        public RuleTile.TilingRule this[RuleTile.TilingRule originalRule]
+        public RuleTile.TilingRuleOutput this[RuleTile.TilingRule originalRule]
         {
             get
             {
@@ -35,15 +35,15 @@ namespace UnityEngine.Tilemaps
                 }
                 if (value != null)
                 {
-                    var overrideRule = new RuleTile.TilingRule();
+                    var overrideRule = new RuleTile.TilingRuleOutput();
                     CopyTilingRule(value, overrideRule);
                     m_OverrideTilingRules.Add(overrideRule);
                 }
             }
         }
 
-        public List<RuleTile.TilingRule> m_OverrideTilingRules = new List<RuleTile.TilingRule>();
-        public RuleTile.TilingRule m_OverrideDefaultTilingRule => m_OverrideTilingRules.Find(rule => rule.m_InstanceID == 0);
+        public List<RuleTile.TilingRuleOutput> m_OverrideTilingRules = new List<RuleTile.TilingRuleOutput>();
+        public RuleTile.TilingRuleOutput m_OverrideDefaultTilingRule => m_OverrideTilingRules.Find(rule => rule.m_InstanceID == 0);
         public RuleTile.TilingRule m_OriginalDefaultTilingRule
         {
             get
@@ -61,7 +61,7 @@ namespace UnityEngine.Tilemaps
             }
         }
 
-        public void ApplyOverrides(IList<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>> overrides)
+        public void ApplyOverrides(IList<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>> overrides)
         {
             if (overrides == null)
                 throw new System.ArgumentNullException("overrides");
@@ -72,7 +72,7 @@ namespace UnityEngine.Tilemaps
                 this[overrides[i].Key] = overrides[i].Value;
         }
 
-        public void GetOverrides(List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>> overrides)
+        public void GetOverrides(List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>> overrides)
         {
             if (overrides == null)
                 throw new System.ArgumentNullException("overrides");
@@ -83,11 +83,11 @@ namespace UnityEngine.Tilemaps
             {
                 foreach (var originalRule in m_Tile.m_TilingRules)
                 {
-                    RuleTile.TilingRule overrideRule = this[originalRule];
-                    overrides.Add(new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>(originalRule, overrideRule));
+                    RuleTile.TilingRuleOutput overrideRule = this[originalRule];
+                    overrides.Add(new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>(originalRule, overrideRule));
                 }
 
-                overrides.Add(new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>(m_OriginalDefaultTilingRule, m_OverrideDefaultTilingRule));
+                overrides.Add(new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>(m_OriginalDefaultTilingRule, m_OverrideDefaultTilingRule));
             }
         }
 
@@ -104,7 +104,11 @@ namespace UnityEngine.Tilemaps
 
             tile.m_TilingRules.Clear();
             foreach (var rule in m_Tile.m_TilingRules)
-                tile.m_TilingRules.Add(CopyTilingRule(rule, new RuleTile.TilingRule()));
+            {
+                var overrideRule = new RuleTile.TilingRule();
+                CopyTilingRule(rule, overrideRule);
+                tile.m_TilingRules.Add(overrideRule);
+            }
 
             var overrideDefaultRule = m_OverrideDefaultTilingRule;
             if (overrideDefaultRule != null)
@@ -116,7 +120,7 @@ namespace UnityEngine.Tilemaps
             for (int i = 0; i < tile.m_TilingRules.Count; i++)
             {
                 RuleTile.TilingRule originalRule = tile.m_TilingRules[i];
-                RuleTile.TilingRule overrideRule = this[m_Tile.m_TilingRules[i]];
+                RuleTile.TilingRuleOutput overrideRule = this[m_Tile.m_TilingRules[i]];
                 if (overrideRule != null)
                     CopyTilingRule(overrideRule, originalRule);
             }
