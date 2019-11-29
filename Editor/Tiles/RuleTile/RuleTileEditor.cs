@@ -173,10 +173,10 @@ namespace UnityEditor
             EditorUtility.SetDirty(target);
             SceneView.RepaintAll();
 
-            UpdateOverrideTiles();
+            UpdateAffectedOverrideTiles(tile);
         }
 
-        private void UpdateOverrideTiles()
+        public static void UpdateAffectedOverrideTiles(RuleTile target)
         {
             string[] overrideTileGuids = AssetDatabase.FindAssets("t:RuleOverrideTile");
             foreach (string overrideTileGuid in overrideTileGuids)
@@ -184,7 +184,13 @@ namespace UnityEditor
                 string overrideTilePath = AssetDatabase.GUIDToAssetPath(overrideTileGuid);
                 RuleOverrideTile overrideTile = AssetDatabase.LoadAssetAtPath<RuleOverrideTile>(overrideTilePath);
                 if (overrideTile.m_Tile == target)
-                    overrideTile.Override();
+                {
+                    if (overrideTile.m_InstanceTile)
+                    {
+                        overrideTile.Override();
+                        UpdateAffectedOverrideTiles(overrideTile.m_InstanceTile);
+                    }
+                }
             }
         }
 
@@ -234,7 +240,7 @@ namespace UnityEditor
             foreach (var field in customFields)
                 EditorGUILayout.PropertyField(serializedObject.FindProperty(field.Name), true);
         }
-    
+
         public virtual int GetArrowIndex(Vector3Int position)
         {
             if (Mathf.Abs(position.x) == Mathf.Abs(position.y))

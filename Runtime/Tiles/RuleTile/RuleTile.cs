@@ -53,6 +53,7 @@ namespace UnityEngine
         [Serializable]
         public class TilingRule
         {
+            public int m_InstanceID = m_RandomID.Next(1, int.MaxValue);
             /// <summary>
             /// The matching Rule conditions for each of its neighboring Tiles.
             /// </summary>
@@ -103,6 +104,8 @@ namespace UnityEngine
             /// The randomized transform output for this Rule.
             /// </summary>
             public Transform m_RandomTransform;
+
+            static System.Random m_RandomID = new System.Random();
 
             /// <summary>
             /// Constructor for Tiling Rule. This defaults to a Single Output.
