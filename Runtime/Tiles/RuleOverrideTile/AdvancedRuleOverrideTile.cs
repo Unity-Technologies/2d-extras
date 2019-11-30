@@ -42,24 +42,10 @@ namespace UnityEngine.Tilemaps
             }
         }
 
+        public Sprite m_DefaultSprite;
+        public GameObject m_DefaultGameObject;
+        public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
         public List<RuleTile.TilingRuleOutput> m_OverrideTilingRules = new List<RuleTile.TilingRuleOutput>();
-        public RuleTile.TilingRuleOutput m_OverrideDefaultTilingRule => m_OverrideTilingRules.Find(rule => rule.m_InstanceID == 0);
-        public RuleTile.TilingRule m_OriginalDefaultTilingRule
-        {
-            get
-            {
-                if (!m_Tile)
-                    return new RuleTile.TilingRule() { m_InstanceID = 0 };
-
-                return new RuleTile.TilingRule()
-                {
-                    m_InstanceID = 0,
-                    m_Sprites = new Sprite[] { m_Tile.m_DefaultSprite },
-                    m_ColliderType = m_Tile.m_DefaultColliderType,
-                    m_GameObject = m_Tile.m_DefaultGameObject,
-                };
-            }
-        }
 
         public void ApplyOverrides(IList<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>> overrides)
         {
@@ -96,31 +82,19 @@ namespace UnityEngine.Tilemaps
 
             var tile = m_InstanceTile;
 
-            tile.m_DefaultSprite = m_Tile.m_DefaultSprite;
-            tile.m_DefaultGameObject = m_Tile.m_DefaultGameObject;
-            tile.m_DefaultColliderType = m_Tile.m_DefaultColliderType;
-
+            tile.m_DefaultSprite = m_DefaultSprite;
+            tile.m_DefaultGameObject = m_DefaultGameObject;
+            tile.m_DefaultColliderType = m_DefaultColliderType;
             tile.m_TilingRules.Clear();
-            foreach (var rule in m_Tile.m_TilingRules)
-            {
-                var overrideRule = new RuleTile.TilingRule();
-                CopyTilingRule(rule, overrideRule);
-                tile.m_TilingRules.Add(overrideRule);
-            }
 
-            var overrideDefaultRule = m_OverrideDefaultTilingRule;
-            if (overrideDefaultRule != null)
+            foreach (var originalRule in m_Tile.m_TilingRules)
             {
-                tile.m_DefaultSprite = overrideDefaultRule.m_Sprites[0];
-                tile.m_DefaultGameObject = overrideDefaultRule.m_GameObject;
-                tile.m_DefaultColliderType = overrideDefaultRule.m_ColliderType;
-            }
-            for (int i = 0; i < tile.m_TilingRules.Count; i++)
-            {
-                RuleTile.TilingRule originalRule = tile.m_TilingRules[i];
-                RuleTile.TilingRuleOutput overrideRule = this[m_Tile.m_TilingRules[i]];
+                var overrideRule = this[originalRule];
+                var instanceRule = new RuleTile.TilingRule();
+                CopyTilingRule(originalRule, instanceRule);
                 if (overrideRule != null)
-                    CopyTilingRule(overrideRule, originalRule);
+                    CopyTilingRule(overrideRule, instanceRule);
+                tile.m_TilingRules.Add(instanceRule);
             }
         }
     }

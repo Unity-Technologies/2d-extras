@@ -12,7 +12,6 @@ namespace UnityEditor
         public new AdvancedRuleOverrideTile overrideTile { get { return (target as AdvancedRuleOverrideTile); } }
 
         List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>> m_Rules = new List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>>();
-        KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>[] m_DefaultRules = { new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>() };
         ReorderableList m_RuleList;
         ReorderableList m_DefaultRuleList;
 
@@ -23,15 +22,6 @@ namespace UnityEditor
 
         void OnEnable()
         {
-            if (m_DefaultRuleList == null)
-            {
-                m_DefaultRules[0] = new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>(overrideTile.m_OriginalDefaultTilingRule, overrideTile.m_OverrideDefaultTilingRule);
-
-                m_DefaultRuleList = new ReorderableList(m_DefaultRules, typeof(KeyValuePair<RuleTile.TilingRuleOutput, RuleTile.TilingRuleOutput>), false, true, false, false);
-                m_DefaultRuleList.drawHeaderCallback = DrawDefaultRulesHeader;
-                m_DefaultRuleList.drawElementCallback = DrawDefaultRuleElement;
-                m_DefaultRuleList.elementHeight = k_DefaultElementHeight + 4;
-            }
             if (m_RuleList == null)
             {
                 overrideTile.GetOverrides(m_Rules);
@@ -45,11 +35,18 @@ namespace UnityEditor
 
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
+            serializedObject.UpdateIfRequiredOrScript();
 
-            m_DefaultRules[0] = new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>(overrideTile.m_OriginalDefaultTilingRule, overrideTile.m_OverrideDefaultTilingRule);
-            m_DefaultRuleList.list = m_DefaultRules;
-            m_DefaultRuleList.DoLayoutList();
+            DrawSourceTileField();
+
+            EditorGUI.BeginChangeCheck();
+            overrideTile.m_DefaultSprite = EditorGUILayout.ObjectField("Default Sprite", overrideTile.m_DefaultSprite, typeof(Sprite), false) as Sprite;
+            overrideTile.m_DefaultGameObject = EditorGUILayout.ObjectField("Default Game Object", overrideTile.m_DefaultGameObject, typeof(GameObject), false) as GameObject;
+            overrideTile.m_DefaultColliderType = (Tile.ColliderType)EditorGUILayout.EnumPopup("Default Collider", overrideTile.m_DefaultColliderType);
+            if (EditorGUI.EndChangeCheck())
+                SaveTile();
+
+            DrawCustomFields();
 
             overrideTile.GetOverrides(m_Rules);
             m_RuleList.list = m_Rules;
@@ -66,22 +63,11 @@ namespace UnityEditor
             GUI.Label(rect, "Tiling Rules", EditorStyles.label);
         }
 
-        void DrawDefaultRuleElement(Rect rect, int index, bool selected, bool focused)
-        {
-            RuleTile.TilingRule originalRule = m_DefaultRules[index].Key;
-            RuleTile.TilingRuleOutput overrideRule = m_DefaultRules[index].Value;
-            DrawElementInternal(rect, originalRule, overrideRule, true);
-        }
-
         void DrawRuleElement(Rect rect, int index, bool selected, bool focused)
         {
             RuleTile.TilingRule originalRule = m_Rules[index].Key;
             RuleTile.TilingRuleOutput overrideRule = m_Rules[index].Value;
-            DrawElementInternal(rect, originalRule, overrideRule, false);
-        }
 
-        void DrawElementInternal(Rect rect, RuleTile.TilingRule originalRule, RuleTile.TilingRuleOutput overrideRule, bool isDefault)
-        {
             DrawToggleInternal(new Rect(rect.xMin, rect.yMin, 16, rect.height));
             DrawRuleInternal(new Rect(rect.xMin + 16, rect.yMin, rect.width - 16, rect.height));
 
@@ -106,10 +92,7 @@ namespace UnityEditor
                 EditorGUI.BeginChangeCheck();
 
                 bool isOverride = overrideRule != null;
-                if (isDefault)
-                    DrawDefaultRule(r, isOverride ? overrideRule : originalRule, isOverride);
-                else
-                    DrawRule(r, isOverride ? overrideRule : originalRule, isOverride, originalRule);
+                DrawRule(r, isOverride ? overrideRule : originalRule, isOverride, originalRule);
 
                 if (EditorGUI.EndChangeCheck())
                     SaveTile();
@@ -143,35 +126,6 @@ namespace UnityEditor
                 using (new EditorGUI.DisabledScope(true))
                     ruleTileEditor.RuleMatrixOnGUI(overrideTile.m_InstanceTile, matrixRect, ruleGuiBounds, originalRule);
             }
-        }
-
-        void DrawDefaultRule(Rect rect, RuleTile.TilingRuleOutput rule, bool isOverride)
-        {
-            using (new EditorGUI.DisabledScope(!isOverride))
-            {
-                float yPos = rect.yMin + 2f;
-                float height = rect.height - k_PaddingBetweenRules;
-                float matrixWidth = k_DefaultElementHeight;
-
-                Rect inspectorRect = new Rect(rect.xMin, yPos, rect.width - matrixWidth * 2f - 20f, height);
-                Rect spriteRect = new Rect(rect.xMax - matrixWidth - 5f, yPos, matrixWidth, k_DefaultElementHeight);
-
-                DefaultRuleOnGUI(inspectorRect, rule);
-                ruleTileEditor.SpriteOnGUI(spriteRect, rule);
-            }
-        }
-
-        void DefaultRuleOnGUI(Rect rect, RuleTile.TilingRuleOutput rule)
-        {
-            float y = rect.yMin;
-
-            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Game Object");
-            rule.m_GameObject = (GameObject)EditorGUI.ObjectField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), "", rule.m_GameObject, typeof(GameObject), false);
-            y += k_SingleLineHeight;
-
-            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Collider");
-            rule.m_ColliderType = (Tile.ColliderType)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), rule.m_ColliderType);
-            y += k_SingleLineHeight;
         }
 
         float GetRuleElementHeight(int index)

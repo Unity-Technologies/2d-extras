@@ -35,9 +35,20 @@ namespace UnityEditor
         {
             serializedObject.UpdateIfRequiredOrScript();
 
-            EditorGUI.BeginChangeCheck();
+            DrawSourceTileField();
+            DrawCustomFields();
+        }
 
+        public void DrawSourceTileField()
+        {
+            EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Tile"));
+            serializedObject.ApplyModifiedProperties();
+            if (EditorGUI.EndChangeCheck())
+                SaveTile();
+        }
+        public void DrawCustomFields()
+        {
             if (overrideTile.m_InstanceTile)
             {
                 SerializedObject instanceTileSerializedObject = new SerializedObject(overrideTile.m_InstanceTile);
@@ -46,10 +57,6 @@ namespace UnityEditor
                 overrideTile.m_InstanceTile.hideFlags = HideFlags.NotEditable;
                 instanceTileSerializedObject.ApplyModifiedProperties();
             }
-            serializedObject.ApplyModifiedProperties();
-
-            if (EditorGUI.EndChangeCheck())
-                SaveTile();
         }
 
         public void SaveInstanceTileAsset()
