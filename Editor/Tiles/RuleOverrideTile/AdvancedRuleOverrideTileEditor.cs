@@ -13,7 +13,6 @@ namespace UnityEditor
 
         List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>> m_Rules = new List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>>();
         ReorderableList m_RuleList;
-        ReorderableList m_DefaultRuleList;
 
         static float k_DefaultElementHeight { get { return RuleTileEditor.k_DefaultElementHeight; } }
         static float k_PaddingBetweenRules { get { return RuleTileEditor.k_PaddingBetweenRules; } }
