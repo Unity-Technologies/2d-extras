@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Collections.Generic;
 
 namespace UnityEditor
 {
@@ -42,11 +43,45 @@ namespace UnityEditor
         public void DrawSourceTileField()
         {
             EditorGUI.BeginChangeCheck();
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Tile"));
-            serializedObject.ApplyModifiedProperties();
+            RuleTile tile = EditorGUILayout.ObjectField("Tile", overrideTile.m_Tile, typeof(RuleTile), false) as RuleTile;
             if (EditorGUI.EndChangeCheck())
-                SaveTile();
+            {
+                if (!LoopCheck(tile))
+                {
+                    overrideTile.m_Tile = tile;
+                    SaveTile();
+                }
+                else
+                {
+                    Debug.LogWarning("Circular tile reference");
+                }
+            }
+
+            bool LoopCheck(RuleTile checkTile)
+            {
+                if (!overrideTile.m_InstanceTile)
+                    return false;
+
+                HashSet<RuleTile> renferenceTils = new HashSet<RuleTile>();
+                Add(overrideTile.m_InstanceTile);
+
+                return renferenceTils.Contains(checkTile);
+
+                void Add(RuleTile ruleTile)
+                {
+                    if (renferenceTils.Contains(ruleTile))
+                        return;
+
+                    renferenceTils.Add(ruleTile);
+
+                    var overrideTiles = RuleTileEditor.FindAffectedOverrideTiles(ruleTile);
+
+                    foreach (var overrideTile in overrideTiles)
+                        Add(overrideTile.m_InstanceTile);
+                }
+            }
         }
+
         public void DrawCustomFields()
         {
             if (overrideTile.m_InstanceTile)

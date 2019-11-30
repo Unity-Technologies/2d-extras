@@ -187,6 +187,18 @@ namespace UnityEditor
 
         public static void UpdateAffectedOverrideTiles(RuleTile target)
         {
+            List<RuleOverrideTileBase> overrideTiles = FindAffectedOverrideTiles(target);
+            foreach (var overrideTile in overrideTiles)
+            {
+                overrideTile.Override();
+                UpdateAffectedOverrideTiles(overrideTile.m_InstanceTile);
+            }
+        }
+
+        public static List<RuleOverrideTileBase> FindAffectedOverrideTiles(RuleTile target)
+        {
+            List<RuleOverrideTileBase> overrideTiles = new List<RuleOverrideTileBase>();
+
             string[] overrideTileGuids = AssetDatabase.FindAssets("t:" + typeof(RuleOverrideTileBase).Name);
             foreach (string overrideTileGuid in overrideTileGuids)
             {
@@ -194,13 +206,11 @@ namespace UnityEditor
                 RuleOverrideTileBase overrideTile = AssetDatabase.LoadAssetAtPath<RuleOverrideTileBase>(overrideTilePath);
                 if (overrideTile.m_Tile == target)
                 {
-                    if (overrideTile.m_InstanceTile)
-                    {
-                        overrideTile.Override();
-                        UpdateAffectedOverrideTiles(overrideTile.m_InstanceTile);
-                    }
+                    overrideTiles.Add(overrideTile);
                 }
             }
+
+            return overrideTiles;
         }
 
         private void OnDrawHeader(Rect rect)
