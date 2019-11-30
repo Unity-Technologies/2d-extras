@@ -193,29 +193,23 @@ namespace UnityEngine.Tilemaps
 
             var tile = m_InstanceTile;
 
-            tile.m_DefaultSprite = m_Tile.m_DefaultSprite;
-            tile.m_DefaultGameObject = m_Tile.m_DefaultGameObject;
-            tile.m_DefaultColliderType = m_Tile.m_DefaultColliderType;
-
-            tile.m_TilingRules.Clear();
-            foreach (var rule in m_Tile.m_TilingRules)
-            {
-                var overrideRule = new RuleTile.TilingRule();
-                CopyTilingRule(rule, overrideRule);
-                tile.m_TilingRules.Add(overrideRule);
-            }
-
             tile.m_DefaultSprite = this[m_Tile.m_DefaultSprite];
             tile.m_DefaultGameObject = this[m_Tile.m_DefaultGameObject];
+            tile.m_DefaultColliderType = m_Tile.m_DefaultColliderType;
+            tile.m_TilingRules.Clear();
 
-            foreach (RuleTile.TilingRule rule in tile.m_TilingRules)
+            foreach (var originalRule in m_Tile.m_TilingRules)
             {
+                var instanceRule = new RuleTile.TilingRule();
+                CopyTilingRule(originalRule, instanceRule);
 
-                for (int i = 0; i < rule.m_Sprites.Length; i++)
-                    if (rule.m_Sprites[i])
-                        rule.m_Sprites[i] = this[rule.m_Sprites[i]];
+                for (int i = 0; i < instanceRule.m_Sprites.Length; i++)
+                    if (instanceRule.m_Sprites[i])
+                        instanceRule.m_Sprites[i] = this[instanceRule.m_Sprites[i]];
 
-                rule.m_GameObject = this[rule.m_GameObject];
+                instanceRule.m_GameObject = this[instanceRule.m_GameObject];
+
+                tile.m_TilingRules.Add(instanceRule);
             }
         }
     }
