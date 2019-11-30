@@ -12,23 +12,23 @@ namespace UnityEditor
         {
             get
             {
-                if (m_RuleTileEditorTile != overrideTile.m_Tile)
+                if (m_RuleTileEditorTarget != overrideTile.m_Tile)
                 {
                     DestroyImmediate(m_RuleTileEditor);
                     m_RuleTileEditor = Editor.CreateEditor(overrideTile.m_InstanceTile) as RuleTileEditor;
-                    m_RuleTileEditorTile = overrideTile.m_Tile;
+                    m_RuleTileEditorTarget = overrideTile.m_Tile;
                 }
                 return m_RuleTileEditor;
             }
         }
 
         RuleTileEditor m_RuleTileEditor;
-        RuleTile m_RuleTileEditorTile;
+        RuleTile m_RuleTileEditorTarget;
 
         public virtual void OnDisable()
         {
             DestroyImmediate(ruleTileEditor);
-            m_RuleTileEditorTile = null;
+            m_RuleTileEditorTarget = null;
         }
 
         public override void OnInspectorGUI()

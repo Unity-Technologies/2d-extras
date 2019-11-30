@@ -24,8 +24,6 @@ namespace UnityEditor
         {
             if (m_RuleList == null)
             {
-                overrideTile.GetOverrides(m_Rules);
-
                 m_RuleList = new ReorderableList(m_Rules, typeof(KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>), false, true, false, false);
                 m_RuleList.drawHeaderCallback = DrawRulesHeader;
                 m_RuleList.drawElementCallback = DrawRuleElement;
@@ -48,8 +46,10 @@ namespace UnityEditor
 
             DrawCustomFields();
 
-            overrideTile.GetOverrides(m_Rules);
-            m_RuleList.list = m_Rules;
+            m_Rules.Clear();
+            if (overrideTile.m_Tile)
+                overrideTile.GetOverrides(m_Rules);
+
             m_RuleList.DoLayoutList();
         }
 
