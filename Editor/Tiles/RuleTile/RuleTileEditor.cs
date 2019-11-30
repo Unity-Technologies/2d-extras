@@ -226,7 +226,7 @@ namespace UnityEditor
             tile.m_DefaultGameObject = EditorGUILayout.ObjectField("Default Game Object", tile.m_DefaultGameObject, typeof(GameObject), false) as GameObject;
             tile.m_DefaultColliderType = (Tile.ColliderType)EditorGUILayout.EnumPopup("Default Collider", tile.m_DefaultColliderType);
             if (EditorGUI.EndChangeCheck())
-                EditorUtility.SetDirty(tile);
+                SaveTile();
 
             serializedObject.Update();
             EditorGUI.BeginChangeCheck();
