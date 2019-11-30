@@ -67,9 +67,13 @@ namespace UnityEditor
         {
             RuleTile.TilingRule originalRule = m_Rules[index].Key;
             RuleTile.TilingRuleOutput overrideRule = m_Rules[index].Value;
+            bool isMissing = index >= overrideTile.m_MissingTilingRuleIndex;
 
             DrawToggleInternal(new Rect(rect.xMin, rect.yMin, 16, rect.height));
             DrawRuleInternal(new Rect(rect.xMin + 16, rect.yMin, rect.width - 16, rect.height));
+
+            if (isMissing)
+                EditorGUI.DrawRect(rect, new Color(0, 0, 0, 0.5f));
 
             void DrawToggleInternal(Rect r)
             {
@@ -130,8 +134,8 @@ namespace UnityEditor
 
         float GetRuleElementHeight(int index)
         {
-            var originalRule = overrideTile.m_Tile.m_TilingRules[index];
-            var overrideRule = overrideTile[originalRule];
+            var originalRule = m_Rules[index].Key;
+            var overrideRule = m_Rules[index].Value;
             return overrideRule != null ? ruleTileEditor.GetElementHeight(overrideRule) : ruleTileEditor.GetElementHeight(originalRule);
         }
     }

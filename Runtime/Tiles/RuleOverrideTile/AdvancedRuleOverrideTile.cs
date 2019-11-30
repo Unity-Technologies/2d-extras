@@ -46,13 +46,12 @@ namespace UnityEngine.Tilemaps
         public GameObject m_DefaultGameObject;
         public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
         public List<RuleTile.TilingRuleOutput> m_OverrideTilingRules = new List<RuleTile.TilingRuleOutput>();
+        [NonSerialized] public int m_MissingTilingRuleIndex = -1;
 
         public void ApplyOverrides(IList<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>> overrides)
         {
             if (overrides == null)
                 throw new System.ArgumentNullException("overrides");
-
-            m_OverrideTilingRules.Clear();
 
             for (int i = 0; i < overrides.Count; i++)
                 this[overrides[i].Key] = overrides[i].Value;
@@ -70,6 +69,17 @@ namespace UnityEngine.Tilemaps
                 foreach (var originalRule in m_Tile.m_TilingRules)
                 {
                     RuleTile.TilingRuleOutput overrideRule = this[originalRule];
+                    overrides.Add(new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>(originalRule, overrideRule));
+                }
+            }
+
+            m_MissingTilingRuleIndex = overrides.Count;
+
+            foreach (var overrideRule in m_OverrideTilingRules)
+            {
+                if (!overrides.Exists(o => o.Key.m_InstanceID == overrideRule.m_InstanceID))
+                {
+                    var originalRule = new RuleTile.TilingRule() { m_InstanceID = overrideRule.m_InstanceID };
                     overrides.Add(new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>(originalRule, overrideRule));
                 }
             }
