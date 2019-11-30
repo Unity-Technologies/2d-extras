@@ -111,25 +111,34 @@ namespace UnityEditor
         private float GetElementHeight(int index)
         {
             RuleTile.TilingRule rule = tile.m_TilingRules[index];
+            return GetElementHeight(rule);
+        }
+
+        public float GetElementHeight(RuleTile.TilingRule rule)
+        {
             BoundsInt bounds = GetRuleGUIBounds(rule.GetBounds(), rule);
 
-            float inspectorHeight = k_DefaultElementHeight + k_PaddingBetweenRules;
+            float inspectorHeight = GetElementHeight(rule as RuleTile.TilingRuleOutput);
             float matrixHeight = GetMatrixSize(bounds).y + 10f;
 
-            if (index < tile.m_TilingRules.Count)
+            return Mathf.Max(inspectorHeight, matrixHeight);
+        }
+
+        public float GetElementHeight(RuleTile.TilingRuleOutput rule)
+        {
+            float inspectorHeight = k_DefaultElementHeight + k_PaddingBetweenRules;
+
+            switch (rule.m_Output)
             {
-                switch (tile.m_TilingRules[index].m_Output)
-                {
-                    case RuleTile.TilingRule.OutputSprite.Random:
-                        inspectorHeight = k_DefaultElementHeight + k_SingleLineHeight * (tile.m_TilingRules[index].m_Sprites.Length + 3) + k_PaddingBetweenRules;
-                        break;
-                    case RuleTile.TilingRule.OutputSprite.Animation:
-                        inspectorHeight = k_DefaultElementHeight + k_SingleLineHeight * (tile.m_TilingRules[index].m_Sprites.Length + 2) + k_PaddingBetweenRules;
-                        break;
-                }
+                case RuleTile.TilingRule.OutputSprite.Random:
+                    inspectorHeight = k_DefaultElementHeight + k_SingleLineHeight * (rule.m_Sprites.Length + 3) + k_PaddingBetweenRules;
+                    break;
+                case RuleTile.TilingRule.OutputSprite.Animation:
+                    inspectorHeight = k_DefaultElementHeight + k_SingleLineHeight * (rule.m_Sprites.Length + 2) + k_PaddingBetweenRules;
+                    break;
             }
 
-            return Mathf.Max(inspectorHeight, matrixHeight);
+            return inspectorHeight;
         }
 
         public virtual Vector2 GetMatrixSize(BoundsInt bounds)

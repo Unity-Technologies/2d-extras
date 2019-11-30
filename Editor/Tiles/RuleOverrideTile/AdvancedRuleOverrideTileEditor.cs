@@ -12,7 +12,9 @@ namespace UnityEditor
         public new AdvancedRuleOverrideTile overrideTile { get { return (target as AdvancedRuleOverrideTile); } }
 
         List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>> m_Rules = new List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>>();
+        KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>[] m_DefaultRules = { new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>() };
         ReorderableList m_RuleList;
+        ReorderableList m_DefaultRuleList;
 
         static float k_DefaultElementHeight { get { return RuleTileEditor.k_DefaultElementHeight; } }
         static float k_PaddingBetweenRules { get { return RuleTileEditor.k_PaddingBetweenRules; } }
@@ -21,13 +23,22 @@ namespace UnityEditor
 
         void OnEnable()
         {
+            if (m_DefaultRuleList == null)
+            {
+                m_DefaultRules[0] = new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>(overrideTile.m_OriginalDefaultTilingRule, overrideTile.m_OverrideDefaultTilingRule);
+
+                m_DefaultRuleList = new ReorderableList(m_DefaultRules, typeof(KeyValuePair<RuleTile.TilingRuleOutput, RuleTile.TilingRuleOutput>), false, true, false, false);
+                m_DefaultRuleList.drawHeaderCallback = DrawDefaultRulesHeader;
+                m_DefaultRuleList.drawElementCallback = DrawDefaultRuleElement;
+                m_DefaultRuleList.elementHeight = k_DefaultElementHeight + 4;
+            }
             if (m_RuleList == null)
             {
                 overrideTile.GetOverrides(m_Rules);
 
                 m_RuleList = new ReorderableList(m_Rules, typeof(KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>), false, true, false, false);
-                m_RuleList.drawHeaderCallback = DrawHeader;
-                m_RuleList.drawElementCallback = DrawElement;
+                m_RuleList.drawHeaderCallback = DrawRulesHeader;
+                m_RuleList.drawElementCallback = DrawRuleElement;
                 m_RuleList.elementHeightCallback = GetRuleElementHeight;
             }
         }
@@ -36,22 +47,41 @@ namespace UnityEditor
         {
             base.OnInspectorGUI();
 
-            overrideTile.GetOverrides(m_Rules);
+            m_DefaultRules[0] = new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>(overrideTile.m_OriginalDefaultTilingRule, overrideTile.m_OverrideDefaultTilingRule);
+            m_DefaultRuleList.list = m_DefaultRules;
+            m_DefaultRuleList.DoLayoutList();
 
+            overrideTile.GetOverrides(m_Rules);
             m_RuleList.list = m_Rules;
             m_RuleList.DoLayoutList();
         }
 
-        void DrawHeader(Rect rect)
+        void DrawDefaultRulesHeader(Rect rect)
         {
-            GUI.Label(rect, "Overrides", EditorStyles.label);
+            GUI.Label(rect, "Default Rule", EditorStyles.label);
         }
 
-        void DrawElement(Rect rect, int index, bool selected, bool focused)
+        void DrawRulesHeader(Rect rect)
+        {
+            GUI.Label(rect, "Tiling Rules", EditorStyles.label);
+        }
+
+        void DrawDefaultRuleElement(Rect rect, int index, bool selected, bool focused)
+        {
+            RuleTile.TilingRule originalRule = m_DefaultRules[index].Key;
+            RuleTile.TilingRuleOutput overrideRule = m_DefaultRules[index].Value;
+            DrawElementInternal(rect, originalRule, overrideRule, true);
+        }
+
+        void DrawRuleElement(Rect rect, int index, bool selected, bool focused)
         {
             RuleTile.TilingRule originalRule = m_Rules[index].Key;
             RuleTile.TilingRuleOutput overrideRule = m_Rules[index].Value;
+            DrawElementInternal(rect, originalRule, overrideRule, false);
+        }
 
+        void DrawElementInternal(Rect rect, RuleTile.TilingRule originalRule, RuleTile.TilingRuleOutput overrideRule, bool isDefault)
+        {
             DrawToggleInternal(new Rect(rect.xMin, rect.yMin, 16, rect.height));
             DrawRuleInternal(new Rect(rect.xMin + 16, rect.yMin, rect.width - 16, rect.height));
 
@@ -76,7 +106,6 @@ namespace UnityEditor
                 EditorGUI.BeginChangeCheck();
 
                 bool isOverride = overrideRule != null;
-                bool isDefault = index == overrideTile.m_Tile.m_TilingRules.Count;
                 if (isDefault)
                     DrawDefaultRule(r, isOverride ? overrideRule : originalRule, isOverride);
                 else
@@ -136,10 +165,6 @@ namespace UnityEditor
         {
             float y = rect.yMin;
 
-            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Rule");
-            EditorGUI.LabelField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), "Default");
-            y += k_SingleLineHeight;
-
             GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Game Object");
             rule.m_GameObject = (GameObject)EditorGUI.ObjectField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), "", rule.m_GameObject, typeof(GameObject), false);
             y += k_SingleLineHeight;
@@ -151,36 +176,9 @@ namespace UnityEditor
 
         float GetRuleElementHeight(int index)
         {
-            if (index == overrideTile.m_Tile.m_TilingRules.Count)
-            {
-                var originalRule = overrideTile.m_OriginalDefaultTilingRule;
-                var overrideRule = overrideTile.m_OverrideDefaultTilingRule;
-                return overrideRule != null ? GetRuleElementHeight(overrideRule) : GetRuleElementHeight(originalRule);
-            }
-            else
-            {
-                var originalRule = overrideTile.m_Tile.m_TilingRules[index];
-                var overrideRule = overrideTile[originalRule];
-                return overrideRule != null ? GetRuleElementHeight(overrideRule) : GetRuleElementHeight(originalRule);
-            }
-        }
-
-        float GetRuleElementHeight(RuleTile.TilingRuleOutput rule)
-        {
-            float height = k_DefaultElementHeight + k_PaddingBetweenRules;
-            if (rule != null)
-            {
-                switch (rule.m_Output)
-                {
-                    case RuleTile.TilingRule.OutputSprite.Random:
-                        height = k_DefaultElementHeight + k_SingleLineHeight * (rule.m_Sprites.Length + 3) + k_PaddingBetweenRules;
-                        break;
-                    case RuleTile.TilingRule.OutputSprite.Animation:
-                        height = k_DefaultElementHeight + k_SingleLineHeight * (rule.m_Sprites.Length + 2) + k_PaddingBetweenRules;
-                        break;
-                }
-            }
-            return height;
+            var originalRule = overrideTile.m_Tile.m_TilingRules[index];
+            var overrideRule = overrideTile[originalRule];
+            return overrideRule != null ? ruleTileEditor.GetElementHeight(overrideRule) : ruleTileEditor.GetElementHeight(originalRule);
         }
     }
 }
