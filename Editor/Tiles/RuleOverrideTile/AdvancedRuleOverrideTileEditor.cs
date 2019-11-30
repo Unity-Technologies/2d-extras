@@ -53,11 +53,6 @@ namespace UnityEditor
             m_RuleList.DoLayoutList();
         }
 
-        void DrawDefaultRulesHeader(Rect rect)
-        {
-            GUI.Label(rect, "Default Rule", EditorStyles.label);
-        }
-
         void DrawRulesHeader(Rect rect)
         {
             GUI.Label(rect, "Tiling Rules", EditorStyles.label);
