@@ -193,8 +193,8 @@ namespace UnityEngine.Tilemaps
 
             var tile = m_InstanceTile;
 
-            tile.m_DefaultSprite = this[m_Tile.m_DefaultSprite];
-            tile.m_DefaultGameObject = this[m_Tile.m_DefaultGameObject];
+            tile.m_DefaultSprite = this[m_Tile.m_DefaultSprite] ?? m_Tile.m_DefaultSprite;
+            tile.m_DefaultGameObject = this[m_Tile.m_DefaultGameObject] ?? m_Tile.m_DefaultGameObject;
             tile.m_DefaultColliderType = m_Tile.m_DefaultColliderType;
             tile.m_TilingRules.Clear();
 
@@ -204,10 +204,13 @@ namespace UnityEngine.Tilemaps
                 CopyTilingRule(originalRule, instanceRule);
 
                 for (int i = 0; i < instanceRule.m_Sprites.Length; i++)
-                    if (instanceRule.m_Sprites[i])
-                        instanceRule.m_Sprites[i] = this[instanceRule.m_Sprites[i]];
+                {
+                    Sprite originalSprite = instanceRule.m_Sprites[i];
+                    if (originalSprite)
+                        instanceRule.m_Sprites[i] = this[originalSprite] ?? originalSprite;
+                }
 
-                instanceRule.m_GameObject = this[instanceRule.m_GameObject];
+                instanceRule.m_GameObject = this[instanceRule.m_GameObject] ?? instanceRule.m_GameObject;
 
                 tile.m_TilingRules.Add(instanceRule);
             }
