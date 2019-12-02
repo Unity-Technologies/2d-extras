@@ -53,10 +53,7 @@ namespace UnityEngine
         [Serializable]
         public class TilingRuleOutput
         {
-
-            public static System.Random m_RandomID = new System.Random();
-
-            public int m_Id = m_RandomID.Next(1, int.MaxValue);
+            public int m_Id;
             /// <summary>
             /// The output Sprites for this Rule.
             /// </summary>
