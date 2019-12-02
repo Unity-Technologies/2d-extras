@@ -75,7 +75,7 @@
         /// <param name="to">A Tiling Rule to copy to</param>
         public static void CopyTilingRule(RuleTile.TilingRuleOutput from, RuleTile.TilingRuleOutput to)
         {
-            to.m_InstanceID = from.m_InstanceID;
+            to.m_Id = from.m_Id;
             to.m_Sprites = from.m_Sprites.Clone() as Sprite[];
             to.m_GameObject = from.m_GameObject;
             to.m_AnimationSpeed = from.m_AnimationSpeed;
@@ -88,15 +88,9 @@
         {
             CopyTilingRule(from as RuleTile.TilingRuleOutput, to as RuleTile.TilingRuleOutput);
 
-            if (from is RuleTile.TilingRule && to is RuleTile.TilingRule)
-            {
-                var from_2 = from as RuleTile.TilingRule;
-                var to_2 = to as RuleTile.TilingRule;
-
-                to_2.m_Neighbors = from_2.m_Neighbors;
-                to_2.m_NeighborPositions = from_2.m_NeighborPositions;
-                to_2.m_RuleTransform = from_2.m_RuleTransform;
-            }
+            to.m_Neighbors = from.m_Neighbors;
+            to.m_NeighborPositions = from.m_NeighborPositions;
+            to.m_RuleTransform = from.m_RuleTransform;
         }
     }
 }

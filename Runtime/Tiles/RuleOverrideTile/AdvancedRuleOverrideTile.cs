@@ -18,7 +18,7 @@ namespace UnityEngine.Tilemaps
             get
             {
                 foreach (var overrideRule in m_OverrideTilingRules)
-                    if (overrideRule.m_InstanceID == originalRule.m_InstanceID)
+                    if (overrideRule.m_Id == originalRule.m_Id)
                         return overrideRule;
 
                 return null;
@@ -27,7 +27,7 @@ namespace UnityEngine.Tilemaps
             {
                 for (int i = m_OverrideTilingRules.Count - 1; i >= 0; i--)
                 {
-                    if (m_OverrideTilingRules[i].m_InstanceID == originalRule.m_InstanceID)
+                    if (m_OverrideTilingRules[i].m_Id == originalRule.m_Id)
                     {
                         m_OverrideTilingRules.RemoveAt(i);
                         break;
@@ -77,9 +77,9 @@ namespace UnityEngine.Tilemaps
 
             foreach (var overrideRule in m_OverrideTilingRules)
             {
-                if (!overrides.Exists(o => o.Key.m_InstanceID == overrideRule.m_InstanceID))
+                if (!overrides.Exists(o => o.Key.m_Id == overrideRule.m_Id))
                 {
-                    var originalRule = new RuleTile.TilingRule() { m_InstanceID = overrideRule.m_InstanceID };
+                    var originalRule = new RuleTile.TilingRule() { m_Id = overrideRule.m_Id };
                     overrides.Add(new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>(originalRule, overrideRule));
                 }
             }

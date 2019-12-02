@@ -89,8 +89,7 @@ namespace UnityEditor
             {
                 EditorGUI.BeginChangeCheck();
 
-                bool isOverride = overrideRule != null;
-                DrawRule(r, isOverride ? overrideRule : originalRule, isOverride, originalRule);
+                DrawRule(r, overrideRule ?? originalRule, overrideRule != null, originalRule);
 
                 if (EditorGUI.EndChangeCheck())
                     SaveTile();
