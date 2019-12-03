@@ -366,7 +366,7 @@ namespace UnityEngine
                 return true;
 
             if (m_AllocatedUsedTileArr.Length < newUsedTilesCount)
-                m_AllocatedUsedTileArr = new TileBase[newUsedTilesCount];
+                Array.Resize(ref m_AllocatedUsedTileArr, newUsedTilesCount);
 
             tilemap.GetUsedTilesNonAlloc(m_AllocatedUsedTileArr);
 
@@ -386,7 +386,7 @@ namespace UnityEngine
             HashSet<Vector3Int> neighborPositions = new HashSet<Vector3Int>();
 
             if (m_AllocatedUsedTileArr.Length < usedTileCount)
-                m_AllocatedUsedTileArr = new TileBase[usedTileCount];
+                Array.Resize(ref m_AllocatedUsedTileArr, usedTileCount);
 
             tilemap.GetUsedTilesNonAlloc(m_AllocatedUsedTileArr);
 
