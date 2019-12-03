@@ -15,7 +15,7 @@ namespace UnityEngine
         /// <summary>
         /// Returns the Neighbor Rule Class type for this Rule Tile.
         /// </summary>
-        public sealed override Type m_NeighborType { get { return typeof(T); } }
+        public sealed override Type m_NeighborType => typeof(T);
     }
 
     /// <summary>
@@ -28,7 +28,7 @@ namespace UnityEngine
         /// <summary>
         /// Returns the default Neighbor Rule Class type.
         /// </summary>
-        public virtual Type m_NeighborType { get { return typeof(TilingRule.Neighbor); } }
+        public virtual Type m_NeighborType => typeof(TilingRule.Neighbor);
 
         /// <summary>
         /// The Default Sprite set when creating a new Rule.

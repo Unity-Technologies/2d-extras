@@ -7,10 +7,10 @@ namespace UnityEditor
     public class HexagonalRuleTileEditor : RuleTileEditor
     {
 
+        public HexagonalRuleTile hexTile => target as HexagonalRuleTile;
+
         public override int GetArrowIndex(Vector3Int position)
         {
-            var hexTile = tile as HexagonalRuleTile;
-
             if (position.y % 2 != 0)
             {
                 position *= 2;
@@ -61,14 +61,12 @@ namespace UnityEditor
 
         public override Vector2 GetMatrixSize(BoundsInt bounds)
         {
-            var hexTile = tile as HexagonalRuleTile;
             Vector2 size = base.GetMatrixSize(bounds);
             return hexTile.m_FlatTop ? new Vector2(size.y, size.x) : size;
         }
 
         public override void RuleMatrixOnGUI(RuleTile tile, Rect rect, BoundsInt bounds, RuleTile.TilingRule tilingRule)
         {
-            var hexTile = tile as HexagonalRuleTile;
             bool flatTop = hexTile.m_FlatTop;
 
             Handles.color = EditorGUIUtility.isProSkin ? new Color(1f, 1f, 1f, 0.2f) : new Color(0f, 0f, 0f, 0.2f);
@@ -149,26 +147,7 @@ namespace UnityEditor
                             r.x += w / 2;
                     }
 
-                    if (x != 0 || y != 0)
-                    {
-                        if (neighbors.ContainsKey(pos))
-                        {
-                            RuleOnGUI(r, pos, neighbors[pos]);
-                            RuleTooltipOnGUI(r, neighbors[pos]);
-                        }
-                        if (RuleNeighborUpdate(r, tilingRule, neighbors, pos))
-                        {
-                            tile.UpdateNeighborPositions();
-                        }
-                    }
-                    else
-                    {
-                        RuleTransformOnGUI(r, tilingRule.m_RuleTransform);
-                        if (RuleTransformUpdate(r, tilingRule))
-                        {
-                            tile.UpdateNeighborPositions();
-                        }
-                    }
+                    RuleMatrixIconOnGUI(tilingRule, neighbors, pos, r);
                 }
             }
         }

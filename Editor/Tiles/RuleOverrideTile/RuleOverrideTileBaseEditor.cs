@@ -8,7 +8,7 @@ namespace UnityEditor
     public class RuleOverrideTileBaseEditor : Editor
     {
 
-        public RuleOverrideTileBase overrideTile { get { return (target as RuleOverrideTileBase); } }
+        public RuleOverrideTileBase overrideTile => target as RuleOverrideTileBase;
         public RuleTileEditor ruleTileEditor
         {
             get

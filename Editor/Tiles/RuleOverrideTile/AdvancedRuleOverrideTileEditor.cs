@@ -66,9 +66,6 @@ namespace UnityEditor
             DrawToggleInternal(new Rect(rect.xMin, rect.yMin, 16, rect.height));
             DrawRuleInternal(new Rect(rect.xMin + 16, rect.yMin, rect.width - 16, rect.height));
 
-            if (isMissing)
-                EditorGUI.DrawRect(rect, new Color(0, 0, 0, 0.5f));
-
             void DrawToggleInternal(Rect r)
             {
                 EditorGUI.BeginChangeCheck();
@@ -89,15 +86,21 @@ namespace UnityEditor
             {
                 EditorGUI.BeginChangeCheck();
 
-                DrawRule(r, overrideRule ?? originalRule, overrideRule != null, originalRule);
+                DrawRule(r, overrideRule ?? originalRule, overrideRule != null, originalRule, isMissing);
 
                 if (EditorGUI.EndChangeCheck())
                     SaveTile();
             }
         }
 
-        void DrawRule(Rect rect, RuleTile.TilingRuleOutput rule, bool isOverride, RuleTile.TilingRule originalRule)
+        void DrawRule(Rect rect, RuleTile.TilingRuleOutput rule, bool isOverride, RuleTile.TilingRule originalRule, bool isMissing)
         {
+            if (isMissing)
+            {
+                EditorGUI.HelpBox(new Rect(rect.xMin, rect.yMin, rect.width, 16), "Original Tiling Rule missing", MessageType.Warning);
+                rect.yMin += 16;
+            }
+
             using (new EditorGUI.DisabledScope(!isOverride))
             {
                 float yPos = rect.yMin + 2f;
@@ -120,8 +123,9 @@ namespace UnityEditor
                 ruleTileEditor.RuleInspectorOnGUI(inspectorRect, rule);
                 ruleTileEditor.SpriteOnGUI(spriteRect, rule);
 
-                using (new EditorGUI.DisabledScope(true))
-                    ruleTileEditor.RuleMatrixOnGUI(overrideTile.m_InstanceTile, matrixRect, ruleGuiBounds, originalRule);
+                if (!isMissing)
+                    using (new EditorGUI.DisabledScope(true))
+                        ruleTileEditor.RuleMatrixOnGUI(overrideTile.m_InstanceTile, matrixRect, ruleGuiBounds, originalRule);
             }
         }
 
@@ -129,7 +133,13 @@ namespace UnityEditor
         {
             var originalRule = m_Rules[index].Key;
             var overrideRule = m_Rules[index].Value;
-            return overrideRule != null ? ruleTileEditor.GetElementHeight(overrideRule) : ruleTileEditor.GetElementHeight(originalRule);
+            float height = overrideRule != null ? ruleTileEditor.GetElementHeight(overrideRule) : ruleTileEditor.GetElementHeight(originalRule);
+
+            bool isMissing = index >= overrideTile.m_MissingTilingRuleIndex;
+            if (isMissing)
+                height += 16;
+
+            return height;
         }
     }
 }

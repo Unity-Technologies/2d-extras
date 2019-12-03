@@ -9,7 +9,7 @@ namespace UnityEditor
     public class RuleOverrideTileEditor : RuleOverrideTileBaseEditor
     {
 
-        public new RuleOverrideTile overrideTile { get { return (target as RuleOverrideTile); } }
+        public new RuleOverrideTile overrideTile => target as RuleOverrideTile;
 
         List<KeyValuePair<Sprite, Sprite>> m_Sprites = new List<KeyValuePair<Sprite, Sprite>>();
         List<KeyValuePair<GameObject, GameObject>> m_GameObjects = new List<KeyValuePair<GameObject, GameObject>>();
@@ -29,7 +29,7 @@ namespace UnityEditor
                 m_SpriteList = new ReorderableList(m_Sprites, typeof(KeyValuePair<Sprite, Sprite>), false, true, false, false);
                 m_SpriteList.drawHeaderCallback = DrawSpriteListHeader;
                 m_SpriteList.drawElementCallback = DrawSpriteElement;
-                m_SpriteList.elementHeight = k_SpriteElementHeight + k_PaddingBetweenRules;
+                m_SpriteList.elementHeightCallback = GetSpriteElementHeight;
             }
             if (m_GameObjectList == null)
             {
@@ -38,7 +38,7 @@ namespace UnityEditor
                 m_GameObjectList = new ReorderableList(m_GameObjects, typeof(KeyValuePair<Sprite, Sprite>), false, true, false, false);
                 m_GameObjectList.drawHeaderCallback = DrawGameObjectListHeader;
                 m_GameObjectList.drawElementCallback = DrawGameObjectElement;
-                m_GameObjectList.elementHeight = k_GameObjectElementHeight + k_PaddingBetweenRules;
+                m_GameObjectList.elementHeightCallback = GetGameObjectElementHeight;
             }
         }
 
@@ -99,12 +99,40 @@ namespace UnityEditor
             GUI.Label(rect, "Override GameObject", EditorStyles.label);
         }
 
+        float GetSpriteElementHeight(int index)
+        {
+            float height = k_SpriteElementHeight + k_PaddingBetweenRules;
+
+            bool isMissing = index >= overrideTile.m_MissingSpriteIndex;
+            if (isMissing)
+                height += 16;
+
+            return height;
+        }
+
+        float GetGameObjectElementHeight(int index)
+        {
+            float height = k_GameObjectElementHeight + k_PaddingBetweenRules;
+
+            bool isMissing = index >= overrideTile.m_MissingGameObjectIndex;
+            if (isMissing)
+                height += 16;
+
+            return height;
+        }
+
         void DrawSpriteElement(Rect rect, int index, bool selected, bool focused)
         {
+            bool isMissing = index >= overrideTile.m_MissingSpriteIndex;
+            if (isMissing)
+            {
+                EditorGUI.HelpBox(new Rect(rect.xMin, rect.yMin, rect.width, 16), "Original Sprite missing", MessageType.Warning);
+                rect.yMin += 16;
+            }
+
             Sprite originalSprite = m_Sprites[index].Key;
             Sprite overrideSprite = m_Sprites[index].Value;
             Rect fullRect = rect;
-            bool isMissing = index >= overrideTile.m_MissingSpriteIndex;
 
             rect.y += 2;
             rect.height -= k_PaddingBetweenRules;
@@ -119,17 +147,20 @@ namespace UnityEditor
             overrideSprite = EditorGUI.ObjectField(new Rect(rect.xMin, rect.yMin, rect.height, rect.height), overrideSprite, typeof(Sprite), false) as Sprite;
             if (EditorGUI.EndChangeCheck())
                 m_Sprites[index] = new KeyValuePair<Sprite, Sprite>(originalSprite, overrideSprite);
-
-            if (isMissing)
-                EditorGUI.DrawRect(fullRect, new Color(0, 0, 0, 0.5f));
         }
 
         void DrawGameObjectElement(Rect rect, int index, bool selected, bool focused)
         {
+            bool isMissing = index >= overrideTile.m_MissingSpriteIndex;
+            if (isMissing)
+            {
+                EditorGUI.HelpBox(new Rect(rect.xMin, rect.yMin, rect.width, 16), "Original Game Object missing", MessageType.Warning);
+                rect.yMin += 16;
+            }
+
             GameObject originalGameObject = m_GameObjects[index].Key;
             GameObject overrideGameObject = m_GameObjects[index].Value;
             Rect fullRect = rect;
-            bool isMissing = index >= overrideTile.m_MissingGameObjectIndex;
 
             rect.y += 2;
             rect.height -= k_PaddingBetweenRules;
@@ -144,9 +175,6 @@ namespace UnityEditor
             overrideGameObject = EditorGUI.ObjectField(new Rect(rect.xMin, rect.yMin, rect.width, rect.height), overrideGameObject, typeof(GameObject), false) as GameObject;
             if (EditorGUI.EndChangeCheck())
                 m_GameObjects[index] = new KeyValuePair<GameObject, GameObject>(originalGameObject, overrideGameObject);
-
-            if (isMissing)
-                EditorGUI.DrawRect(fullRect, new Color(0, 0, 0, 0.5f));
         }
     }
 }
