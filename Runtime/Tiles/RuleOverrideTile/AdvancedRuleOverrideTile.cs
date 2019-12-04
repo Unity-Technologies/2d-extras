@@ -10,9 +10,13 @@ namespace UnityEngine.Tilemaps
     [MovedFrom(true, "UnityEngine")]
     [Serializable]
     [CreateAssetMenu(fileName = "New Advanced Rule Override Tile", menuName = "Tiles/Advanced Rule Override Tile")]
-    public class AdvancedRuleOverrideTile : RuleOverrideTileBase, IRuleOverrideTile<RuleTile.TilingRule, RuleTile.TilingRuleOutput>
+    public class AdvancedRuleOverrideTile : RuleOverrideTile
     {
 
+        /// <summary>
+        /// Gets the overriding TilingRuleOutput of a given TilingRule. 
+        /// </summary>
+        /// <param name="original">The original TilingRule that is overridden</param>
         public RuleTile.TilingRuleOutput this[RuleTile.TilingRule originalRule]
         {
             get
@@ -45,9 +49,18 @@ namespace UnityEngine.Tilemaps
         public Sprite m_DefaultSprite;
         public GameObject m_DefaultGameObject;
         public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
+
+        /// <summary>
+        /// A list of TilingRule Overrides
+        /// </summary>
         public List<RuleTile.TilingRuleOutput> m_OverrideTilingRules = new List<RuleTile.TilingRuleOutput>();
         [NonSerialized] public int m_MissingTilingRuleIndex = -1;
 
+        /// <summary>
+        /// Applies overrides to this
+        /// </summary>
+        /// <param name="overrides">A list of overrides to apply</param>
+        /// <exception cref="ArgumentNullException">The input overrides list is not valid</exception>
         public void ApplyOverrides(IList<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>> overrides)
         {
             if (overrides == null)
@@ -57,6 +70,11 @@ namespace UnityEngine.Tilemaps
                 this[overrides[i].Key] = overrides[i].Value;
         }
 
+        /// <summary>
+        /// Gets overrides for this
+        /// </summary>
+        /// <param name="overrides">A list of overrides to fill</param>
+        /// <exception cref="ArgumentNullException">The input overrides list is not valid</exception>
         public void GetOverrides(List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>> overrides)
         {
             if (overrides == null)

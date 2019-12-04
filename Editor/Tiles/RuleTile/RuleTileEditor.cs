@@ -194,7 +194,7 @@ namespace UnityEditor
 
         public static void UpdateAffectedOverrideTiles(RuleTile target)
         {
-            List<RuleOverrideTileBase> overrideTiles = FindAffectedOverrideTiles(target);
+            List<RuleOverrideTile> overrideTiles = FindAffectedOverrideTiles(target);
             foreach (var overrideTile in overrideTiles)
             {
                 overrideTile.Override();
@@ -202,15 +202,15 @@ namespace UnityEditor
             }
         }
 
-        public static List<RuleOverrideTileBase> FindAffectedOverrideTiles(RuleTile target)
+        public static List<RuleOverrideTile> FindAffectedOverrideTiles(RuleTile target)
         {
-            List<RuleOverrideTileBase> overrideTiles = new List<RuleOverrideTileBase>();
+            List<RuleOverrideTile> overrideTiles = new List<RuleOverrideTile>();
 
-            string[] overrideTileGuids = AssetDatabase.FindAssets("t:" + typeof(RuleOverrideTileBase).Name);
+            string[] overrideTileGuids = AssetDatabase.FindAssets("t:" + typeof(RuleOverrideTile).Name);
             foreach (string overrideTileGuid in overrideTileGuids)
             {
                 string overrideTilePath = AssetDatabase.GUIDToAssetPath(overrideTileGuid);
-                RuleOverrideTileBase overrideTile = AssetDatabase.LoadAssetAtPath<RuleOverrideTileBase>(overrideTilePath);
+                RuleOverrideTile overrideTile = AssetDatabase.LoadAssetAtPath<RuleOverrideTile>(overrideTilePath);
                 if (overrideTile.m_Tile == target)
                 {
                     overrideTiles.Add(overrideTile);

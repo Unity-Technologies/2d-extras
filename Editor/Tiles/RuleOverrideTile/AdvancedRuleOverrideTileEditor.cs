@@ -6,10 +6,10 @@ using System.Collections.Generic;
 namespace UnityEditor
 {
     [CustomEditor(typeof(AdvancedRuleOverrideTile))]
-    public class AdvancedRuleOverrideTileEditor : RuleOverrideTileBaseEditor
+    public class AdvancedRuleOverrideTileEditor : RuleOverrideTileEditor
     {
 
-        public new AdvancedRuleOverrideTile overrideTile { get { return (target as AdvancedRuleOverrideTile); } }
+        public new AdvancedRuleOverrideTile overrideTile => target as AdvancedRuleOverrideTile;
 
         List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>> m_Rules = new List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>>();
         ReorderableList m_RuleList;
@@ -19,7 +19,7 @@ namespace UnityEditor
         static float k_SingleLineHeight { get { return RuleTileEditor.k_SingleLineHeight; } }
         static float k_LabelWidth { get { return RuleTileEditor.k_LabelWidth; } }
 
-        void OnEnable()
+        public override void OnEnable()
         {
             if (m_RuleList == null)
             {
@@ -34,7 +34,7 @@ namespace UnityEditor
         {
             serializedObject.UpdateIfRequiredOrScript();
 
-            DrawSourceTileField();
+            DrawTileField();
 
             EditorGUI.BeginChangeCheck();
             overrideTile.m_DefaultSprite = EditorGUILayout.ObjectField("Default Sprite", overrideTile.m_DefaultSprite, typeof(Sprite), false) as Sprite;
