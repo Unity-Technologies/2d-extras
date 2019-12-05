@@ -67,26 +67,8 @@ namespace UnityEditor
                     Vector2 center = r.center;
                     r.size *= iconScale;
                     r.center = center;
-                    if (x != 0 || y != 0)
-                    {
-                        if (neighbors.ContainsKey(pos))
-                        {
-                            RuleOnGUI(r, pos, neighbors[pos]);
-                            RuleTooltipOnGUI(r, neighbors[pos]);
-                        }
-                        if (RuleNeighborUpdate(r, tilingRule, neighbors, pos))
-                        {
-                            tile.UpdateNeighborPositions();
-                        }
-                    }
-                    else
-                    {
-                        RuleTransformOnGUI(r, tilingRule.m_RuleTransform);
-                        if (RuleTransformUpdate(r, tilingRule))
-                        {
-                            tile.UpdateNeighborPositions();
-                        }
-                    }
+
+                    RuleMatrixIconOnGUI(tilingRule, neighbors, pos, r);
                 }
             }
         }

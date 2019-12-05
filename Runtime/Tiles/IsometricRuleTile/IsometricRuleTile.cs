@@ -13,7 +13,7 @@ namespace UnityEngine
         /// <summary>
         /// Returns the Neighbor Rule Class type for this Rule Tile.
         /// </summary>
-        public sealed override Type m_NeighborType { get { return typeof(T); } }
+        public sealed override Type m_NeighborType => typeof(T);
     }
 
     /// <summary>
