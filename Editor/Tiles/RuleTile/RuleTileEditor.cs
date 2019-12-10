@@ -539,6 +539,9 @@ namespace UnityEditor
                 return;
 
             m_PreviewUtility.BeginPreview(r, background);
+            m_PreviewUtility.camera.orthographicSize = 2;
+            if (r.height > r.width)
+                m_PreviewUtility.camera.orthographicSize *= (float)r.height / r.width;
             m_PreviewUtility.camera.Render();
             m_PreviewUtility.EndAndDrawPreview(r);
         }
