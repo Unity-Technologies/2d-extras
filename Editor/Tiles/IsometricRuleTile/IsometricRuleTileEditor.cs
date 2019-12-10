@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace UnityEditor
 {
@@ -82,6 +83,33 @@ namespace UnityEditor
             var xAbs = Mathf.Abs(Vector2.Dot(mouseFromCenter, Vector2.right));
             var yAbs = Mathf.Abs(Vector2.Dot(mouseFromCenter, Vector2.up));
             return (xAbs / halfWidth + yAbs / halfHeight) <= 1;
+        }
+
+        public override void OnPreviewSettings()
+        {
+            base.OnPreviewSettings();
+
+            if (m_PreviewGrid)
+            {
+                float height = EditorGUILayout.FloatField("Cell Height", m_PreviewGrid.cellSize.y);
+                m_PreviewGrid.cellSize = new Vector3(1f, Mathf.Max(height, 0), 1f);
+            }
+        }
+
+        public override void CreatePreview()
+        {
+            base.CreatePreview();
+
+            m_PreviewGrid.cellSize = new Vector3(1f, 0.5f, 1f);
+            m_PreviewGrid.cellLayout = GridLayout.CellLayout.Isometric;
+
+            foreach (var tilemapRenderer in m_PreviewTilemapRenderers)
+                tilemapRenderer.sortOrder = TilemapRenderer.SortOrder.TopRight;
+
+            m_PreviewTilemapRenderers[0].sortingOrder = 0;
+            m_PreviewTilemapRenderers[1].sortingOrder = -1;
+            m_PreviewTilemapRenderers[2].sortingOrder = 1;
+            m_PreviewTilemapRenderers[3].sortingOrder = 0;
         }
     }
 }

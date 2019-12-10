@@ -300,10 +300,17 @@ namespace UnityEditor
             SceneView.RepaintAll();
 
             SaveInstanceTileAsset();
+        
             if (overrideTile.m_InstanceTile)
             {
                 overrideTile.Override();
                 RuleTileEditor.UpdateAffectedOverrideTiles(overrideTile.m_InstanceTile);
+            }
+
+            if (ruleTileEditor && ruleTileEditor.m_PreviewTilemaps != null)
+            {
+                foreach (var tilemap in ruleTileEditor.m_PreviewTilemaps)
+                    tilemap.RefreshAllTiles();
             }
         }
 
@@ -313,6 +320,26 @@ namespace UnityEditor
                 return ruleTileEditor.RenderStaticPreview(assetPath, subAssets, width, height);
 
             return base.RenderStaticPreview(assetPath, subAssets, width, height);
+        }
+
+        public override bool HasPreviewGUI()
+        {
+            if (ruleTileEditor)
+                return ruleTileEditor.HasPreviewGUI();
+
+            return false;
+        }
+
+        public override void OnPreviewSettings()
+        {
+            if (ruleTileEditor)
+                ruleTileEditor.OnPreviewSettings();
+        }
+
+        public override void OnPreviewGUI(Rect r, GUIStyle background)
+        {
+            if (ruleTileEditor)
+                ruleTileEditor.OnPreviewGUI(r, background);
         }
     }
 }
