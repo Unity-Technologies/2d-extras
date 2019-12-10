@@ -308,5 +308,13 @@ namespace UnityEditor
                 RuleTileEditor.UpdateAffectedOverrideTiles(overrideTile.m_InstanceTile);
             }
         }
+
+        public override Texture2D RenderStaticPreview(string assetPath, Object[] subAssets, int width, int height)
+        {
+            if (ruleTileEditor)
+                return ruleTileEditor.RenderStaticPreview(assetPath, subAssets, width, height);
+
+            return base.RenderStaticPreview(assetPath, subAssets, width, height);
+        }
     }
 }
