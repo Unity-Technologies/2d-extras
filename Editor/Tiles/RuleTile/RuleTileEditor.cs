@@ -260,11 +260,14 @@ namespace UnityEditor
         public static void DrawCustomFields(Object tile, SerializedObject serializedObject)
         {
             var customFields = tile.GetType().GetFields()
-                .Where(field => typeof(RuleTile).GetField(field.Name) == null)
-                .Where(field => !field.IsStatic)
-                .Where(field => field.FieldType.IsSerializable);
+                .Where(field => typeof(RuleTile).GetField(field.Name) == null);
+
             foreach (var field in customFields)
-                EditorGUILayout.PropertyField(serializedObject.FindProperty(field.Name), true);
+            {
+                var property = serializedObject.FindProperty(field.Name);
+                if (property != null)
+                    EditorGUILayout.PropertyField(property, true);
+            }
         }
 
         public virtual int GetArrowIndex(Vector3Int position)
