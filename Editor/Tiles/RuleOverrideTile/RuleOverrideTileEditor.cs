@@ -246,13 +246,11 @@ namespace UnityEditor
 
         public void DrawCustomFields()
         {
-            if (overrideTile.m_InstanceTile)
+            if (ruleTileEditor)
             {
-                SerializedObject instanceTileSerializedObject = new SerializedObject(overrideTile.m_InstanceTile);
-                overrideTile.m_InstanceTile.hideFlags = HideFlags.None;
-                RuleTileEditor.DrawCustomFields(overrideTile.m_InstanceTile, instanceTileSerializedObject);
-                overrideTile.m_InstanceTile.hideFlags = HideFlags.NotEditable;
-                instanceTileSerializedObject.ApplyModifiedProperties();
+                ruleTileEditor.target.hideFlags = HideFlags.None;
+                ruleTileEditor.DrawCustomFields();
+                ruleTileEditor.target.hideFlags = HideFlags.NotEditable;
             }
         }
 

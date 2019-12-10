@@ -245,11 +245,7 @@ namespace UnityEditor
             if (EditorGUI.EndChangeCheck())
                 SaveTile();
 
-            serializedObject.Update();
-            EditorGUI.BeginChangeCheck();
-            DrawCustomFields(tile, serializedObject);
-            if (EditorGUI.EndChangeCheck())
-                serializedObject.ApplyModifiedProperties();
+            DrawCustomFields();
 
             EditorGUILayout.Space();
 
@@ -257,17 +253,21 @@ namespace UnityEditor
                 m_ReorderableList.DoLayoutList();
         }
 
-        public static void DrawCustomFields(Object tile, SerializedObject serializedObject)
+        public void DrawCustomFields()
         {
             var customFields = tile.GetType().GetFields()
                 .Where(field => typeof(RuleTile).GetField(field.Name) == null);
 
+            serializedObject.Update();
+            EditorGUI.BeginChangeCheck();
             foreach (var field in customFields)
             {
                 var property = serializedObject.FindProperty(field.Name);
                 if (property != null)
                     EditorGUILayout.PropertyField(property, true);
             }
+            if (EditorGUI.EndChangeCheck())
+                serializedObject.ApplyModifiedProperties();
         }
 
         public virtual int GetArrowIndex(Vector3Int position)
