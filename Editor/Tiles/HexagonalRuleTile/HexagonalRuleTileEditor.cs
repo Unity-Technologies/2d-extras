@@ -151,5 +151,10 @@ namespace UnityEditor
                 }
             }
         }
+
+        public override bool HasPreviewGUI()
+        {
+            return false;
+        }
     }
 }

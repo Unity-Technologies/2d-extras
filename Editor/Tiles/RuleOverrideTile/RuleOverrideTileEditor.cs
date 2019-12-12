@@ -246,13 +246,11 @@ namespace UnityEditor
 
         public void DrawCustomFields()
         {
-            if (overrideTile.m_InstanceTile)
+            if (ruleTileEditor)
             {
-                SerializedObject instanceTileSerializedObject = new SerializedObject(overrideTile.m_InstanceTile);
-                overrideTile.m_InstanceTile.hideFlags = HideFlags.None;
-                RuleTileEditor.DrawCustomFields(overrideTile.m_InstanceTile, instanceTileSerializedObject);
-                overrideTile.m_InstanceTile.hideFlags = HideFlags.NotEditable;
-                instanceTileSerializedObject.ApplyModifiedProperties();
+                ruleTileEditor.target.hideFlags = HideFlags.None;
+                ruleTileEditor.DrawCustomFields();
+                ruleTileEditor.target.hideFlags = HideFlags.NotEditable;
             }
         }
 
@@ -302,11 +300,46 @@ namespace UnityEditor
             SceneView.RepaintAll();
 
             SaveInstanceTileAsset();
+        
             if (overrideTile.m_InstanceTile)
             {
                 overrideTile.Override();
                 RuleTileEditor.UpdateAffectedOverrideTiles(overrideTile.m_InstanceTile);
             }
+
+            if (ruleTileEditor && ruleTileEditor.m_PreviewTilemaps != null)
+            {
+                foreach (var tilemap in ruleTileEditor.m_PreviewTilemaps)
+                    tilemap.RefreshAllTiles();
+            }
+        }
+
+        public override Texture2D RenderStaticPreview(string assetPath, Object[] subAssets, int width, int height)
+        {
+            if (ruleTileEditor)
+                return ruleTileEditor.RenderStaticPreview(assetPath, subAssets, width, height);
+
+            return base.RenderStaticPreview(assetPath, subAssets, width, height);
+        }
+
+        public override bool HasPreviewGUI()
+        {
+            if (ruleTileEditor)
+                return ruleTileEditor.HasPreviewGUI();
+
+            return false;
+        }
+
+        public override void OnPreviewSettings()
+        {
+            if (ruleTileEditor)
+                ruleTileEditor.OnPreviewSettings();
+        }
+
+        public override void OnPreviewGUI(Rect r, GUIStyle background)
+        {
+            if (ruleTileEditor)
+                ruleTileEditor.OnPreviewGUI(r, background);
         }
     }
 }

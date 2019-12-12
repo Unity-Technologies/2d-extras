@@ -72,6 +72,11 @@ namespace UnityEditor
         private ReorderableList m_ReorderableList;
         public bool extendNeighbor;
 
+        public PreviewRenderUtility m_PreviewUtility;
+        public Grid m_PreviewGrid;
+        public List<Tilemap> m_PreviewTilemaps;
+        public List<TilemapRenderer> m_PreviewTilemapRenderers;
+
         public const float k_DefaultElementHeight = 48f;
         public const float k_PaddingBetweenRules = 26f;
         public const float k_SingleLineHeight = 16f;
@@ -85,6 +90,11 @@ namespace UnityEditor
             m_ReorderableList.elementHeightCallback = GetElementHeight;
             m_ReorderableList.onChangedCallback = ListUpdated;
             m_ReorderableList.onAddCallback = OnAddElement;
+        }
+
+        public void OnDisable()
+        {
+            DestroyPreview();
         }
 
         public virtual BoundsInt GetRuleGUIBounds(BoundsInt bounds, RuleTile.TilingRule rule)
@@ -245,11 +255,7 @@ namespace UnityEditor
             if (EditorGUI.EndChangeCheck())
                 SaveTile();
 
-            serializedObject.Update();
-            EditorGUI.BeginChangeCheck();
-            DrawCustomFields(tile, serializedObject);
-            if (EditorGUI.EndChangeCheck())
-                serializedObject.ApplyModifiedProperties();
+            DrawCustomFields();
 
             EditorGUILayout.Space();
 
@@ -257,14 +263,21 @@ namespace UnityEditor
                 m_ReorderableList.DoLayoutList();
         }
 
-        public static void DrawCustomFields(Object tile, SerializedObject serializedObject)
+        public void DrawCustomFields()
         {
             var customFields = tile.GetType().GetFields()
-                .Where(field => typeof(RuleTile).GetField(field.Name) == null)
-                .Where(field => !field.IsStatic)
-                .Where(field => field.FieldType.IsSerializable);
+                .Where(field => typeof(RuleTile).GetField(field.Name) == null);
+
+            serializedObject.Update();
+            EditorGUI.BeginChangeCheck();
             foreach (var field in customFields)
-                EditorGUILayout.PropertyField(serializedObject.FindProperty(field.Name), true);
+            {
+                var property = serializedObject.FindProperty(field.Name);
+                if (property != null)
+                    EditorGUILayout.PropertyField(property, true);
+            }
+            if (EditorGUI.EndChangeCheck())
+                serializedObject.ApplyModifiedProperties();
         }
 
         public virtual int GetArrowIndex(Vector3Int position)
@@ -509,6 +522,75 @@ namespace UnityEditor
                     tilingRule.m_Sprites[i] = EditorGUI.ObjectField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_Sprites[i], typeof(Sprite), false) as Sprite;
                     y += k_SingleLineHeight;
                 }
+            }
+        }
+
+        public override bool HasPreviewGUI()
+        {
+            return true;
+        }
+
+        public override void OnPreviewGUI(Rect r, GUIStyle background)
+        {
+            if (m_PreviewUtility == null)
+                CreatePreview();
+
+            if (Event.current.type != EventType.Repaint)
+                return;
+
+            m_PreviewUtility.BeginPreview(r, background);
+            m_PreviewUtility.camera.orthographicSize = 2;
+            if (r.height > r.width)
+                m_PreviewUtility.camera.orthographicSize *= (float)r.height / r.width;
+            m_PreviewUtility.camera.Render();
+            m_PreviewUtility.EndAndDrawPreview(r);
+        }
+
+        public virtual void CreatePreview()
+        {
+            m_PreviewUtility = new PreviewRenderUtility(true);
+            m_PreviewUtility.camera.orthographic = true;
+            m_PreviewUtility.camera.orthographicSize = 2;
+            m_PreviewUtility.camera.transform.position = new Vector3(0, 0, -10);
+
+            var previewInstance = new GameObject();
+            m_PreviewGrid = previewInstance.AddComponent<Grid>();
+            m_PreviewUtility.AddSingleGO(previewInstance);
+
+            m_PreviewTilemaps = new List<Tilemap>();
+            m_PreviewTilemapRenderers = new List<TilemapRenderer>();
+
+            for (int i = 0; i < 4; i++)
+            {
+                var previewTilemapGo = new GameObject();
+                m_PreviewTilemaps.Add(previewTilemapGo.AddComponent<Tilemap>());
+                m_PreviewTilemapRenderers.Add(previewTilemapGo.AddComponent<TilemapRenderer>());
+
+                previewTilemapGo.transform.SetParent(previewInstance.transform, false);
+            }
+
+            for (int x = -2; x <= 0; x++)
+                for (int y = -1; y <= 1; y++)
+                    m_PreviewTilemaps[0].SetTile(new Vector3Int(x, y, 0), tile);
+
+            for (int y = -1; y <= 1; y++)
+                m_PreviewTilemaps[1].SetTile(new Vector3Int(1, y, 0), tile);
+
+            for (int x = -2; x <= 0; x++)
+                m_PreviewTilemaps[2].SetTile(new Vector3Int(x, -2, 0), tile);
+
+            m_PreviewTilemaps[3].SetTile(new Vector3Int(1, -2, 0), tile);
+        }
+
+        private void DestroyPreview()
+        {
+            if (m_PreviewUtility != null)
+            {
+                m_PreviewUtility.Cleanup();
+                m_PreviewUtility = null;
+                m_PreviewGrid = null;
+                m_PreviewTilemaps = null;
+                m_PreviewTilemapRenderers = null;
             }
         }
 
