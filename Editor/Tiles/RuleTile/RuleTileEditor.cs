@@ -82,7 +82,7 @@ namespace UnityEditor
         public const float k_SingleLineHeight = 16f;
         public const float k_LabelWidth = 80f;
 
-        public void OnEnable()
+        public virtual void OnEnable()
         {
             m_ReorderableList = new ReorderableList(tile.m_TilingRules, typeof(RuleTile.TilingRule), true, true, true, true);
             m_ReorderableList.drawHeaderCallback = OnDrawHeader;
@@ -92,7 +92,7 @@ namespace UnityEditor
             m_ReorderableList.onAddCallback = OnAddElement;
         }
 
-        public void OnDisable()
+        public virtual void OnDisable()
         {
             DestroyPreview();
         }
@@ -113,7 +113,7 @@ namespace UnityEditor
             return bounds;
         }
 
-        private void ListUpdated(ReorderableList list)
+        public void ListUpdated(ReorderableList list)
         {
             HashSet<int> usedIdSet = new HashSet<int>();
             foreach (var rule in tile.m_TilingRules)
@@ -124,7 +124,7 @@ namespace UnityEditor
             }
         }
 
-        private float GetElementHeight(int index)
+        public float GetElementHeight(int index)
         {
             RuleTile.TilingRule rule = tile.m_TilingRules[index];
             return GetElementHeight(rule);
@@ -162,7 +162,7 @@ namespace UnityEditor
             return new Vector2(bounds.size.x * k_SingleLineHeight, bounds.size.y * k_SingleLineHeight);
         }
 
-        protected virtual void OnDrawElement(Rect rect, int index, bool isactive, bool isfocused)
+        public virtual void OnDrawElement(Rect rect, int index, bool isactive, bool isfocused)
         {
             RuleTile.TilingRule rule = tile.m_TilingRules[index];
             BoundsInt bounds = GetRuleGUIBounds(rule.GetBounds(), rule);
@@ -180,7 +180,7 @@ namespace UnityEditor
             SpriteOnGUI(spriteRect, rule);
         }
 
-        private void OnAddElement(ReorderableList list)
+        public void OnAddElement(ReorderableList list)
         {
             RuleTile.TilingRule rule = new RuleTile.TilingRule();
             rule.m_Output = RuleTile.TilingRule.OutputSprite.Single;
@@ -226,7 +226,7 @@ namespace UnityEditor
             return overrideTiles;
         }
 
-        private void OnDrawHeader(Rect rect)
+        public void OnDrawHeader(Rect rect)
         {
             GUI.Label(rect, "Tiling Rules");
 
@@ -409,7 +409,7 @@ namespace UnityEditor
             return rect.Contains(Event.current.mousePosition);
         }
 
-        private static int GetMouseChange()
+        public static int GetMouseChange()
         {
             return Event.current.button == 1 ? -1 : 1;
         }
@@ -579,7 +579,7 @@ namespace UnityEditor
             m_PreviewTilemaps[3].SetTile(new Vector3Int(1, -2, 0), tile);
         }
 
-        private void DestroyPreview()
+        public void DestroyPreview()
         {
             if (m_PreviewUtility != null)
             {
@@ -610,7 +610,7 @@ namespace UnityEditor
             return base.RenderStaticPreview(assetPath, subAssets, width, height);
         }
 
-        private static Type GetType(string TypeName)
+        public static Type GetType(string TypeName)
         {
             var type = Type.GetType(TypeName);
             if (type != null)
@@ -642,7 +642,7 @@ namespace UnityEditor
             return null;
         }
 
-        private static Texture2D Base64ToTexture(string base64)
+        public static Texture2D Base64ToTexture(string base64)
         {
             Texture2D t = new Texture2D(1, 1);
             t.hideFlags = HideFlags.HideAndDontSave;
@@ -658,7 +658,7 @@ namespace UnityEditor
         }
 
         [MenuItem("CONTEXT/RuleTile/Copy All Rules")]
-        private static void CopyAllRules(MenuCommand item)
+        public static void CopyAllRules(MenuCommand item)
         {
             RuleTile tile = item.context as RuleTile;
             if (tile == null)
@@ -671,7 +671,7 @@ namespace UnityEditor
         }
 
         [MenuItem("CONTEXT/RuleTile/Paste Rules")]
-        private static void PasteRules(MenuCommand item)
+        public static void PasteRules(MenuCommand item)
         {
             RuleTile tile = item.context as RuleTile;
             if (tile == null)

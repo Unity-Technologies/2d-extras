@@ -88,7 +88,7 @@ namespace UnityEngine
             return tilemapPosition;
         }
 
-        protected override Vector3Int GetOffsetPosition(Vector3Int location, Vector3Int offset)
+        public override Vector3Int GetOffsetPosition(Vector3Int location, Vector3Int offset)
         {
             Vector3Int position = location + offset;
 
@@ -98,7 +98,7 @@ namespace UnityEngine
             return position;
         }
 
-        protected override Vector3Int GetOffsetPositionReverse(Vector3Int position, Vector3Int offset)
+        public override Vector3Int GetOffsetPositionReverse(Vector3Int position, Vector3Int offset)
         {
             Vector3Int location = position - offset;
 
@@ -114,7 +114,7 @@ namespace UnityEngine
         /// <param name="position">Original position of Tile.</param>
         /// <param name="rotation">Rotation in degrees.</param>
         /// <returns>Rotated position of Tile.</returns>
-        protected override Vector3Int GetRotatedPosition(Vector3Int position, int rotation)
+        public override Vector3Int GetRotatedPosition(Vector3Int position, int rotation)
         {
             if (rotation != 0)
             {
@@ -148,7 +148,7 @@ namespace UnityEngine
         /// <param name="mirrorX">Mirror in the X Axis.</param>
         /// <param name="mirrorY">Mirror in the Y Axis.</param>
         /// <returns>Mirrored position of Tile.</returns>
-        protected override Vector3Int GetMirroredPosition(Vector3Int position, bool mirrorX, bool mirrorY)
+        public override Vector3Int GetMirroredPosition(Vector3Int position, bool mirrorX, bool mirrorY)
         {
             if (mirrorX || mirrorY)
             {

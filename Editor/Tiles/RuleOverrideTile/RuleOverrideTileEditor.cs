@@ -27,14 +27,14 @@ namespace UnityEditor
         RuleTileEditor m_RuleTileEditor;
         RuleTile m_RuleTileEditorTarget;
 
-        List<KeyValuePair<Sprite, Sprite>> m_Sprites = new List<KeyValuePair<Sprite, Sprite>>();
-        List<KeyValuePair<GameObject, GameObject>> m_GameObjects = new List<KeyValuePair<GameObject, GameObject>>();
-        ReorderableList m_SpriteList;
-        ReorderableList m_GameObjectList;
+        public List<KeyValuePair<Sprite, Sprite>> m_Sprites = new List<KeyValuePair<Sprite, Sprite>>();
+        public List<KeyValuePair<GameObject, GameObject>> m_GameObjects = new List<KeyValuePair<GameObject, GameObject>>();
+        public ReorderableList m_SpriteList;
+        public ReorderableList m_GameObjectList;
 
-        static float k_SpriteElementHeight = 48;
-        static float k_GameObjectElementHeight = 16;
-        static float k_PaddingBetweenRules = 4;
+        public static float k_SpriteElementHeight = 48;
+        public static float k_GameObjectElementHeight = 16;
+        public static float k_PaddingBetweenRules = 4;
 
         public virtual void OnEnable()
         {
@@ -104,7 +104,7 @@ namespace UnityEditor
             }
         }
 
-        void DrawSpriteListHeader(Rect rect)
+        public void DrawSpriteListHeader(Rect rect)
         {
             float xMax = rect.xMax;
             rect.xMax = rect.xMax / 2.0f;
@@ -114,7 +114,7 @@ namespace UnityEditor
             GUI.Label(rect, "Override Sprite", EditorStyles.label);
         }
 
-        void DrawGameObjectListHeader(Rect rect)
+        public void DrawGameObjectListHeader(Rect rect)
         {
             float xMax = rect.xMax;
             rect.xMax = rect.xMax / 2.0f;
@@ -124,7 +124,7 @@ namespace UnityEditor
             GUI.Label(rect, "Override GameObject", EditorStyles.label);
         }
 
-        float GetSpriteElementHeight(int index)
+        public float GetSpriteElementHeight(int index)
         {
             float height = k_SpriteElementHeight + k_PaddingBetweenRules;
 
@@ -135,7 +135,7 @@ namespace UnityEditor
             return height;
         }
 
-        float GetGameObjectElementHeight(int index)
+        public float GetGameObjectElementHeight(int index)
         {
             float height = k_GameObjectElementHeight + k_PaddingBetweenRules;
 
@@ -146,7 +146,7 @@ namespace UnityEditor
             return height;
         }
 
-        void DrawSpriteElement(Rect rect, int index, bool selected, bool focused)
+        public void DrawSpriteElement(Rect rect, int index, bool selected, bool focused)
         {
             bool isMissing = index >= overrideTile.m_MissingSpriteIndex;
             if (isMissing)
@@ -174,7 +174,7 @@ namespace UnityEditor
                 m_Sprites[index] = new KeyValuePair<Sprite, Sprite>(originalSprite, overrideSprite);
         }
 
-        void DrawGameObjectElement(Rect rect, int index, bool selected, bool focused)
+        public void DrawGameObjectElement(Rect rect, int index, bool selected, bool focused)
         {
             bool isMissing = index >= overrideTile.m_MissingSpriteIndex;
             if (isMissing)

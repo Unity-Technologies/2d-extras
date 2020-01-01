@@ -15,7 +15,6 @@ namespace UnityEditor
         ReorderableList m_RuleList;
 
         static float k_DefaultElementHeight { get { return RuleTileEditor.k_DefaultElementHeight; } }
-        static float k_PaddingBetweenRules { get { return RuleTileEditor.k_PaddingBetweenRules; } }
         static float k_SingleLineHeight { get { return RuleTileEditor.k_SingleLineHeight; } }
         static float k_LabelWidth { get { return RuleTileEditor.k_LabelWidth; } }
 
@@ -52,12 +51,12 @@ namespace UnityEditor
             m_RuleList.DoLayoutList();
         }
 
-        void DrawRulesHeader(Rect rect)
+        public void DrawRulesHeader(Rect rect)
         {
             GUI.Label(rect, "Tiling Rules", EditorStyles.label);
         }
 
-        void DrawRuleElement(Rect rect, int index, bool selected, bool focused)
+        public void DrawRuleElement(Rect rect, int index, bool selected, bool focused)
         {
             RuleTile.TilingRule originalRule = m_Rules[index].Key;
             RuleTile.TilingRuleOutput overrideRule = m_Rules[index].Value;
@@ -93,7 +92,7 @@ namespace UnityEditor
             }
         }
 
-        void DrawRule(Rect rect, RuleTile.TilingRuleOutput rule, bool isOverride, RuleTile.TilingRule originalRule, bool isMissing)
+        public void DrawRule(Rect rect, RuleTile.TilingRuleOutput rule, bool isOverride, RuleTile.TilingRule originalRule, bool isMissing)
         {
             if (isMissing)
             {
@@ -129,7 +128,7 @@ namespace UnityEditor
             }
         }
 
-        float GetRuleElementHeight(int index)
+        public float GetRuleElementHeight(int index)
         {
             var originalRule = m_Rules[index].Key;
             var overrideRule = m_Rules[index].Value;
