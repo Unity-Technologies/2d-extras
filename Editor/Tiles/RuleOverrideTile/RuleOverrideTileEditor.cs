@@ -31,6 +31,8 @@ namespace UnityEditor
         public List<KeyValuePair<GameObject, GameObject>> m_GameObjects = new List<KeyValuePair<GameObject, GameObject>>();
         public ReorderableList m_SpriteList;
         public ReorderableList m_GameObjectList;
+        int m_MissingOriginalSpriteIndex;
+        int m_MissingOriginalGameObjectIndex;
 
         public static float k_SpriteElementHeight = 48;
         public static float k_GameObjectElementHeight = 16;
@@ -40,8 +42,6 @@ namespace UnityEditor
         {
             if (m_SpriteList == null)
             {
-                overrideTile.GetOverrides(m_Sprites);
-
                 m_SpriteList = new ReorderableList(m_Sprites, typeof(KeyValuePair<Sprite, Sprite>), false, true, false, false);
                 m_SpriteList.drawHeaderCallback = DrawSpriteListHeader;
                 m_SpriteList.drawElementCallback = DrawSpriteElement;
@@ -49,8 +49,6 @@ namespace UnityEditor
             }
             if (m_GameObjectList == null)
             {
-                overrideTile.GetOverrides(m_GameObjects);
-
                 m_GameObjectList = new ReorderableList(m_GameObjects, typeof(KeyValuePair<Sprite, Sprite>), false, true, false, false);
                 m_GameObjectList.drawHeaderCallback = DrawGameObjectListHeader;
                 m_GameObjectList.drawElementCallback = DrawGameObjectElement;
@@ -71,36 +69,23 @@ namespace UnityEditor
             DrawTileField();
             DrawCustomFields();
 
-            // Sprite List
-            EditorGUI.BeginChangeCheck();
-            overrideTile.GetOverrides(m_Sprites);
+            overrideTile.GetOverrides(m_Sprites, ref m_MissingOriginalSpriteIndex);
+            overrideTile.GetOverrides(m_GameObjects, ref m_MissingOriginalGameObjectIndex);
 
-            m_SpriteList.list = m_Sprites;
+            EditorGUI.BeginChangeCheck();
             m_SpriteList.DoLayoutList();
             if (EditorGUI.EndChangeCheck())
             {
-                for (int i = 0; i < targets.Length; i++)
-                {
-                    RuleOverrideTile tile = targets[i] as RuleOverrideTile;
-                    tile.ApplyOverrides(m_Sprites);
-                    SaveTile();
-                }
+                overrideTile.ApplyOverrides(m_Sprites);
+                SaveTile();
             }
 
-            // GameObject List
             EditorGUI.BeginChangeCheck();
-            overrideTile.GetOverrides(m_GameObjects);
-
-            m_GameObjectList.list = m_GameObjects;
             m_GameObjectList.DoLayoutList();
             if (EditorGUI.EndChangeCheck())
             {
-                for (int i = 0; i < targets.Length; i++)
-                {
-                    RuleOverrideTile tile = targets[i] as RuleOverrideTile;
-                    tile.ApplyOverrides(m_GameObjects);
-                    SaveTile();
-                }
+                overrideTile.ApplyOverrides(m_GameObjects);
+                SaveTile();
             }
         }
 
@@ -128,7 +113,7 @@ namespace UnityEditor
         {
             float height = k_SpriteElementHeight + k_PaddingBetweenRules;
 
-            bool isMissing = index >= overrideTile.m_MissingSpriteIndex;
+            bool isMissing = index >= m_MissingOriginalSpriteIndex;
             if (isMissing)
                 height += 16;
 
@@ -139,7 +124,7 @@ namespace UnityEditor
         {
             float height = k_GameObjectElementHeight + k_PaddingBetweenRules;
 
-            bool isMissing = index >= overrideTile.m_MissingGameObjectIndex;
+            bool isMissing = index >= m_MissingOriginalGameObjectIndex;
             if (isMissing)
                 height += 16;
 
@@ -148,7 +133,7 @@ namespace UnityEditor
 
         public void DrawSpriteElement(Rect rect, int index, bool selected, bool focused)
         {
-            bool isMissing = index >= overrideTile.m_MissingSpriteIndex;
+            bool isMissing = index >= m_MissingOriginalSpriteIndex;
             if (isMissing)
             {
                 EditorGUI.HelpBox(new Rect(rect.xMin, rect.yMin, rect.width, 16), "Original Sprite missing", MessageType.Warning);
@@ -176,7 +161,7 @@ namespace UnityEditor
 
         public void DrawGameObjectElement(Rect rect, int index, bool selected, bool focused)
         {
-            bool isMissing = index >= overrideTile.m_MissingSpriteIndex;
+            bool isMissing = index >= m_MissingOriginalGameObjectIndex;
             if (isMissing)
             {
                 EditorGUI.HelpBox(new Rect(rect.xMin, rect.yMin, rect.width, 16), "Original Game Object missing", MessageType.Warning);

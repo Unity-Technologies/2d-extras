@@ -54,7 +54,6 @@ namespace UnityEngine.Tilemaps
         /// A list of TilingRule Overrides
         /// </summary>
         public List<RuleTile.TilingRuleOutput> m_OverrideTilingRules = new List<RuleTile.TilingRuleOutput>();
-        [NonSerialized] public int m_MissingTilingRuleIndex = -1;
 
         /// <summary>
         /// Applies overrides to this
@@ -75,7 +74,7 @@ namespace UnityEngine.Tilemaps
         /// </summary>
         /// <param name="overrides">A list of overrides to fill</param>
         /// <exception cref="ArgumentNullException">The input overrides list is not valid</exception>
-        public void GetOverrides(List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>> overrides)
+        public void GetOverrides(List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>> overrides, ref int validCount)
         {
             if (overrides == null)
                 throw new System.ArgumentNullException("overrides");
@@ -91,7 +90,7 @@ namespace UnityEngine.Tilemaps
                 }
             }
 
-            m_MissingTilingRuleIndex = overrides.Count;
+            validCount = overrides.Count;
 
             foreach (var overrideRule in m_OverrideTilingRules)
             {

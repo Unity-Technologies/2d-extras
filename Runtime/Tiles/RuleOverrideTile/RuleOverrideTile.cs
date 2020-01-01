@@ -135,8 +135,6 @@ namespace UnityEngine.Tilemaps
         /// Returns the Rule Tile for retrieving TileData
         /// </summary>
         [HideInInspector] public RuleTile m_InstanceTile;
-        [NonSerialized] public int m_MissingSpriteIndex = -1;
-        [NonSerialized] public int m_MissingGameObjectIndex = -1;
 
         /// <summary>
         /// Applies overrides to this
@@ -171,7 +169,7 @@ namespace UnityEngine.Tilemaps
         /// </summary>
         /// <param name="overrides">A list of overrides to fill</param>
         /// <exception cref="ArgumentNullException">The input overrides list is not valid</exception>
-        public void GetOverrides(List<KeyValuePair<Sprite, Sprite>> overrides)
+        public void GetOverrides(List<KeyValuePair<Sprite, Sprite>> overrides, ref int validCount)
         {
             if (overrides == null)
                 throw new System.ArgumentNullException("overrides");
@@ -191,7 +189,7 @@ namespace UnityEngine.Tilemaps
                             originalSprites.Add(sprite);
             }
 
-            m_MissingSpriteIndex = originalSprites.Count;
+            validCount = originalSprites.Count;
 
             foreach (var pair in m_Sprites)
                 if (!originalSprites.Contains(pair.m_OriginalSprite))
@@ -206,7 +204,7 @@ namespace UnityEngine.Tilemaps
         /// </summary>
         /// <param name="overrides">A list of overrides to fill</param>
         /// <exception cref="ArgumentNullException">The input overrides list is not valid</exception>
-        public void GetOverrides(List<KeyValuePair<GameObject, GameObject>> overrides)
+        public void GetOverrides(List<KeyValuePair<GameObject, GameObject>> overrides, ref int validCount)
         {
             if (overrides == null)
                 throw new System.ArgumentNullException("overrides");
@@ -225,7 +223,7 @@ namespace UnityEngine.Tilemaps
                         originalGameObjects.Add(rule.m_GameObject);
             }
 
-            m_MissingGameObjectIndex = originalGameObjects.Count;
+            validCount = originalGameObjects.Count;
 
             foreach (var pair in m_GameObjects)
                 if (!originalGameObjects.Contains(pair.m_OriginalGameObject))
