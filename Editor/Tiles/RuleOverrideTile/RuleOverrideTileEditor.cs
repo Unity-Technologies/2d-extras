@@ -249,7 +249,7 @@ namespace UnityEditor
             if (ruleTileEditor)
             {
                 ruleTileEditor.target.hideFlags = HideFlags.None;
-                ruleTileEditor.DrawCustomFields();
+                ruleTileEditor.DrawCustomFields(true);
                 ruleTileEditor.target.hideFlags = HideFlags.NotEditable;
             }
         }

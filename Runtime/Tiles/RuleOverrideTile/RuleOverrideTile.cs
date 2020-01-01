@@ -240,29 +240,34 @@ namespace UnityEngine.Tilemaps
             if (!m_Tile || !m_InstanceTile)
                 return;
 
+            PrepareOverride();
+
             var tile = m_InstanceTile;
 
-            tile.m_DefaultSprite = this[m_Tile.m_DefaultSprite] ?? m_Tile.m_DefaultSprite;
-            tile.m_DefaultGameObject = this[m_Tile.m_DefaultGameObject] ?? m_Tile.m_DefaultGameObject;
-            tile.m_DefaultColliderType = m_Tile.m_DefaultColliderType;
-            tile.m_TilingRules.Clear();
+            tile.m_DefaultSprite = this[tile.m_DefaultSprite] ?? tile.m_DefaultSprite;
+            tile.m_DefaultGameObject = this[tile.m_DefaultGameObject] ?? tile.m_DefaultGameObject;
 
-            foreach (var originalRule in m_Tile.m_TilingRules)
+            foreach (var rule in tile.m_TilingRules)
             {
-                var instanceRule = new RuleTile.TilingRule();
-                CopyTilingRule(originalRule, instanceRule);
-
-                for (int i = 0; i < instanceRule.m_Sprites.Length; i++)
+                for (int i = 0; i < rule.m_Sprites.Length; i++)
                 {
-                    Sprite originalSprite = instanceRule.m_Sprites[i];
-                    if (originalSprite)
-                        instanceRule.m_Sprites[i] = this[originalSprite] ?? originalSprite;
+                    Sprite sprite = rule.m_Sprites[i];
+                    rule.m_Sprites[i] = this[sprite] ?? sprite;
                 }
 
-                instanceRule.m_GameObject = this[instanceRule.m_GameObject] ?? instanceRule.m_GameObject;
-
-                tile.m_TilingRules.Add(instanceRule);
+                rule.m_GameObject = this[rule.m_GameObject] ?? rule.m_GameObject;
             }
+        }
+
+        public void PrepareOverride()
+        {
+            var customData = m_InstanceTile.GetCustomFields(true)
+                .ToDictionary(field => field, field => field.GetValue(m_InstanceTile));
+
+            JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(m_Tile), m_InstanceTile);
+
+            foreach (var kvp in customData)
+                kvp.Key.SetValue(m_InstanceTile, kvp.Value);
         }
 
         /// <summary>
@@ -317,31 +322,5 @@ namespace UnityEngine.Tilemaps
                 return true;
             return m_InstanceTile.StartUp(position, tilemap, go);
         }
-
-        /// <summary>
-        /// Copies a Tiling Rule from a given Tiling Rule
-        /// </summary>
-        /// <param name="from">A Tiling Rule to copy from</param>
-        /// <param name="to">A Tiling Rule to copy to</param>
-        public static void CopyTilingRule(RuleTile.TilingRuleOutput from, RuleTile.TilingRuleOutput to)
-        {
-            to.m_Id = from.m_Id;
-            to.m_Sprites = from.m_Sprites.Clone() as Sprite[];
-            to.m_GameObject = from.m_GameObject;
-            to.m_AnimationSpeed = from.m_AnimationSpeed;
-            to.m_PerlinScale = from.m_PerlinScale;
-            to.m_Output = from.m_Output;
-            to.m_ColliderType = from.m_ColliderType;
-            to.m_RandomTransform = from.m_RandomTransform;
-        }
-        public static void CopyTilingRule(RuleTile.TilingRule from, RuleTile.TilingRule to)
-        {
-            CopyTilingRule(from as RuleTile.TilingRuleOutput, to as RuleTile.TilingRuleOutput);
-
-            to.m_Neighbors = from.m_Neighbors;
-            to.m_NeighborPositions = from.m_NeighborPositions;
-            to.m_RuleTransform = from.m_RuleTransform;
-        }
-
     }
 }

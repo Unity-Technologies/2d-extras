@@ -39,8 +39,8 @@ namespace UnityEngine.Tilemaps
                 }
                 if (value != null)
                 {
-                    var overrideRule = new RuleTile.TilingRuleOutput();
-                    CopyTilingRule(value, overrideRule);
+                    var json = JsonUtility.ToJson(value);
+                    var overrideRule = JsonUtility.FromJson<RuleTile.TilingRuleOutput>(json);
                     m_OverrideTilingRules.Add(overrideRule);
                 }
             }
@@ -108,21 +108,21 @@ namespace UnityEngine.Tilemaps
             if (!m_Tile || !m_InstanceTile)
                 return;
 
+            PrepareOverride();
+
             var tile = m_InstanceTile;
 
             tile.m_DefaultSprite = m_DefaultSprite;
             tile.m_DefaultGameObject = m_DefaultGameObject;
             tile.m_DefaultColliderType = m_DefaultColliderType;
-            tile.m_TilingRules.Clear();
 
-            foreach (var originalRule in m_Tile.m_TilingRules)
+            foreach (var rule in tile.m_TilingRules)
             {
-                var overrideRule = this[originalRule];
-                var instanceRule = new RuleTile.TilingRule();
-                CopyTilingRule(originalRule, instanceRule);
+                var overrideRule = this[rule];
                 if (overrideRule != null)
-                    CopyTilingRule(overrideRule, instanceRule);
-                tile.m_TilingRules.Add(instanceRule);
+                {
+                    JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(overrideRule), rule);
+                }
             }
         }
     }

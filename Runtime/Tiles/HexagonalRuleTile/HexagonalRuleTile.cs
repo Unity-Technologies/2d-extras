@@ -63,7 +63,7 @@ namespace UnityEngine
         /// <summary>
         /// Whether this is a flat top Hexagonal Tile
         /// </summary>
-        public bool m_FlatTop;
+        [DontOverride] public bool m_FlatTop;
 
         static float m_TilemapToWorldYScale = Mathf.Pow(1 - Mathf.Pow(0.5f, 2f), 0.5f);
 

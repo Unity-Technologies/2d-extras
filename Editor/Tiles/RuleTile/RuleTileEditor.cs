@@ -69,7 +69,7 @@ namespace UnityEditor
         }
 
         public RuleTile tile => target as RuleTile;
-        private ReorderableList m_ReorderableList;
+        public ReorderableList m_ReorderableList;
         public bool extendNeighbor;
 
         public PreviewRenderUtility m_PreviewUtility;
@@ -122,7 +122,6 @@ namespace UnityEditor
                     rule.m_Id++;
                 usedIdSet.Add(rule.m_Id);
             }
-            SaveTile();
         }
 
         private float GetElementHeight(int index)
@@ -176,12 +175,9 @@ namespace UnityEditor
             Rect matrixRect = new Rect(rect.xMax - matrixSize.x - spriteRect.width - 10f, yPos, matrixSize.x, matrixSize.y);
             Rect inspectorRect = new Rect(rect.xMin, yPos, rect.width - matrixSize.x - spriteRect.width - 20f, height);
 
-            EditorGUI.BeginChangeCheck();
             RuleInspectorOnGUI(inspectorRect, rule);
             RuleMatrixOnGUI(tile, matrixRect, bounds, rule);
             SpriteOnGUI(spriteRect, rule);
-            if (EditorGUI.EndChangeCheck())
-                SaveTile();
         }
 
         private void OnAddElement(ReorderableList list)
@@ -249,24 +245,25 @@ namespace UnityEditor
         public override void OnInspectorGUI()
         {
             EditorGUI.BeginChangeCheck();
+
             tile.m_DefaultSprite = EditorGUILayout.ObjectField("Default Sprite", tile.m_DefaultSprite, typeof(Sprite), false) as Sprite;
             tile.m_DefaultGameObject = EditorGUILayout.ObjectField("Default Game Object", tile.m_DefaultGameObject, typeof(GameObject), false) as GameObject;
             tile.m_DefaultColliderType = (Tile.ColliderType)EditorGUILayout.EnumPopup("Default Collider", tile.m_DefaultColliderType);
-            if (EditorGUI.EndChangeCheck())
-                SaveTile();
 
-            DrawCustomFields();
+            DrawCustomFields(false);
 
             EditorGUILayout.Space();
 
             if (m_ReorderableList != null)
                 m_ReorderableList.DoLayoutList();
+
+            if (EditorGUI.EndChangeCheck())
+                SaveTile();
         }
 
-        public void DrawCustomFields()
+        public void DrawCustomFields(bool isOverrideInstance)
         {
-            var customFields = tile.GetType().GetFields()
-                .Where(field => typeof(RuleTile).GetField(field.Name) == null);
+            var customFields = tile.GetCustomFields(isOverrideInstance);
 
             serializedObject.Update();
             EditorGUI.BeginChangeCheck();
@@ -475,7 +472,7 @@ namespace UnityEditor
 
         public virtual void SpriteOnGUI(Rect rect, RuleTile.TilingRuleOutput tilingRule)
         {
-            tilingRule.m_Sprites[0] = EditorGUI.ObjectField(new Rect(rect.xMax - rect.height, rect.yMin, rect.height, rect.height), tilingRule.m_Sprites[0], typeof(Sprite), false) as Sprite;
+            tilingRule.m_Sprites[0] = EditorGUI.ObjectField(rect, tilingRule.m_Sprites[0], typeof(Sprite), false) as Sprite;
         }
 
         public void RuleInspectorOnGUI(Rect rect, RuleTile.TilingRuleOutput tilingRule)

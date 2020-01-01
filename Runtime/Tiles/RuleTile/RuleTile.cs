@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Collections.Generic;
 using UnityEngine.Tilemaps;
 
@@ -203,6 +204,8 @@ namespace UnityEngine
             }
         }
 
+        public class DontOverride : Attribute { }
+
         /// <summary>
         /// A list of Tiling Rules for the Rule Tile.
         /// </summary>
@@ -277,12 +280,12 @@ namespace UnityEngine
             {
                 Tilemap tmpMap = tilemap.GetComponent<Tilemap>();
                 Matrix4x4 orientMatrix = tmpMap.orientationMatrix;
-                
+
                 var iden = Matrix4x4.identity;
                 Vector3 gameObjectTranslation = new Vector3();
                 Quaternion gameObjectRotation = new Quaternion();
                 Vector3 gameObjectScale = new Vector3();
-                
+
                 bool ruleMatched = false;
                 foreach (TilingRule rule in m_TilingRules)
                 {
@@ -290,12 +293,12 @@ namespace UnityEngine
                     if (RuleMatches(rule, location, tilemap, ref transform))
                     {
                         transform = orientMatrix * transform;
-                        
+
                         // Converts the tile's translation, rotation, & scale matrix to values to be used by the instantiated Game Object
                         gameObjectTranslation = new Vector3(transform.m03, transform.m13, transform.m23);
                         gameObjectRotation = Quaternion.LookRotation(new Vector3(transform.m02, transform.m12, transform.m22), new Vector3(transform.m01, transform.m11, transform.m21));
                         gameObjectScale = transform.lossyScale;
-                        
+
                         ruleMatched = true;
                         break;
                     }
@@ -307,7 +310,7 @@ namespace UnityEngine
                     gameObjectRotation = Quaternion.LookRotation(new Vector3(orientMatrix.m02, orientMatrix.m12, orientMatrix.m22), new Vector3(orientMatrix.m01, orientMatrix.m11, orientMatrix.m21));
                     gameObjectScale = orientMatrix.lossyScale;
                 }
-                
+
                 instantiatedGameObject.transform.localPosition = gameObjectTranslation + tmpMap.CellToLocalInterpolated(location + tmpMap.tileAnchor);
                 instantiatedGameObject.transform.localRotation = gameObjectRotation;
                 instantiatedGameObject.transform.localScale = gameObjectScale;
@@ -586,6 +589,15 @@ namespace UnityEngine
                     return Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), Vector3.one);
             }
             return original;
+        }
+
+        public FieldInfo[] GetCustomFields(bool isOverrideInstance)
+        {
+            return this.GetType().GetFields()
+                .Where(field => typeof(RuleTile).GetField(field.Name) == null)
+                .Where(field => !field.IsDefined(typeof(HideInInspector)))
+                .Where(field => !isOverrideInstance || !field.IsDefined(typeof(RuleTile.DontOverride)))
+                .ToArray();
         }
 
         /// <summary>
