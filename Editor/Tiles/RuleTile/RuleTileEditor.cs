@@ -69,7 +69,7 @@ namespace UnityEditor
         }
 
         public RuleTile tile => target as RuleTile;
-        private ReorderableList m_ReorderableList;
+        public ReorderableList m_ReorderableList;
         public bool extendNeighbor;
 
         public PreviewRenderUtility m_PreviewUtility;
@@ -82,7 +82,7 @@ namespace UnityEditor
         public const float k_SingleLineHeight = 16f;
         public const float k_LabelWidth = 80f;
 
-        public void OnEnable()
+        public virtual void OnEnable()
         {
             m_ReorderableList = new ReorderableList(tile.m_TilingRules, typeof(RuleTile.TilingRule), true, true, true, true);
             m_ReorderableList.drawHeaderCallback = OnDrawHeader;
@@ -92,7 +92,7 @@ namespace UnityEditor
             m_ReorderableList.onAddCallback = OnAddElement;
         }
 
-        public void OnDisable()
+        public virtual void OnDisable()
         {
             DestroyPreview();
         }
@@ -113,7 +113,7 @@ namespace UnityEditor
             return bounds;
         }
 
-        private void ListUpdated(ReorderableList list)
+        public void ListUpdated(ReorderableList list)
         {
             HashSet<int> usedIdSet = new HashSet<int>();
             foreach (var rule in tile.m_TilingRules)
@@ -122,10 +122,9 @@ namespace UnityEditor
                     rule.m_Id++;
                 usedIdSet.Add(rule.m_Id);
             }
-            SaveTile();
         }
 
-        private float GetElementHeight(int index)
+        public float GetElementHeight(int index)
         {
             RuleTile.TilingRule rule = tile.m_TilingRules[index];
             return GetElementHeight(rule);
@@ -163,7 +162,7 @@ namespace UnityEditor
             return new Vector2(bounds.size.x * k_SingleLineHeight, bounds.size.y * k_SingleLineHeight);
         }
 
-        protected virtual void OnDrawElement(Rect rect, int index, bool isactive, bool isfocused)
+        public virtual void OnDrawElement(Rect rect, int index, bool isactive, bool isfocused)
         {
             RuleTile.TilingRule rule = tile.m_TilingRules[index];
             BoundsInt bounds = GetRuleGUIBounds(rule.GetBounds(), rule);
@@ -176,15 +175,12 @@ namespace UnityEditor
             Rect matrixRect = new Rect(rect.xMax - matrixSize.x - spriteRect.width - 10f, yPos, matrixSize.x, matrixSize.y);
             Rect inspectorRect = new Rect(rect.xMin, yPos, rect.width - matrixSize.x - spriteRect.width - 20f, height);
 
-            EditorGUI.BeginChangeCheck();
             RuleInspectorOnGUI(inspectorRect, rule);
             RuleMatrixOnGUI(tile, matrixRect, bounds, rule);
             SpriteOnGUI(spriteRect, rule);
-            if (EditorGUI.EndChangeCheck())
-                SaveTile();
         }
 
-        private void OnAddElement(ReorderableList list)
+        public void OnAddElement(ReorderableList list)
         {
             RuleTile.TilingRule rule = new RuleTile.TilingRule();
             rule.m_Output = RuleTile.TilingRule.OutputSprite.Single;
@@ -230,7 +226,7 @@ namespace UnityEditor
             return overrideTiles;
         }
 
-        private void OnDrawHeader(Rect rect)
+        public void OnDrawHeader(Rect rect)
         {
             GUI.Label(rect, "Tiling Rules");
 
@@ -249,24 +245,25 @@ namespace UnityEditor
         public override void OnInspectorGUI()
         {
             EditorGUI.BeginChangeCheck();
+
             tile.m_DefaultSprite = EditorGUILayout.ObjectField("Default Sprite", tile.m_DefaultSprite, typeof(Sprite), false) as Sprite;
             tile.m_DefaultGameObject = EditorGUILayout.ObjectField("Default Game Object", tile.m_DefaultGameObject, typeof(GameObject), false) as GameObject;
             tile.m_DefaultColliderType = (Tile.ColliderType)EditorGUILayout.EnumPopup("Default Collider", tile.m_DefaultColliderType);
-            if (EditorGUI.EndChangeCheck())
-                SaveTile();
 
-            DrawCustomFields();
+            DrawCustomFields(false);
 
             EditorGUILayout.Space();
 
             if (m_ReorderableList != null)
                 m_ReorderableList.DoLayoutList();
+
+            if (EditorGUI.EndChangeCheck())
+                SaveTile();
         }
 
-        public void DrawCustomFields()
+        public void DrawCustomFields(bool isOverrideInstance)
         {
-            var customFields = tile.GetType().GetFields()
-                .Where(field => typeof(RuleTile).GetField(field.Name) == null);
+            var customFields = tile.GetCustomFields(isOverrideInstance);
 
             serializedObject.Update();
             EditorGUI.BeginChangeCheck();
@@ -412,7 +409,7 @@ namespace UnityEditor
             return rect.Contains(Event.current.mousePosition);
         }
 
-        private static int GetMouseChange()
+        public static int GetMouseChange()
         {
             return Event.current.button == 1 ? -1 : 1;
         }
@@ -475,7 +472,7 @@ namespace UnityEditor
 
         public virtual void SpriteOnGUI(Rect rect, RuleTile.TilingRuleOutput tilingRule)
         {
-            tilingRule.m_Sprites[0] = EditorGUI.ObjectField(new Rect(rect.xMax - rect.height, rect.yMin, rect.height, rect.height), tilingRule.m_Sprites[0], typeof(Sprite), false) as Sprite;
+            tilingRule.m_Sprites[0] = EditorGUI.ObjectField(rect, tilingRule.m_Sprites[0], typeof(Sprite), false) as Sprite;
         }
 
         public void RuleInspectorOnGUI(Rect rect, RuleTile.TilingRuleOutput tilingRule)
@@ -582,7 +579,7 @@ namespace UnityEditor
             m_PreviewTilemaps[3].SetTile(new Vector3Int(1, -2, 0), tile);
         }
 
-        private void DestroyPreview()
+        public void DestroyPreview()
         {
             if (m_PreviewUtility != null)
             {
@@ -613,7 +610,7 @@ namespace UnityEditor
             return base.RenderStaticPreview(assetPath, subAssets, width, height);
         }
 
-        private static Type GetType(string TypeName)
+        public static Type GetType(string TypeName)
         {
             var type = Type.GetType(TypeName);
             if (type != null)
@@ -645,7 +642,7 @@ namespace UnityEditor
             return null;
         }
 
-        private static Texture2D Base64ToTexture(string base64)
+        public static Texture2D Base64ToTexture(string base64)
         {
             Texture2D t = new Texture2D(1, 1);
             t.hideFlags = HideFlags.HideAndDontSave;
@@ -661,7 +658,7 @@ namespace UnityEditor
         }
 
         [MenuItem("CONTEXT/RuleTile/Copy All Rules")]
-        private static void CopyAllRules(MenuCommand item)
+        public static void CopyAllRules(MenuCommand item)
         {
             RuleTile tile = item.context as RuleTile;
             if (tile == null)
@@ -674,7 +671,7 @@ namespace UnityEditor
         }
 
         [MenuItem("CONTEXT/RuleTile/Paste Rules")]
-        private static void PasteRules(MenuCommand item)
+        public static void PasteRules(MenuCommand item)
         {
             RuleTile tile = item.context as RuleTile;
             if (tile == null)
