@@ -1,9 +1,9 @@
 {
-    "name": "com.unity.2d.tilemap.extras",
-    "displayName": "Tilemap Extras",
+    "name": "com.unity.2d.extras",
+    "displayName": "2D Extras",
     "version": "1.3.1",
     "unity": "2019.2",
-    "description": "Tilemap Extras is a package that contains extra scripts for use with the Tilemap. These include custom Tiles and Brushes.",
+    "description": "2D Extras is a package that contains extra scripts for use with 2D features in Unity. These include custom Tiles and Brushes for the Tilemap feature.",
     "keywords": ["2d"],
     "category": "2D",
     "dependencies": {
