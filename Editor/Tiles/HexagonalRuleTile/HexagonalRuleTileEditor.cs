@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace UnityEditor
 {
@@ -152,9 +153,39 @@ namespace UnityEditor
             }
         }
 
-        public override bool HasPreviewGUI()
+        public override void CreatePreview()
         {
-            return false;
+            base.CreatePreview();
+
+            m_PreviewGrid.cellLayout = GridLayout.CellLayout.Hexagon;
+            m_PreviewGrid.cellSwizzle = hexTile.m_FlatTop ? GridLayout.CellSwizzle.YXZ : GridLayout.CellSwizzle.XYZ;
+
+            foreach (var tilemap in m_PreviewTilemaps)
+            {
+                tilemap.tileAnchor = Vector3.zero;
+                tilemap.ClearAllTiles();
+            }
+
+            for (int x = -1; x <= 0; ++x)
+                for (int y = -1; y <= 1; ++y)
+                    m_PreviewTilemaps[0].SetTile(new Vector3Int(x, y, 0), tile);
+
+            m_PreviewTilemaps[1].SetTile(new Vector3Int(1, -1, 0), tile);
+            m_PreviewTilemaps[1].SetTile(new Vector3Int(2, 0, 0), tile);
+            m_PreviewTilemaps[1].SetTile(new Vector3Int(2, 1, 0), tile);
+
+            for (int x = -1; x <= 1; x++)
+                m_PreviewTilemaps[2].SetTile(new Vector3Int(x, -2, 0), tile);
+
+            m_PreviewTilemaps[3].SetTile(new Vector3Int(1, 1, 0), tile);
+
+            foreach (var tilemapRenderer in m_PreviewTilemapRenderers)
+                tilemapRenderer.sortOrder = TilemapRenderer.SortOrder.TopRight;
+
+            m_PreviewTilemapRenderers[0].sortingOrder = 0;
+            m_PreviewTilemapRenderers[1].sortingOrder = -1;
+            m_PreviewTilemapRenderers[2].sortingOrder = 1;
+            m_PreviewTilemapRenderers[3].sortingOrder = 0;
         }
     }
 }
