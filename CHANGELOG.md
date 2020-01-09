@@ -3,6 +3,29 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.4.0] - 2020-01-07
+### Added
+- [RuleTile / HexagonalRuleTile / IsometricRuleTile / RuleOverrideTile] Added Asset Preview for TilingRules
+- [RuleTile] Hidden Rule field
+- [CustomRuleTile] Support custom field of Object type
+- [CustomRuleTile] Support HideInInspector, DontOverride attributes
+- [RuleOverrideTile] Move advanced mode to AdvancedRuleOverrideTile
+- [RuleOverrideTile] Add GameObject overrides
+- [RuleOverrideTile] List height lessen
+- [RuleOverrideTile] Don't override null sprite
+- [RuleOverrideTile] Add static preview
+- [AdvancedRuleOverrideTile] List GUI simplify
+- [RuleOverrideTile / AdvancedRuleOverrideTile] Show unused overrides
+- [RuleOverrideTile / AdvancedRuleOverrideTile] Support multiple inheritance
+- [RuleOverrideTile / AdvancedRuleOverrideTile] Prevent circular reference
+- [AnimatedTile] Added Animation Start Frame which helps to calculate the Animation Start Time for a given Tilemap
+
+### Fixed
+- [RuleTile] Fixed RuleTile InstantiatedGameObject rotation/scale
+- [RuleTile] Fixed override tiles have not update when default properties changed
+- [AdvancedRuleOverrideTile] Fix override rule lost reference when source rule reorder
+- [PrefabBrush] Use WorldToCell comparison when getting GameObjects using PrefabBrush
+
 ## [1.3.1] - 2019-11-06
 ### Changed
 - [RuleTile] Simplified

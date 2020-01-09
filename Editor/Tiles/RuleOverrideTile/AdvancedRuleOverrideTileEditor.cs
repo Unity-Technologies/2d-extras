@@ -13,9 +13,9 @@ namespace UnityEditor
 
         List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>> m_Rules = new List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>>();
         ReorderableList m_RuleList;
+        int m_MissingOriginalRuleIndex;
 
         static float k_DefaultElementHeight { get { return RuleTileEditor.k_DefaultElementHeight; } }
-        static float k_PaddingBetweenRules { get { return RuleTileEditor.k_PaddingBetweenRules; } }
         static float k_SingleLineHeight { get { return RuleTileEditor.k_SingleLineHeight; } }
         static float k_LabelWidth { get { return RuleTileEditor.k_LabelWidth; } }
 
@@ -45,23 +45,22 @@ namespace UnityEditor
 
             DrawCustomFields();
 
-            m_Rules.Clear();
             if (overrideTile.m_Tile)
-                overrideTile.GetOverrides(m_Rules);
+                overrideTile.GetOverrides(m_Rules, ref m_MissingOriginalRuleIndex);
 
             m_RuleList.DoLayoutList();
         }
 
-        void DrawRulesHeader(Rect rect)
+        public void DrawRulesHeader(Rect rect)
         {
             GUI.Label(rect, "Tiling Rules", EditorStyles.label);
         }
 
-        void DrawRuleElement(Rect rect, int index, bool selected, bool focused)
+        public void DrawRuleElement(Rect rect, int index, bool selected, bool focused)
         {
             RuleTile.TilingRule originalRule = m_Rules[index].Key;
             RuleTile.TilingRuleOutput overrideRule = m_Rules[index].Value;
-            bool isMissing = index >= overrideTile.m_MissingTilingRuleIndex;
+            bool isMissing = index >= m_MissingOriginalRuleIndex;
 
             DrawToggleInternal(new Rect(rect.xMin, rect.yMin, 16, rect.height));
             DrawRuleInternal(new Rect(rect.xMin + 16, rect.yMin, rect.width - 16, rect.height));
@@ -93,7 +92,7 @@ namespace UnityEditor
             }
         }
 
-        void DrawRule(Rect rect, RuleTile.TilingRuleOutput rule, bool isOverride, RuleTile.TilingRule originalRule, bool isMissing)
+        public void DrawRule(Rect rect, RuleTile.TilingRuleOutput rule, bool isOverride, RuleTile.TilingRule originalRule, bool isMissing)
         {
             if (isMissing)
             {
@@ -129,13 +128,13 @@ namespace UnityEditor
             }
         }
 
-        float GetRuleElementHeight(int index)
+        public float GetRuleElementHeight(int index)
         {
             var originalRule = m_Rules[index].Key;
             var overrideRule = m_Rules[index].Value;
             float height = overrideRule != null ? ruleTileEditor.GetElementHeight(overrideRule) : ruleTileEditor.GetElementHeight(originalRule);
 
-            bool isMissing = index >= overrideTile.m_MissingTilingRuleIndex;
+            bool isMissing = index >= m_MissingOriginalRuleIndex;
             if (isMissing)
                 height += 16;
 

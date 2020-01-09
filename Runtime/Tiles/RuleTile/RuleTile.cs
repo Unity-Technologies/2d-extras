@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Collections.Generic;
 using UnityEngine.Tilemaps;
 
@@ -203,6 +204,8 @@ namespace UnityEngine
             }
         }
 
+        public class DontOverride : Attribute { }
+
         /// <summary>
         /// A list of Tiling Rules for the Rule Tile.
         /// </summary>
@@ -277,12 +280,12 @@ namespace UnityEngine
             {
                 Tilemap tmpMap = tilemap.GetComponent<Tilemap>();
                 Matrix4x4 orientMatrix = tmpMap.orientationMatrix;
-                
+
                 var iden = Matrix4x4.identity;
                 Vector3 gameObjectTranslation = new Vector3();
                 Quaternion gameObjectRotation = new Quaternion();
                 Vector3 gameObjectScale = new Vector3();
-                
+
                 bool ruleMatched = false;
                 foreach (TilingRule rule in m_TilingRules)
                 {
@@ -290,12 +293,12 @@ namespace UnityEngine
                     if (RuleMatches(rule, location, tilemap, ref transform))
                     {
                         transform = orientMatrix * transform;
-                        
+
                         // Converts the tile's translation, rotation, & scale matrix to values to be used by the instantiated Game Object
                         gameObjectTranslation = new Vector3(transform.m03, transform.m13, transform.m23);
                         gameObjectRotation = Quaternion.LookRotation(new Vector3(transform.m02, transform.m12, transform.m22), new Vector3(transform.m01, transform.m11, transform.m21));
                         gameObjectScale = transform.lossyScale;
-                        
+
                         ruleMatched = true;
                         break;
                     }
@@ -307,7 +310,7 @@ namespace UnityEngine
                     gameObjectRotation = Quaternion.LookRotation(new Vector3(orientMatrix.m02, orientMatrix.m12, orientMatrix.m22), new Vector3(orientMatrix.m01, orientMatrix.m11, orientMatrix.m21));
                     gameObjectScale = orientMatrix.lossyScale;
                 }
-                
+
                 instantiatedGameObject.transform.localPosition = gameObjectTranslation + tmpMap.CellToLocalInterpolated(location + tmpMap.tileAnchor);
                 instantiatedGameObject.transform.localRotation = gameObjectRotation;
                 instantiatedGameObject.transform.localScale = gameObjectScale;
@@ -365,7 +368,7 @@ namespace UnityEngine
         /// <param name="scale">The Perlin Scale factor of the Tile.</param>
         /// <param name="offset">Offset of the Tile on the Tilemap.</param>
         /// <returns>A Perlin Noise value based on the given inputs.</returns>
-        protected static float GetPerlinValue(Vector3Int position, float scale, float offset)
+        public static float GetPerlinValue(Vector3Int position, float scale, float offset)
         {
             return Mathf.PerlinNoise((position.x + offset) * scale, (position.y + offset) * scale);
         }
@@ -501,7 +504,7 @@ namespace UnityEngine
         /// <param name="tilemap">The tilemap to match with.</param>
         /// <param name="transform">A transform matrix which will match the Rule.</param>
         /// <returns>True if there is a match, False if not.</returns>
-        protected virtual bool RuleMatches(TilingRule rule, Vector3Int position, ITilemap tilemap, ref Matrix4x4 transform)
+        public virtual bool RuleMatches(TilingRule rule, Vector3Int position, ITilemap tilemap, ref Matrix4x4 transform)
         {
             if (RuleMatches(rule, position, tilemap, 0))
             {
@@ -570,7 +573,7 @@ namespace UnityEngine
         /// <param name="perlinScale">The Perlin Scale factor of the Tile.</param>
         /// <param name="position">Position of the Tile on the Tilemap.</param>
         /// <returns>A random transform matrix.</returns>
-        protected virtual Matrix4x4 ApplyRandomTransform(TilingRule.Transform type, Matrix4x4 original, float perlinScale, Vector3Int position)
+        public virtual Matrix4x4 ApplyRandomTransform(TilingRule.Transform type, Matrix4x4 original, float perlinScale, Vector3Int position)
         {
             float perlin = GetPerlinValue(position, perlinScale, 200000f);
             switch (type)
@@ -586,6 +589,15 @@ namespace UnityEngine
                     return Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), Vector3.one);
             }
             return original;
+        }
+
+        public FieldInfo[] GetCustomFields(bool isOverrideInstance)
+        {
+            return this.GetType().GetFields()
+                .Where(field => typeof(RuleTile).GetField(field.Name) == null)
+                .Where(field => !field.IsDefined(typeof(HideInInspector)))
+                .Where(field => !isOverrideInstance || !field.IsDefined(typeof(RuleTile.DontOverride)))
+                .ToArray();
         }
 
         /// <summary>
@@ -614,7 +626,7 @@ namespace UnityEngine
         /// <param name="tilemap">Tilemap to match.</param>
         /// <param name="angle">Rotation angle for matching.</param>
         /// <returns>True if there is a match, False if not.</returns>
-        protected bool RuleMatches(TilingRule rule, Vector3Int position, ITilemap tilemap, int angle)
+        public bool RuleMatches(TilingRule rule, Vector3Int position, ITilemap tilemap, int angle)
         {
             for (int i = 0; i < rule.m_Neighbors.Count && i < rule.m_NeighborPositions.Count; i++)
             {
@@ -637,7 +649,7 @@ namespace UnityEngine
         /// <param name="mirrorX">Mirror X Axis for matching.</param>
         /// <param name="mirrorY">Mirror Y Axis for matching.</param>
         /// <returns>True if there is a match, False if not.</returns>
-        protected bool RuleMatches(TilingRule rule, Vector3Int position, ITilemap tilemap, bool mirrorX, bool mirrorY)
+        public bool RuleMatches(TilingRule rule, Vector3Int position, ITilemap tilemap, bool mirrorX, bool mirrorY)
         {
             for (int i = 0; i < rule.m_Neighbors.Count && i < rule.m_NeighborPositions.Count; i++)
             {
@@ -658,7 +670,7 @@ namespace UnityEngine
         /// <param name="position">Original position of Tile.</param>
         /// <param name="rotation">Rotation in degrees.</param>
         /// <returns>Rotated position of Tile.</returns>
-        protected virtual Vector3Int GetRotatedPosition(Vector3Int position, int rotation)
+        public virtual Vector3Int GetRotatedPosition(Vector3Int position, int rotation)
         {
             switch (rotation)
             {
@@ -681,7 +693,7 @@ namespace UnityEngine
         /// <param name="mirrorX">Mirror in the X Axis.</param>
         /// <param name="mirrorY">Mirror in the Y Axis.</param>
         /// <returns>Mirrored position of Tile.</returns>
-        protected virtual Vector3Int GetMirroredPosition(Vector3Int position, bool mirrorX, bool mirrorY)
+        public virtual Vector3Int GetMirroredPosition(Vector3Int position, bool mirrorX, bool mirrorY)
         {
             if (mirrorX)
                 position.x *= -1;
@@ -690,12 +702,12 @@ namespace UnityEngine
             return position;
         }
 
-        protected virtual Vector3Int GetOffsetPosition(Vector3Int location, Vector3Int offset)
+        public virtual Vector3Int GetOffsetPosition(Vector3Int location, Vector3Int offset)
         {
             return location + offset;
         }
 
-        protected virtual Vector3Int GetOffsetPositionReverse(Vector3Int position, Vector3Int offset)
+        public virtual Vector3Int GetOffsetPositionReverse(Vector3Int position, Vector3Int offset)
         {
             return position - offset;
         }

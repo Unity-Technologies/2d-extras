@@ -39,8 +39,8 @@ namespace UnityEngine.Tilemaps
                 }
                 if (value != null)
                 {
-                    var overrideRule = new RuleTile.TilingRuleOutput();
-                    CopyTilingRule(value, overrideRule);
+                    var json = JsonUtility.ToJson(value);
+                    var overrideRule = JsonUtility.FromJson<RuleTile.TilingRuleOutput>(json);
                     m_OverrideTilingRules.Add(overrideRule);
                 }
             }
@@ -54,7 +54,6 @@ namespace UnityEngine.Tilemaps
         /// A list of TilingRule Overrides
         /// </summary>
         public List<RuleTile.TilingRuleOutput> m_OverrideTilingRules = new List<RuleTile.TilingRuleOutput>();
-        [NonSerialized] public int m_MissingTilingRuleIndex = -1;
 
         /// <summary>
         /// Applies overrides to this
@@ -75,7 +74,7 @@ namespace UnityEngine.Tilemaps
         /// </summary>
         /// <param name="overrides">A list of overrides to fill</param>
         /// <exception cref="ArgumentNullException">The input overrides list is not valid</exception>
-        public void GetOverrides(List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>> overrides)
+        public void GetOverrides(List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>> overrides, ref int validCount)
         {
             if (overrides == null)
                 throw new System.ArgumentNullException("overrides");
@@ -91,7 +90,7 @@ namespace UnityEngine.Tilemaps
                 }
             }
 
-            m_MissingTilingRuleIndex = overrides.Count;
+            validCount = overrides.Count;
 
             foreach (var overrideRule in m_OverrideTilingRules)
             {
@@ -108,21 +107,21 @@ namespace UnityEngine.Tilemaps
             if (!m_Tile || !m_InstanceTile)
                 return;
 
+            PrepareOverride();
+
             var tile = m_InstanceTile;
 
             tile.m_DefaultSprite = m_DefaultSprite;
             tile.m_DefaultGameObject = m_DefaultGameObject;
             tile.m_DefaultColliderType = m_DefaultColliderType;
-            tile.m_TilingRules.Clear();
 
-            foreach (var originalRule in m_Tile.m_TilingRules)
+            foreach (var rule in tile.m_TilingRules)
             {
-                var overrideRule = this[originalRule];
-                var instanceRule = new RuleTile.TilingRule();
-                CopyTilingRule(originalRule, instanceRule);
+                var overrideRule = this[rule];
                 if (overrideRule != null)
-                    CopyTilingRule(overrideRule, instanceRule);
-                tile.m_TilingRules.Add(instanceRule);
+                {
+                    JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(overrideRule), rule);
+                }
             }
         }
     }
