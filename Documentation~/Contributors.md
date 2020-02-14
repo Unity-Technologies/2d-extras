@@ -18,5 +18,6 @@ Thank you to all who have contributed to this repository!
 - ream88
 - Quickz
 - capnslipp
+- TrentSterling
 
 If anybody has been missed, please do let us know!
