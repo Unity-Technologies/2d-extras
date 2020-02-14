@@ -47,6 +47,7 @@ namespace UnityEngine.Tilemaps
             
             if (Sprites == null || Sprites.Length <= 0) return;
             
+            var oldState = Random.state;
             long hash = location.x;
             hash = hash + 0xabcd1234 + (hash << 15);
             hash = hash + 0x0987efab ^ (hash >> 11);
@@ -68,6 +69,7 @@ namespace UnityEngine.Tilemaps
                     break;
                 }
             }
+            Random.state = oldState;
         }
     }
 
