@@ -11,7 +11,6 @@ namespace UnityEditor.Tilemaps
     /// Use this as an example to modify brush painting behaviour to making painting quicker with less actions.
     /// </summary>
     [CustomGridBrush(true, false, false, "Line Brush")]
-    [CreateAssetMenu(fileName = "New Line Brush", menuName = "Brushes/Line Brush")]
     public class LineBrush : GridBrush
     {
         /// <summary>
