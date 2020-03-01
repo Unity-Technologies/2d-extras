@@ -1,21 +1,22 @@
-using System;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace UnityEditor.Tilemaps
 {
     /// <summary>
-    /// This Brush instances and places a randomly selected Prefabs onto the targeted location and parents the instanced object to the paint target. Use this as an example to quickly place an assorted type of GameObjects onto structured locations.
+    /// This Brush instances and places a selected refab onto the targeted location and parents the instanced object to the paint target.
     /// </summary>
     [CreateAssetMenu(fileName = "Prefab brush", menuName = "Brushes/Prefab brush")]
     [CustomGridBrush(false, true, false, "Prefab Brush")]
     public class PrefabBrush : GridBrush
     {
         /// <summary>
-        /// The selection of Prefabs to paint from
+        /// The selection of Prefab to paint from
         /// </summary>
         public GameObject m_Prefab;
-
+        /// <summary>
+        /// Use to remove all prefabs in the cell or just the one that is currently selected in m_Prefab
+        /// </summary>
         public bool m_ForceDelete;
         /// <summary>
         /// Factor for distribution of choice of Prefabs to paint
@@ -29,7 +30,7 @@ namespace UnityEditor.Tilemaps
         /// Paints Prefabs into a given position within the selected layers.
         /// The PrefabBrush overrides this to provide Prefab painting functionality.
         /// </summary>
-        /// <param name="gridLayout">Grid used for layout.</param>
+        /// <param name="grid">Grid used for layout.</param>
         /// <param name="brushTarget">Target of the paint operation. By default the currently selected GameObject.</param>
         /// <param name="position">The coordinates of the cell to paint data to.</param>
         public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
@@ -51,7 +52,8 @@ namespace UnityEditor.Tilemaps
         }
 
         /// <summary>
-        /// Erases Prefabs in a given position within the selected layers.
+        /// Erases all Prefabs in a given position within the selected layers if ForceDelete is true.
+        /// Erase only selected Prefabs in a given position within the selected layers if ForceDelete is false.
         /// The PrefabBrush overrides this to provide Prefab erasing functionality.
         /// </summary>
         /// <param name="grid">Grid used for layout.</param>
