@@ -96,7 +96,7 @@ namespace UnityEditor.Tilemaps
     /// <summary>
     /// The Brush Editor for a Prefab Brush.
     /// </summary>
-    [CustomEditor(typeof(PrefabRandomBrush))]
+    [CustomEditor(typeof(PrefabBrush))]
     public class PrefabBrushEditor : GridBrushEditor
     {
         private SerializedProperty m_Prefab;
