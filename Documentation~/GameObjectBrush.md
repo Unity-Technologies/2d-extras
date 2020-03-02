@@ -1,10 +1,10 @@
 # GameObject Brush
 
-This Brush instances, places and manipulates GameObjects onto the scene. Use this as an example to create brushes which targets objects other than tiles for manipulation.
+This Brush instances, places and manipulates GameObjects onto the Scene. Use this Brush as an example for creating custom Brushes which can target and manipulate other objects beside Tiles.
 
-### Usage
+## Usage
 
-To pick GameObjects, change to the Pick tool and pick GameObjects from the Scene. Note that the GameObjects must be a child of the active Grid.
+First select the GameObject Brush from the Brush drop-down menu. With the Brush selected, then select the Pick Tool from the [Tile Palette](https://docs.unity3d.com/Manual/Tilemap-Painting.html) toolbar. Use the __Select Tool__ to select GameObjects from the Scene that you want the GameObject Brush to paint with. The GameObjects must be a child of the active Grid to be selectable.
 
 When painting with the GameObject Brush, the GameObject Brush will instantiate GameObjects picked onto the Scene.
 

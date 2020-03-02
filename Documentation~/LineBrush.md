@@ -1,10 +1,12 @@
 # Line Brush
 
-###### *Contribution by:  CraigGraff*
+__Contribution by :__  [CraigGraff](https://github.com/CraigGraff)
 
-This Brush helps draw lines of Tiles onto a Tilemap. Use this as an example to modify brush painting behaviour to making painting quicker with less actions.
+This Brush draws a line of Tiles onto a Tilemap. With this Brush selected, click once to set the starting point of the line and click again to set the ending point of the line. This Brush then draws a line of Tiles between the two points. 
 
-### Properties
+Use this as an example to modify Brush painting behavior to make painting more efficient.
+
+## Properties
 
 | Property              | Function                                                     |
 | --------------------- | ------------------------------------------------------------ |
