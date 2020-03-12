@@ -3,6 +3,15 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.5.0-preview] - 2020-02-14
+### Added
+- Added CONTRIBUTING.md
+- Updated LICENSE.md
+
+### Fixed
+- [WeightedRandomTile] Fixed WeightedRandomTile messing up Random.seed!
+
+
 ## [1.4.0] - 2020-01-07
 ### Added
 - [RuleTile / HexagonalRuleTile / IsometricRuleTile / RuleOverrideTile] Added Asset Preview for TilingRules
