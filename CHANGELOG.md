@@ -11,7 +11,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - [WeightedRandomTile] Fixed WeightedRandomTile messing up Random.seed!
 
-
 ## [1.4.0] - 2020-01-07
 ### Added
 - [RuleTile / HexagonalRuleTile / IsometricRuleTile / RuleOverrideTile] Added Asset Preview for TilingRules
