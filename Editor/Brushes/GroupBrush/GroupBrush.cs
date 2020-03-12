@@ -192,20 +192,6 @@ namespace UnityEditor.Tilemaps
                 SetColor(brushPosition, tilemap.GetColor(position));
             }
         }
-
-        /// <summary>
-        /// Creates a Group Brush Asset
-        /// </summary>
-        [MenuItem("Assets/Create/Brushes/Group Brush")]
-        public static void CreateBrush()
-        {
-            string path = EditorUtility.SaveFilePanelInProject("Save Group Brush", "New Group Brush", "asset", "Save Group Brush", "Assets");
-
-            if (path == "")
-                return;
-
-            AssetDatabase.CreateAsset(ScriptableObject.CreateInstance<GroupBrush>(), path);
-        }
     }
 
     /// <summary>

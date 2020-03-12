@@ -4,7 +4,7 @@ using Object = UnityEngine.Object;
 namespace UnityEditor.Tilemaps
 {
     /// <summary>
-    /// This Brush instances and places a selected refab onto the targeted location and parents the instanced object to the paint target.
+    /// This Brush instances and places a selected prefab onto the targeted location and parents the instanced object to the paint target.
     /// </summary>
     [CreateAssetMenu(fileName = "Prefab brush", menuName = "Brushes/Prefab brush")]
     [CustomGridBrush(false, true, false, "Prefab Brush")]
