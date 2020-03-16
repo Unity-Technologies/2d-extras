@@ -7,7 +7,6 @@ namespace UnityEditor.Tilemaps
     /// Use this as an example to create brushes which have extra visualization features when painting onto a Tilemap.
     /// </summary>
     [CustomGridBrush(true, false, false, "Coordinate Brush")]
-    [CreateAssetMenu(fileName = "New Coordinate Brush", menuName = "Brushes/Coordinate Brush")]
     public class CoordinateBrush : GridBrush 
     {
     }

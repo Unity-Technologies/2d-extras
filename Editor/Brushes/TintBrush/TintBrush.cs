@@ -7,7 +7,7 @@ namespace UnityEditor.Tilemaps
     /// <summary>
     /// This Brush changes the color of Tiles placed on a Tilemap.
     /// </summary>
-    [CustomGridBrush(false, false, false, "Tint Brush")]
+    [CustomGridBrush(true, false, false, "Tint Brush")]
     public class TintBrush : GridBrushBase
     {
         /// <summary>
