@@ -1,6 +1,6 @@
 # Animated Tile
 
-###### *Contribution by:  MahdiMahzuni*
+__Contribution by:__  [MahdiMahzuni](https://github.com/MahdiMahzuni)
 
 Animated Tiles are tiles which run through and display a list of sprites in sequence.
 

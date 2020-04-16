@@ -16,7 +16,7 @@ This template script is for creating new custom [Rule Tiles](RuleTile.md) with d
 
 ## Creating a custom Rule Tile script
 
-Create a Custom Rule Tile script by going to __Assets > Create > Custom Rule Tile Script__. Name the newly created file when prompted. After creating the file, you can edit it to add new matching options and the custom algorithm for testing matches.
+Create a Custom Rule Tile script by going to __Assets > Create > Custom Rule Tile Script__. Name the newly created file when prompted. After creating the file, you can edit it to add new matching options and custom algorithms for testing matches.
 
 ### Examples
 
