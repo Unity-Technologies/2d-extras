@@ -10,7 +10,7 @@ When painting with the GameObject Brush, the Brush will instantiate GameObjects 
 
 ![Scene View with GameObject Brush](images/GameObjectBrush.png)
 
-### Implementation and overrides
+## Implementation
 
 The GameObjectBrush inherits from the GridBrush and overrides several methods when implemented. The following methods are overridden:
 
