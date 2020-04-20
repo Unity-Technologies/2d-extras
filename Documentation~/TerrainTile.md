@@ -1,33 +1,35 @@
 # Terrain Tile
 
-Terrain Tiles, similar to Pipeline Tiles, are tiles which take into consideration its orthogonal and diagonal neighboring tiles and displays a sprite depending on whether the neighboring tile is the same tile.
+Terrain Tiles are Tiles which take into consideration its orthogonal and diagonal neighbors and displays a Sprite depending on whether the neighboring Tile is the same Tile as itself. This is a similar behavior to [Pipeline Tiles](PipelineTile.md).
 
-### Properties
+## Properties
 
-| Property                          | Function                                |
-| --------------------------------- | --------------------------------------- |
-| __Filled__                        | The Sprite fitting this characteristic. |
-| __Three Sides__                   | The Sprite fitting this characteristic. |
-| __Two Sides and One Corner__      | The Sprite fitting this characteristic. |
-| __Two Adjacent Sides__            | The Sprite fitting this characteristic. |
-| __Two Opposite Sides__            | The Sprite fitting this characteristic. |
-| __One Side and Two Corners__      | The Sprite fitting this characteristic. |
-| __One Side and One Lower Corner__ | The Sprite fitting this characteristic. |
-| __One Side and One Upper Corner__ | The Sprite fitting this characteristic. |
-| __One Side__                      | The Sprite fitting this characteristic. |
-| __Four Corners__                  | The Sprite fitting this characteristic. |
-| __Three Corners__                 | The Sprite fitting this characteristic. |
-| __Two Adjacent Corners__          | The Sprite fitting this characteristic. |
-| __Two Opposite Corners__          | The Sprite fitting this characteristic. |
-| __One Corner__                    | The Sprite fitting this characteristic. |
-| __Empty__                         | The Sprite fitting this characteristic. |
+The following properties describe the appearance of Sprites representing terrain or walls. Assign a Sprite that matches the description to each of these properties.
 
-### Usage
+| Property                          | Function                                                     |
+| --------------------------------- | ------------------------------------------------------------ |
+| __Filled__                        | A Sprite with all sides filled.                              |
+| __Three Sides__                   | A Sprite with three sides.                                   |
+| __Two Sides and One Corner__      | A Sprite with two sides and one corner without adjacent sides. |
+| __Two Adjacent Sides__            | A Sprite with two adjacent sides.                            |
+| __Two Opposite Sides__            | A Sprite with two opposite sides across each other.          |
+| __One Side and Two Corners__      | A Sprite with a single side and two corners without adjacent sides. |
+| __One Side and One Lower Corner__ | A Sprite with one side and a corner in the lower half of the Sprite. |
+| __One Side and One Upper Corner__ | A Sprite with one side and a corner in the upper half of the Sprite. |
+| __One Side__                      | A Sprite with a single side.                                 |
+| __Four Corners__                  | A Sprite with four unconnected corners without adjacent sides. |
+| __Three Corners__                 | A Sprite with three corners without adjacent sides.          |
+| __Two Adjacent Corners__          | A Sprite with two adjacent corners.                          |
+| __Two Opposite Corners__          | A Sprite with two opposite corners across each other.        |
+| __One Corner__                    | A Sprite with a single corner with no adjacent sides.        |
+| __Empty__                         | A Sprite without any terrain.                                |
 
-Set up the Terrain Tile with the Sprites fitting the number of Tiles bordering the Sprite.
+## Usage
+
+Set up a Terrain Tile by select Sprites which fit the characteristics stated on the left of the Terrain Tile editor.
 
 ![Terrain Tile Editor](images/TerrainTileEditor.png)
 
-Paint the Terrain Tile using the Tile Palette tools.
+As you paint with the Terrain Tile using the Tile Palette tools, the Tile Sprite automatically adjusts to the appropriate one relative to its position with neighboring Tiles.
 
 ![Scene View with Terrain Tile](images/TerrainTile.png)

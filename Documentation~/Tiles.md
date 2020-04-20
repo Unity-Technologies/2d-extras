@@ -1,8 +1,8 @@
 # Scriptable Tiles
 
-You can script Tiles to adapt to different criteria and conditions, such as its position on the Tilemat. It then displays the Sprite which meets its scripted requirements.
+You can script Tiles to adapt to different criteria and conditions, such as its position on the Tilemap. It then displays the Sprite which meets its scripted requirements.
 
-The following are some implementations and examples of __Scriptables Tiles__ which can help save time when designing a Tilemap:
+The following are some implementations and examples of __Scriptables Tiles__ which can help save time when designing a [Tilemap](https://docs.unity3d.com/Manual/class-Tilemap.html):
 
 
 - [Animated Tile](AnimatedTile.md)
