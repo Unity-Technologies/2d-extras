@@ -7,7 +7,7 @@ This Brush places random Tiles onto a Tilemap. Use this as an example to create 
 | Property                | Function                                                     |
 | ----------------------- | ------------------------------------------------------------ |
 | __Pick Random Tiles__   | Enable this property to pick the Tiles from the current selection as a random Tile Set. |
-| __Add To Random Tiles__ | Enable this proerpty to add the picked Tile Sets to existing Tile Sets instead of replacing them. |
+| __Add To Random Tiles__ | Enable this property to add the picked Tile Sets to existing Tile Sets instead of replacing them. |
 | __Tile Set Size__       | The size of each Tile Set.                                   |
 | __Number of Tiles__     | The number of Tile Sets.                                     |
 | __Tile Set__            | The Tile Set to randomize from                               |
