@@ -1,23 +1,23 @@
 # Pipeline Tile
 
-Pipeline Tiles are tiles which take into consideration its orthogonal neighboring tiles and displays a sprite depending on whether the neighboring tile is the same tile.
+A Pipeline Tile take into consideration its orthogonal neighboring tiles and displays a Sprite depending on whether the neighboring Tile is the same Tile as itself, and the number of Tiles bordering it.
 
-### Properties
+## Properties
 
-| Property  | Function                                  |
-| --------- | ----------------------------------------- |
-| __None__  | The Sprite with no Tiles bordering it.    |
-| __One__   | The Sprite with one Tile bordering it.    |
-| __Two__   | The Sprite with two Tiles bordering it.   |
-| __Three__ | The Sprite with three Tiles bordering it. |
-| __Four__  | The Sprite with four Tiles bordering it.  |
+| Property  | Function                                                     |
+| --------- | ------------------------------------------------------------ |
+| __None__  | Displays this selected Sprite when no other Tiles border the Tile. |
+| __One__   | Displays this selected Sprite when one Tile borders the Tile. |
+| __Two__   | Displays this selected Sprite when two Tiles border the Tile. |
+| __Three__ | Displays this selected Sprite when three Tiles border the Tile. |
+| __Four__  | Displays this selected Sprite when four Tiles border the Tile. |
 
-### Usage
+## Usage
 
-Set up the Pipeline Tile with the Sprites fitting the number of Tiles bordering the Sprite.
+Set up the Pipeline Tile by selecting the Sprites that are displayed depending on the number of Tiles bordering the Sprite.
 
 ![Pipeline Tile Editor](images/PipelineTileEditor.png)
 
-Paint the Pipeline Tile using the Tile Palette tools.
+Then paint the Pipeline Tile onto the Tilemap with the [Tile Palette](https://docs.unity3d.com/Manual/Tilemap-Palette.html) tools.
 
 ![Scene View with Pipeline Tile](images/PipelineTile.png)

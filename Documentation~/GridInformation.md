@@ -1,16 +1,10 @@
 # Grid Information
 
-A simple Component that stores and provides information based on Grid positions and keywords.
+This is a simple Component that stores and provides information based on Grid positions and keywords.
 
+## Usage
 
-
-### Usage
-
-Add this Component to a GameObject with a GridLayout Component.
-
-
-
-To store information on to the GridInformation Component, use the following APIs:
+Add this Component to a GameObject with a Grid component. To store information on to the Grid Information component, use the following APIs:
 
 ```C#
 public bool SetPositionProperty(Vector3Int position, String name, int positionProperty)
@@ -28,7 +22,7 @@ public bool SetPositionProperty(Vector3Int position, String name, Color position
 
 
 
-To get information from the GridInformation Component, use the following APIs:
+To get information from the Grid Information component, use the following APIs:
 
 ```C#
 public T GetPositionProperty<T>(Vector3Int position, String name, T defaultValue) where T : UnityEngine.Object
@@ -44,6 +38,4 @@ public double GetPositionProperty(Vector3Int position, String name, double defau
 public Color GetPositionProperty(Vector3Int position, String name, Color defaultValue)
 ```
 
-
-
-You can use this in combination with Scriptable Tiles to get the right Tile Data when laying out your Tilemap.
+You can use this in combination with [Scriptable Tiles](https://docs.unity3d.com/Manual/Tilemap-ScriptableTiles.html) to get the right [TileData](https://docs.unity3d.com/Manual/Tilemap-ScriptableTiles-TileData.html) when creating the layout of your Tilemap.

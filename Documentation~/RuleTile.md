@@ -1,20 +1,18 @@
-# Rule Tile
+#  Rule Tile
 
-###### *Contributions by: johnsoncodehk, DreadBoy, AVChemodanov, DoctorShinobi *
+__Contributions by:__ [johnsoncodehk](https://github.com/johnsoncodehk), [DreadBoy](https://github.com/DreadBoy), [AVChemodanov](https://github.com/AVChemodanov), [DoctorShinobi](https://github.com/DoctorShinobi)
 
-Generic visual tile for creating different tilesets like terrain, pipeline, random or animated tiles.
+This is a generic visual Tile that other Tiles such as [Terrain Tiles](TerrainTile.md), [Pipeline Tile](PipelineTile.md), [Random Tile](RandomTile.md) or [Animated Tiles](AnimatedTile..md) are based on. The Rule Tile is for the Rectangle Grid type, the Hexagonal Rule Tile is for the Hexagonal Grid type, and the Isometric Rule Tile is for the Isometric Grid types. All the different types of Rule Tiles possess the same properties.
 
-The Rule Tile is for the Rectangle Grid type. For the Hexagonal Grid type, please use the Hexagonal Rule Tile. For the Isometric Grid types, please use the Isometric Rule Tile. The same properties apply for all Rule Tiles.
-
-### Properties
+## Properties
 
 | Property                | Function                                                |
 | ----------------------- | ------------------------------------------------------- |
-| __Default Sprite__      | The Default Sprite set when creating a new Rule.        |
-| __Default Game Object__ | The Default GameObject set when creating a new Rule.    |
-| __Default Collider__    | The Default Collider Type set when creating a new Rule. |
+| __Default Sprite__      | The default Sprite set when creating a new Rule.        |
+| __Default Game Object__ | The default GameObject set when creating a new Rule.    |
+| __Default Collider__    | The default Collider Type set when creating a new Rule. |
 
-#### Tiling Rules
+### Tiling Rules
 
 | Property        | Function                                            |
 | --------------- | --------------------------------------------------- |
@@ -23,13 +21,13 @@ The Rule Tile is for the Rectangle Grid type. For the Hexagonal Grid type, pleas
 | __Collider__    | The Collider Type for the Tile which fits this Rule |
 | __Output__      | The Output for the Tile which fits this Rule.       |
 
-#### Output: Fixed
+### Output: Fixed
 
 | Property   | Function                                      |
 | ---------- | --------------------------------------------- |
 | __Sprite__ | The Sprite for the Tile which fits this Rule. |
 
-#### Output: Random
+### Output: Random
 
 | Property    | Function                                                     |
 | ----------- | ------------------------------------------------------------ |
@@ -38,31 +36,33 @@ The Rule Tile is for the Rectangle Grid type. For the Hexagonal Grid type, pleas
 | __Size__    | The number of Sprites to randomize from.                     |
 | __Sprite__  | The Sprite for the Tile which fits this Rule. A random Sprite will be chosen out of this when placing the Tile. |
 
-#### Output: Animation
+### Output: Animation
 
 | Property   | Function                                                     |
 | ---------- | ------------------------------------------------------------ |
-| __Speed__  | The speed at which the Animation is played.                  |
-| __Size__   | The number of Sprites in the Animation.                      |
+| __Speed__  | The speed at which the animation is played.                  |
+| __Size__   | The number of Sprites in the animation.                      |
 | __Sprite__ | The Sprite for the Tile which fits this Rule. A random Sprite will be chosen out of this when placing the Tile. |
 
-### Usage
+## Usage
 
-Set up the Rule Tile with the required rules with the Rule Tile Editor. In the Rule Tile Editor, you can change, add or remove Rules in the Tiling Rules list. Click on the + or - buttons to add or remove Rules. Drag existing Rules up or down to change the order of the Rule in the list.
+Set up the Rule Tile with the required rules with the __Rule Tile editor__. In the Rule Tile editor, you can change, add or remove Rules in the Tiling Rules list. Click on the + or - buttons to add or remove Rules. Select and hold the top left corner of each row to drag them up or down to change the order of the Rules in the list.
 
 ![Rule Tile Editor](images/RuleTileEditor.png)
 
-When a new Rule is added, you will see a list of Rule properties, a 3x3 box and a Sprite selector. You can modify these to get the Rule that you want matched. The Sprite selected and the other properties of the Rule Tile will then be applied to the cell.
+When you add a new Rule, the Rule editor displays the following: the list of Rule properties, a 3x3 box that visualizes the Rules set, and a Sprite selector.  
 
 ![Rule Editor](images/RuleTileRule.png)
 
-For setting up a Rule, you will need to edit the 3x3 box. The 3x3 box represents the neighbors a Tile can have, where the eight bordering cells are the neighbors in those directions and the center cell is the Tile itself. Each of the neighboring cells can be set with 3 matching options: Don't Care, This and Not This. 
+Edit the 3x3 box to set up the Rule the Tile must match. The 3x3 box represents the neighbors a Tile can have, where the center represents the Tile itself, and the eight bordering cells are the neighboring Tiles in those positions relative to the Tile. Each of the neighboring cells can be set with one of three options: Don't Care, This and Not This. These define the behavior of the Rule Tile towards these Tiles.
 
-- Don't Care:  The Rule Tile will not care about the contents of the cell in that direction
-- This: The Rule Tile will check if the contents of the cell in that direction is an instance of this Rule Tile. If not, the rule will fail.
-- Not This: The Rule Tile will check if the contents of the cell in that direction is not an instance of this Rule Tile. If it is, the rule will fail.
+| Options        | Rule Tile behavior                                           |
+| -------------- | ------------------------------------------------------------ |
+| __Don't Care__ | The Rule Tile ignores the contents in this cell.             |
+| __This__       | The Rule Tile checks if the contents of this cell is an instance of this Rule Tile. If it is an instance, the rule passes. If it is not an instance, the rule fails. |
+| __Not This__   | The Rule Tile checks if the contents of this cell is not an instance of this Rule Tile. If it is not an instance, the rule passes. If it is an instance, the rule fails. |
 
-If all of the neighbors match exactly according to the options set in each direction, the rule will be matched and the contents of this Rule will be applied.
+If all of the neighbors of the Rule Tile match the options set for their respective directions, then the Rule is considered matched and the rest of the Rule properties are applied.
 
 ![Rule Tile with Fixed Rule](images/RuleTileRuleFixed.png)
 
