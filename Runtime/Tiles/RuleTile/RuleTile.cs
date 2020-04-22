@@ -23,7 +23,7 @@ namespace UnityEngine
     /// Generic visual tile for creating different tilesets like terrain, pipeline, random or animated tiles.
     /// </summary>
     [Serializable]
-    [CreateAssetMenu(fileName = "New Rule Tile", menuName = "Tiles/Rule Tile")]
+    [CreateAssetMenu(fileName = "New Rule Tile", menuName = "2D Extras/Tiles/Rule Tile", order = 359)]
     public class RuleTile : TileBase
     {
         /// <summary>

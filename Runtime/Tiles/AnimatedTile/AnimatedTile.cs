@@ -10,7 +10,7 @@ namespace UnityEngine.Tilemaps
     /// Animated Tiles are tiles which run through and display a list of sprites in sequence.
     /// </summary>
     [Serializable]
-    [CreateAssetMenu(fileName = "New Animated Tile", menuName = "Tiles/Animated Tile")]
+    [CreateAssetMenu(fileName = "New Animated Tile", menuName = "2D Extras/Tiles/Animated Tile", order = 359)]
     public class AnimatedTile : TileBase
     {
         /// <summary>

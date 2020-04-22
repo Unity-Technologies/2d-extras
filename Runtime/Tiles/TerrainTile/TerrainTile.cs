@@ -10,7 +10,7 @@ namespace UnityEngine.Tilemaps
     /// Terrain Tiles, similar to Pipeline Tiles, are tiles which take into consideration its orthogonal and diagonal neighboring tiles and displays a sprite depending on whether the neighboring tile is the same tile.
     /// </summary>
     [Serializable]
-    [CreateAssetMenu(fileName = "New Terrain Tile", menuName = "Tiles/Terrain Tile")]
+    [CreateAssetMenu(fileName = "New Terrain Tile", menuName = "2D Extras/Tiles/Terrain Tile", order = 359)]
     public class TerrainTile : TileBase
     {
         /// <summary>
