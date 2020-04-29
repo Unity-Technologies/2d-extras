@@ -11,7 +11,7 @@ namespace UnityEngine.Tilemaps
     /// The Sprite displayed for the Tile is randomized based on its location and will be fixed for that particular location.
     /// </summary>
     [Serializable]
-    [CreateAssetMenu(fileName = "New Random Tile", menuName = "Tiles/Random Tile")]
+    [CreateAssetMenu(fileName = "New Random Tile", menuName = "2D Extras/Tiles/Random Tile", order = 359)]
     public class RandomTile : Tile
     {
         /// <summary>

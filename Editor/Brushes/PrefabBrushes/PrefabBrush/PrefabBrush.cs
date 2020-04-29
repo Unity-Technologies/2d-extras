@@ -5,7 +5,7 @@ namespace UnityEditor.Tilemaps
     /// <summary>
     /// This Brush instances and places a selected prefab onto the targeted location and parents the instanced object to the paint target.
     /// </summary>
-    [CreateAssetMenu(fileName = "Prefab brush", menuName = "Brushes/Prefab brush")]
+    [CreateAssetMenu(fileName = "Prefab brush", menuName = "2D Extras/Brushes/Prefab brush", order = 359)]
     [CustomGridBrush(false, true, false, "Prefab Brush")]
     public class PrefabBrush : BasePrefabBrush
     {
