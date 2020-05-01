@@ -23,8 +23,8 @@ namespace UnityEditor.Tilemaps
         public float m_PerlinScale = 0.5f;
 
         /// <summary>
-        /// Paints Prefabs into a given position within the selected layers.
-        /// The PrefabBrush overrides this to provide Prefab painting functionality.
+        /// Paints GameObject from containg Prefabs with randomly into a given position within the selected layers.
+        /// The PrefabRandomBrush overrides this to provide Prefab painting functionality.
         /// </summary>
         /// <param name="grid">Grid used for layout.</param>
         /// <param name="brushTarget">Target of the paint operation. By default the currently selected GameObject.</param>
@@ -52,9 +52,8 @@ namespace UnityEditor.Tilemaps
         }
 
         /// <summary>
-        /// Erases all Prefabs in a given position within the selected layers if ForceDelete is true.
-        /// Erase only selected Prefabs in a given position within the selected layers if ForceDelete is false.
-        /// The PrefabBrush overrides this to provide Prefab erasing functionality.
+        /// Erases GameObject that is created from containg Prefabs in a given position within the selected layers.
+        /// The PrefabRandomBrush overrides this to provide Prefab erasing functionality.
         /// </summary>
         /// <param name="grid">Grid used for layout.</param>
         /// <param name="brushTarget">Target of the erase operation. By default the currently selected GameObject.</param>

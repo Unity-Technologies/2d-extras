@@ -4,7 +4,7 @@ using UnityEngine;
 namespace UnityEditor.Tilemaps
 {
     /// <summary>
-    /// This Brush instances and places a selected prefab onto the targeted location and parents the instanced object to the paint target.
+    /// This Brush instances and places a containing prefab onto the targeted location and parents the instanced object to the paint target.
     /// </summary>
     [CreateAssetMenu(fileName = "New Prefab Brush", menuName = "2D Extras/Brushes/Prefab Brush", order = 359)]
     [CustomGridBrush(false, true, false, "Prefab Brush")]
@@ -16,7 +16,7 @@ namespace UnityEditor.Tilemaps
         public GameObject m_Prefab;
 
         /// <summary>
-        /// Paints Prefabs into a given position within the selected layers.
+        /// Paints GameObject from containg Prefab into a given position within the selected layers.
         /// The PrefabBrush overrides this to provide Prefab painting functionality.
         /// </summary>
         /// <param name="grid">Grid used for layout.</param>
@@ -40,8 +40,7 @@ namespace UnityEditor.Tilemaps
         }
 
         /// <summary>
-        /// Erases all Prefabs in a given position within the selected layers if ForceDelete is true.
-        /// Erase only selected Prefabs in a given position within the selected layers if ForceDelete is false.
+        /// Erases GameObject that is created from containg Prefab in a given position within the selected layers.
         /// The PrefabBrush overrides this to provide Prefab erasing functionality.
         /// </summary>
         /// <param name="grid">Grid used for layout.</param>
