@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 namespace UnityEditor.Tilemaps
@@ -10,14 +11,17 @@ namespace UnityEditor.Tilemaps
     public class PrefabRandomBrush : BasePrefabBrush
     {
         private const float k_PerlinOffset = 100000f;
+
         /// <summary>
         /// The selection of Prefabs to paint from
         /// </summary>
         public GameObject[] m_Prefabs;
+
         /// <summary>
         /// Factor for distribution of choice of Prefabs to paint
         /// </summary>
         public float m_PerlinScale = 0.5f;
+
         /// <summary>
         /// Paints Prefabs into a given position within the selected layers.
         /// The PrefabBrush overrides this to provide Prefab painting functionality.
@@ -27,11 +31,53 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The coordinates of the cell to paint data to.</param>
         public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
-            var index = Mathf.Clamp(Mathf.FloorToInt(GetPerlinValue(position, m_PerlinScale, k_PerlinOffset) * m_Prefabs.Length), 0, m_Prefabs.Length - 1);
-            Prefab = m_Prefabs[index];
-            base.Paint(grid, brushTarget, position);
+            // Do not allow editing palettes
+            if (brushTarget.layer == 31 || brushTarget == null)
+            {
+                return;
+            }
+
+            var objectsInCell = GetObjectsInCell(grid, brushTarget.transform, position);
+            var existPrefabObjectInCell = objectsInCell.Any(objectInCell =>
+            {
+                return m_Prefabs.Any(prefab => PrefabUtility.GetCorrespondingObjectFromSource(objectInCell) == prefab);
+            });
+
+            if (!existPrefabObjectInCell)
+            {
+                var index = Mathf.Clamp(Mathf.FloorToInt(GetPerlinValue(position, m_PerlinScale, k_PerlinOffset) * m_Prefabs.Length), 0, m_Prefabs.Length - 1);
+                var prefab = m_Prefabs[index];
+                base.InstantiatePrefabOnGrid(grid, brushTarget, position, prefab);
+            }
         }
-        
+
+        /// <summary>
+        /// Erases all Prefabs in a given position within the selected layers if ForceDelete is true.
+        /// Erase only selected Prefabs in a given position within the selected layers if ForceDelete is false.
+        /// The PrefabBrush overrides this to provide Prefab erasing functionality.
+        /// </summary>
+        /// <param name="grid">Grid used for layout.</param>
+        /// <param name="brushTarget">Target of the erase operation. By default the currently selected GameObject.</param>
+        /// <param name="position">The coordinates of the cell to erase data from.</param>
+        public override void Erase(GridLayout grid, GameObject brushTarget, Vector3Int position)
+        {
+            if (brushTarget.layer == 31 || brushTarget.transform == null)
+            {
+                return;
+            }
+
+            foreach (var objectInCell in GetObjectsInCell(grid, brushTarget.transform, position))
+            {
+                foreach (var prefab in m_Prefabs)
+                {
+                    if (PrefabUtility.GetCorrespondingObjectFromSource(objectInCell) == prefab)
+                    {
+                        Undo.DestroyObjectImmediate(objectInCell);
+                    }
+                }
+            }
+        }
+
         private static float GetPerlinValue(Vector3Int position, float scale, float offset)
         {
             return Mathf.PerlinNoise((position.x + offset)*scale, (position.y + offset)*scale);

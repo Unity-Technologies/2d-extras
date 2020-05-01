@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 namespace UnityEditor.Tilemaps
@@ -13,10 +14,7 @@ namespace UnityEditor.Tilemaps
         /// The selection of Prefab to paint from
         /// </summary>
         public GameObject m_Prefab;
-        /// <summary>
-        /// Use to remove all prefabs in the cell or just the one that is currently selected in m_Prefab
-        /// </summary>
-        public bool m_ForceDelete;
+
         /// <summary>
         /// Paints Prefabs into a given position within the selected layers.
         /// The PrefabBrush overrides this to provide Prefab painting functionality.
@@ -24,16 +22,20 @@ namespace UnityEditor.Tilemaps
         /// <param name="grid">Grid used for layout.</param>
         /// <param name="brushTarget">Target of the paint operation. By default the currently selected GameObject.</param>
         /// <param name="position">The coordinates of the cell to paint data to.</param>
-        
         public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
-            
-           
-            Prefab = m_Prefab;
-            var tileObject = GetObjectInCell(grid, brushTarget.transform, position);
-            if (tileObject == null || tileObject.name != m_Prefab.name)
+            // Do not allow editing palettes
+            if (brushTarget.layer == 31 || brushTarget == null)
             {
-                base.Paint(grid, brushTarget, position);
+                return;
+            }
+
+            var objectsInCell = GetObjectsInCell(grid, brushTarget.transform, position);
+            var existPrefabObjectInCell = objectsInCell.Any(objectInCell => PrefabUtility.GetCorrespondingObjectFromSource(objectInCell) == m_Prefab);
+
+            if (!existPrefabObjectInCell)
+            {
+                base.InstantiatePrefabOnGrid(grid, brushTarget, position, m_Prefab);
             }
         }
 
@@ -47,14 +49,17 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The coordinates of the cell to erase data from.</param>
         public override void Erase(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
-            var erased = GetObjectInCell(grid, brushTarget.transform, position);
-            if (erased == null)
+            if (brushTarget.layer == 31 || brushTarget.transform == null)
             {
                 return;
             }
-            if (m_ForceDelete || (!m_ForceDelete && erased.gameObject.name == m_Prefab.name))
+
+            foreach (var objectInCell in GetObjectsInCell(grid, brushTarget.transform, position))
             {
-                base.Erase(grid, brushTarget, position);
+                if (PrefabUtility.GetCorrespondingObjectFromSource(objectInCell) == m_Prefab)
+                {
+                    Undo.DestroyObjectImmediate(objectInCell);
+                }
             }
         }
     }
@@ -66,13 +71,11 @@ namespace UnityEditor.Tilemaps
     public class PrefabBrushEditor : BasePrefabBrushEditor
     {
         private SerializedProperty m_Prefab;
-        private SerializedProperty m_ForceDelete;
 
         protected override void OnEnable()
         {
             base.OnEnable();
             m_Prefab = m_SerializedObject.FindProperty("m_Prefab");
-            m_ForceDelete = m_SerializedObject.FindProperty("m_ForceDelete");
         }
 
         /// <summary>
@@ -84,7 +87,6 @@ namespace UnityEditor.Tilemaps
             base.OnPaintInspectorGUI();
             m_SerializedObject.UpdateIfRequiredOrScript();
             EditorGUILayout.PropertyField(m_Prefab, true);
-            EditorGUILayout.PropertyField(m_ForceDelete, true);
             m_SerializedObject.ApplyModifiedPropertiesWithoutUndo();
         }
     }
