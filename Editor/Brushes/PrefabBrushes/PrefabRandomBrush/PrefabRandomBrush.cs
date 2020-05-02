@@ -47,7 +47,7 @@ namespace UnityEditor.Tilemaps
             {
                 var index = Mathf.Clamp(Mathf.FloorToInt(GetPerlinValue(position, m_PerlinScale, k_PerlinOffset) * m_Prefabs.Length), 0, m_Prefabs.Length - 1);
                 var prefab = m_Prefabs[index];
-                base.InstantiatePrefabOnGrid(grid, brushTarget, position, prefab);
+                base.InstantiatePrefabInCell(grid, brushTarget, position, prefab);
             }
         }
 

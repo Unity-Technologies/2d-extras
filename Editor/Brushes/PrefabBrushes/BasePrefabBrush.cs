@@ -27,7 +27,7 @@ namespace UnityEditor.Tilemaps
             return results;
         }
 
-        protected void InstantiatePrefabOnGrid(GridLayout grid, GameObject brushTarget, Vector3Int position, GameObject prefab)
+        protected void InstantiatePrefabInCell(GridLayout grid, GameObject brushTarget, Vector3Int position, GameObject prefab)
         {
             var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
             if (instance != null)

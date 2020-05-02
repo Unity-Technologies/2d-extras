@@ -35,7 +35,7 @@ namespace UnityEditor.Tilemaps
 
             if (!existPrefabObjectInCell)
             {
-                base.InstantiatePrefabOnGrid(grid, brushTarget, position, m_Prefab);
+                base.InstantiatePrefabInCell(grid, brushTarget, position, m_Prefab);
             }
         }
 
