@@ -1,113 +1,148 @@
 ﻿using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEditorInternal;
-using System;
 using System.Collections.Generic;
 
 namespace UnityEditor
 {
     [CustomEditor(typeof(RuleOverrideTile))]
-    internal class RuleOverrideTileEditor : Editor
+    public class RuleOverrideTileEditor : Editor
     {
 
-        public RuleOverrideTile overrideTile { get { return (target as RuleOverrideTile); } }
-
-        private List<KeyValuePair<Sprite, Sprite>> m_Sprites;
-        private List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>> m_Rules;
-
-        ReorderableList m_SpriteList;
-        ReorderableList m_RuleList;
-
-        private float k_DefaultElementHeight { get { return RuleTileEditor.k_DefaultElementHeight; } }
-        private float k_PaddingBetweenRules { get { return RuleTileEditor.k_PaddingBetweenRules; } }
-        private float k_SingleLineHeight { get { return RuleTileEditor.k_SingleLineHeight; } }
-        private float k_LabelWidth { get { return RuleTileEditor.k_LabelWidth; } }
-
-        void OnEnable()
+        public RuleOverrideTile overrideTile => target as RuleOverrideTile;
+        public RuleTileEditor ruleTileEditor
         {
-            if (m_Sprites == null)
-                m_Sprites = new List<KeyValuePair<Sprite, Sprite>>();
+            get
+            {
+                if (m_RuleTileEditorTarget != overrideTile.m_Tile)
+                {
+                    DestroyImmediate(m_RuleTileEditor);
+                    m_RuleTileEditor = Editor.CreateEditor(overrideTile.m_InstanceTile) as RuleTileEditor;
+                    m_RuleTileEditorTarget = overrideTile.m_Tile;
+                }
+                return m_RuleTileEditor;
+            }
+        }
 
-            if (m_Rules == null)
-                m_Rules = new List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>>();
+        RuleTileEditor m_RuleTileEditor;
+        RuleTile m_RuleTileEditorTarget;
 
+        public List<KeyValuePair<Sprite, Sprite>> m_Sprites = new List<KeyValuePair<Sprite, Sprite>>();
+        public List<KeyValuePair<GameObject, GameObject>> m_GameObjects = new List<KeyValuePair<GameObject, GameObject>>();
+        public ReorderableList m_SpriteList;
+        public ReorderableList m_GameObjectList;
+        int m_MissingOriginalSpriteIndex;
+        int m_MissingOriginalGameObjectIndex;
+
+        public static float k_SpriteElementHeight = 48;
+        public static float k_GameObjectElementHeight = 16;
+        public static float k_PaddingBetweenRules = 4;
+
+        public virtual void OnEnable()
+        {
             if (m_SpriteList == null)
             {
-                overrideTile.GetOverrides(m_Sprites);
-
                 m_SpriteList = new ReorderableList(m_Sprites, typeof(KeyValuePair<Sprite, Sprite>), false, true, false, false);
-                m_SpriteList.drawHeaderCallback = DrawSpriteHeader;
+                m_SpriteList.drawHeaderCallback = DrawSpriteListHeader;
                 m_SpriteList.drawElementCallback = DrawSpriteElement;
-                m_SpriteList.elementHeight = k_DefaultElementHeight + k_PaddingBetweenRules;
+                m_SpriteList.elementHeightCallback = GetSpriteElementHeight;
             }
-            if (m_RuleList == null)
+            if (m_GameObjectList == null)
             {
-                overrideTile.GetOverrides(m_Rules);
-
-                m_RuleList = new ReorderableList(m_Rules, typeof(KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRule>), false, true, false, false);
-                m_RuleList.drawHeaderCallback = DrawRuleHeader;
-                m_RuleList.drawElementCallback = DrawRuleElement;
-                m_RuleList.elementHeightCallback = GetRuleElementHeight;
+                m_GameObjectList = new ReorderableList(m_GameObjects, typeof(KeyValuePair<Sprite, Sprite>), false, true, false, false);
+                m_GameObjectList.drawHeaderCallback = DrawGameObjectListHeader;
+                m_GameObjectList.drawElementCallback = DrawGameObjectElement;
+                m_GameObjectList.elementHeightCallback = GetGameObjectElementHeight;
             }
+        }
+
+        public virtual void OnDisable()
+        {
+            DestroyImmediate(ruleTileEditor);
+            m_RuleTileEditorTarget = null;
         }
 
         public override void OnInspectorGUI()
         {
             serializedObject.UpdateIfRequiredOrScript();
 
+            DrawTileField();
+            DrawCustomFields();
+
+            overrideTile.GetOverrides(m_Sprites, ref m_MissingOriginalSpriteIndex);
+            overrideTile.GetOverrides(m_GameObjects, ref m_MissingOriginalGameObjectIndex);
+
             EditorGUI.BeginChangeCheck();
-
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Tile"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_OverrideSelf"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Advanced"));
-            serializedObject.ApplyModifiedProperties();
-
+            m_SpriteList.DoLayoutList();
             if (EditorGUI.EndChangeCheck())
+            {
+                overrideTile.ApplyOverrides(m_Sprites);
                 SaveTile();
-
-            if (!overrideTile.m_Advanced)
-            {
-                using (new EditorGUI.DisabledScope(overrideTile.m_Tile == null))
-                {
-                    EditorGUI.BeginChangeCheck();
-                    overrideTile.GetOverrides(m_Sprites);
-
-                    m_SpriteList.list = m_Sprites;
-                    m_SpriteList.DoLayoutList();
-                    if (EditorGUI.EndChangeCheck())
-                    {
-                        for (int i = 0; i < targets.Length; i++)
-                        {
-                            RuleOverrideTile tile = targets[i] as RuleOverrideTile;
-                            tile.ApplyOverrides(m_Sprites);
-                        }
-                    }
-                }
             }
-            else
-            {
-                using (new EditorGUI.DisabledScope(overrideTile.m_Tile == null))
-                {
-                    overrideTile.GetOverrides(m_Rules);
 
-                    m_RuleList.list = m_Rules;
-                    m_RuleList.DoLayoutList();
-                }
+            EditorGUI.BeginChangeCheck();
+            m_GameObjectList.DoLayoutList();
+            if (EditorGUI.EndChangeCheck())
+            {
+                overrideTile.ApplyOverrides(m_GameObjects);
+                SaveTile();
             }
         }
 
-        private void SaveTile()
+        public void DrawSpriteListHeader(Rect rect)
         {
-            EditorUtility.SetDirty(target);
-            SceneView.RepaintAll();
-
-            overrideTile.Override();
+            float xMax = rect.xMax;
+            rect.xMax = rect.xMax / 2.0f;
+            GUI.Label(rect, "Original Sprite", EditorStyles.label);
+            rect.xMin = rect.xMax;
+            rect.xMax = xMax;
+            GUI.Label(rect, "Override Sprite", EditorStyles.label);
         }
 
-        private void DrawSpriteElement(Rect rect, int index, bool selected, bool focused)
+        public void DrawGameObjectListHeader(Rect rect)
         {
+            float xMax = rect.xMax;
+            rect.xMax = rect.xMax / 2.0f;
+            GUI.Label(rect, "Original GameObject", EditorStyles.label);
+            rect.xMin = rect.xMax;
+            rect.xMax = xMax;
+            GUI.Label(rect, "Override GameObject", EditorStyles.label);
+        }
+
+        public float GetSpriteElementHeight(int index)
+        {
+            float height = k_SpriteElementHeight + k_PaddingBetweenRules;
+
+            bool isMissing = index >= m_MissingOriginalSpriteIndex;
+            if (isMissing)
+                height += 16;
+
+            return height;
+        }
+
+        public float GetGameObjectElementHeight(int index)
+        {
+            float height = k_GameObjectElementHeight + k_PaddingBetweenRules;
+
+            bool isMissing = index >= m_MissingOriginalGameObjectIndex;
+            if (isMissing)
+                height += 16;
+
+            return height;
+        }
+
+        public void DrawSpriteElement(Rect rect, int index, bool selected, bool focused)
+        {
+            bool isMissing = index >= m_MissingOriginalSpriteIndex;
+            if (isMissing)
+            {
+                EditorGUI.HelpBox(new Rect(rect.xMin, rect.yMin, rect.width, 16), "Original Sprite missing", MessageType.Warning);
+                rect.yMin += 16;
+            }
+
             Sprite originalSprite = m_Sprites[index].Key;
             Sprite overrideSprite = m_Sprites[index].Value;
+            Rect fullRect = rect;
 
             rect.y += 2;
             rect.height -= k_PaddingBetweenRules;
@@ -121,242 +156,175 @@ namespace UnityEditor
             EditorGUI.BeginChangeCheck();
             overrideSprite = EditorGUI.ObjectField(new Rect(rect.xMin, rect.yMin, rect.height, rect.height), overrideSprite, typeof(Sprite), false) as Sprite;
             if (EditorGUI.EndChangeCheck())
-            {
                 m_Sprites[index] = new KeyValuePair<Sprite, Sprite>(originalSprite, overrideSprite);
-                SaveTile();
-            }
         }
-        private void DrawSpriteHeader(Rect rect)
+
+        public void DrawGameObjectElement(Rect rect, int index, bool selected, bool focused)
         {
-            float xMax = rect.xMax;
+            bool isMissing = index >= m_MissingOriginalGameObjectIndex;
+            if (isMissing)
+            {
+                EditorGUI.HelpBox(new Rect(rect.xMin, rect.yMin, rect.width, 16), "Original Game Object missing", MessageType.Warning);
+                rect.yMin += 16;
+            }
+
+            GameObject originalGameObject = m_GameObjects[index].Key;
+            GameObject overrideGameObject = m_GameObjects[index].Value;
+            Rect fullRect = rect;
+
+            rect.y += 2;
+            rect.height -= k_PaddingBetweenRules;
+
             rect.xMax = rect.xMax / 2.0f;
-            GUI.Label(rect, "Original", EditorStyles.label);
-            rect.xMin = rect.xMax;
-            rect.xMax = xMax;
-            GUI.Label(rect, "Override", EditorStyles.label);
-        }
-
-        private void DrawRuleElement(Rect rect, int index, bool selected, bool focused)
-        {
-            RuleTile.TilingRule originalRule = m_Rules[index].Key;
-            RuleTile.TilingRule overrideRule = m_Rules[index].Value;
-
-            float matrixWidth = k_DefaultElementHeight;
-
-            float xMax = rect.xMax;
-            rect.xMax = rect.xMax / 2.0f + matrixWidth - 10f;
-
-            if (index != overrideTile.m_Tile.m_TilingRules.Count)
-                DrawOriginalRuleElement(rect, originalRule);
-            else
-                DrawOriginalRuleElement(rect, originalRule, true);
-
-            rect.xMin = rect.xMax;
-            rect.xMax = xMax;
-
-            EditorGUI.BeginChangeCheck();
-            if (index != overrideTile.m_Tile.m_TilingRules.Count)
-                DrawOverrideElement(rect, originalRule);
-            else
-                DrawOverrideDefaultElement(rect, overrideRule);
-            if (EditorGUI.EndChangeCheck())
-                SaveTile();
-        }
-        public void DrawOriginalRuleElement(Rect rect, RuleTile.TilingRule originalRule, bool isDefault = false)
-        {
             using (new EditorGUI.DisabledScope(true))
-            {
-                float yPos = rect.yMin + 2f;
-                float height = rect.height - k_PaddingBetweenRules;
-                float matrixWidth = k_DefaultElementHeight;
-
-                Rect inspectorRect = new Rect(rect.xMin, yPos, rect.width - matrixWidth * 2f - 20f, height);
-                Rect matrixRect = new Rect(rect.xMax - matrixWidth * 2f - 10f, yPos, matrixWidth, k_DefaultElementHeight);
-                Rect spriteRect = new Rect(rect.xMax - matrixWidth - 5f, yPos, matrixWidth, k_DefaultElementHeight);
-
-                RuleTileEditor ruleTileEditor = Editor.CreateEditor(overrideTile.m_Tile) as RuleTileEditor;
-
-                if (!isDefault)
-                    RuleTileEditor.RuleInspectorOnGUI(inspectorRect, originalRule);
-                else
-                    RuleOriginalDefaultInspectorOnGUI(inspectorRect, originalRule);
-                ruleTileEditor.RuleMatrixOnGUI(overrideTile.m_Tile, matrixRect, originalRule);
-                RuleTileEditor.SpriteOnGUI(spriteRect, originalRule);
-
-                DestroyImmediate(ruleTileEditor);
-            }
-        }
-        private void DrawOverrideElement(Rect rect, RuleTile.TilingRule originalRule)
-        {
-            float yPos = rect.yMin + 2f;
-            float height = rect.height - k_PaddingBetweenRules;
-            float matrixWidth = k_DefaultElementHeight;
-
-            Rect inspectorRect = new Rect(rect.xMin, yPos, rect.width - matrixWidth - 10f, height);
-            Rect spriteRect = new Rect(rect.xMax - matrixWidth - 5f, yPos, matrixWidth, k_DefaultElementHeight);
-
-            RuleOverrideInspectorOnGUI(inspectorRect, originalRule);
-            RuleTile.TilingRule overrideRule = overrideTile[originalRule];
-            if (overrideRule != null)
-                RuleTileEditor.SpriteOnGUI(spriteRect, overrideRule);
-        }
-        private void RuleOriginalDefaultInspectorOnGUI(Rect rect, RuleTile.TilingRule originalRule)
-        {
-            float y = rect.yMin;
-
-            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Rule");
-            EditorGUI.LabelField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), "Default");
-            y += k_SingleLineHeight;
-
-            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Collider");
-            EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), originalRule.m_ColliderType);
-            y += k_SingleLineHeight;
-        }
-        private void RuleOverrideInspectorOnGUI(Rect rect, RuleTile.TilingRule originalRule)
-        {
-            RuleTile.TilingRule overrideRule = overrideTile[originalRule];
-
-            float y = rect.yMin;
-            EditorGUI.BeginChangeCheck();
-
-            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Enabled");
-            bool enabled = EditorGUI.Toggle(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), overrideRule != null);
-            y += k_SingleLineHeight;
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                if (enabled)
-                    overrideTile[originalRule] = originalRule;
-                else
-                    overrideTile[originalRule] = null;
-                overrideRule = overrideTile[originalRule];
-            }
-
-            if (overrideRule == null)
-                return;
-
-            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Game Object");
-            overrideRule.m_GameObject = (GameObject)EditorGUI.ObjectField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), "", overrideRule.m_GameObject, typeof(GameObject), false);
-            y += k_SingleLineHeight;
-            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Collider");
-            overrideRule.m_ColliderType = (Tile.ColliderType)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), overrideRule.m_ColliderType);
-            y += k_SingleLineHeight;
-            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Output");
-            overrideRule.m_Output = (RuleTile.TilingRule.OutputSprite)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), overrideRule.m_Output);
-            y += k_SingleLineHeight;
-
-            if (overrideRule.m_Output == RuleTile.TilingRule.OutputSprite.Animation)
-            {
-                GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Speed");
-                overrideRule.m_AnimationSpeed = EditorGUI.FloatField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), overrideRule.m_AnimationSpeed);
-                y += k_SingleLineHeight;
-            }
-            if (overrideRule.m_Output == RuleTile.TilingRule.OutputSprite.Random)
-            {
-                GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Noise");
-                overrideRule.m_PerlinScale = EditorGUI.Slider(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), overrideRule.m_PerlinScale, 0.001f, 0.999f);
-                y += k_SingleLineHeight;
-
-                GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Shuffle");
-                overrideRule.m_RandomTransform = (RuleTile.TilingRule.Transform)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), overrideRule.m_RandomTransform);
-                y += k_SingleLineHeight;
-            }
-
-            if (overrideRule.m_Output != RuleTile.TilingRule.OutputSprite.Single)
-            {
-                GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Size");
-                EditorGUI.BeginChangeCheck();
-                int newLength = EditorGUI.DelayedIntField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), overrideRule.m_Sprites.Length);
-                if (EditorGUI.EndChangeCheck())
-                    Array.Resize(ref overrideRule.m_Sprites, Math.Max(newLength, 1));
-                y += k_SingleLineHeight;
-
-                for (int i = 0; i < overrideRule.m_Sprites.Length; i++)
-                {
-                    overrideRule.m_Sprites[i] = EditorGUI.ObjectField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), overrideRule.m_Sprites[i], typeof(Sprite), false) as Sprite;
-                    y += k_SingleLineHeight;
-                }
-            }
-        }
-        private void DrawOverrideDefaultElement(Rect rect, RuleTile.TilingRule originalRule)
-        {
-            float yPos = rect.yMin + 2f;
-            float height = rect.height - k_PaddingBetweenRules;
-            float matrixWidth = k_DefaultElementHeight;
-
-            Rect inspectorRect = new Rect(rect.xMin, yPos, rect.width - matrixWidth - 10f, height);
-            Rect spriteRect = new Rect(rect.xMax - matrixWidth - 5f, yPos, matrixWidth, k_DefaultElementHeight);
-
-            RuleOverrideDefaultInspectorOnGUI(inspectorRect, originalRule);
-            if (overrideTile.m_OverrideDefault.m_Enabled)
-                RuleTileEditor.SpriteOnGUI(spriteRect, overrideTile.m_OverrideDefault.m_TilingRule);
-        }
-        private void RuleOverrideDefaultInspectorOnGUI(Rect rect, RuleTile.TilingRule overrideRule)
-        {
-            float y = rect.yMin;
-            EditorGUI.BeginChangeCheck();
-
-            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Enabled");
-            bool enabled = EditorGUI.Toggle(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), overrideTile.m_OverrideDefault.m_Enabled);
-            y += k_SingleLineHeight;
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                overrideTile.m_OverrideDefault.m_Enabled = enabled;
-                overrideTile.m_OverrideDefault.m_TilingRule = overrideTile.m_OriginalDefault;
-            }
-
-            if (!enabled)
-                return;
-
-            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Collider");
-            overrideRule.m_ColliderType = (Tile.ColliderType)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), overrideRule.m_ColliderType);
-            y += k_SingleLineHeight;
-        }
-        private void DrawRuleHeader(Rect rect)
-        {
-            float matrixWidth = k_DefaultElementHeight;
-
-            float xMax = rect.xMax;
-            rect.xMax = rect.xMax / 2.0f + matrixWidth - 10f;
-            GUI.Label(rect, "Original", EditorStyles.label);
+                EditorGUI.ObjectField(new Rect(rect.xMin, rect.yMin, rect.width, rect.height), originalGameObject, typeof(GameObject), false);
             rect.xMin = rect.xMax;
-            rect.xMax = xMax;
-            GUI.Label(rect, "Override", EditorStyles.label);
+            rect.xMax *= 2.0f;
+
+            EditorGUI.BeginChangeCheck();
+            overrideGameObject = EditorGUI.ObjectField(new Rect(rect.xMin, rect.yMin, rect.width, rect.height), overrideGameObject, typeof(GameObject), false) as GameObject;
+            if (EditorGUI.EndChangeCheck())
+                m_GameObjects[index] = new KeyValuePair<GameObject, GameObject>(originalGameObject, overrideGameObject);
         }
-        private float GetRuleElementHeight(int index)
+
+        public void DrawTileField()
         {
-            if (index != overrideTile.m_Tile.m_TilingRules.Count)
+            EditorGUI.BeginChangeCheck();
+            RuleTile tile = EditorGUILayout.ObjectField("Tile", overrideTile.m_Tile, typeof(RuleTile), false) as RuleTile;
+            if (EditorGUI.EndChangeCheck())
             {
-                var overrideRule = overrideTile[overrideTile.m_Tile.m_TilingRules[index]];
-                float overrideHeight = GetRuleElementHeight(overrideRule);
-                float originalHeight = GetRuleElementHeight(overrideTile.m_Tile.m_TilingRules[index]);
-                return Mathf.Max(overrideHeight, originalHeight);
-            }
-            else
-            {
-                var overrideRule = overrideTile.m_OverrideDefault.m_Enabled ? overrideTile.m_OverrideDefault.m_TilingRule : null;
-                float overrideHeight = GetRuleElementHeight(overrideRule);
-                float originalHeight = GetRuleElementHeight(new RuleTile.TilingRule());
-                return Mathf.Max(overrideHeight, originalHeight);
-            }
-        }
-        private float GetRuleElementHeight(RuleTile.TilingRule rule)
-        {
-            float height = k_DefaultElementHeight + k_PaddingBetweenRules;
-            if (rule != null)
-            {
-                switch (rule.m_Output)
+                if (!LoopCheck(tile))
                 {
-                    case RuleTile.TilingRule.OutputSprite.Random:
-                        height = k_DefaultElementHeight + k_SingleLineHeight * (rule.m_Sprites.Length + 3) + k_PaddingBetweenRules;
-                        break;
-                    case RuleTile.TilingRule.OutputSprite.Animation:
-                        height = k_DefaultElementHeight + k_SingleLineHeight * (rule.m_Sprites.Length + 2) + k_PaddingBetweenRules;
-                        break;
+                    overrideTile.m_Tile = tile;
+                    SaveTile();
+                }
+                else
+                {
+                    Debug.LogWarning("Circular tile reference");
                 }
             }
-            return height;
+
+            bool LoopCheck(RuleTile checkTile)
+            {
+                if (!overrideTile.m_InstanceTile)
+                    return false;
+
+                HashSet<RuleTile> renferenceTils = new HashSet<RuleTile>();
+                Add(overrideTile.m_InstanceTile);
+
+                return renferenceTils.Contains(checkTile);
+
+                void Add(RuleTile ruleTile)
+                {
+                    if (renferenceTils.Contains(ruleTile))
+                        return;
+
+                    renferenceTils.Add(ruleTile);
+
+                    var overrideTiles = RuleTileEditor.FindAffectedOverrideTiles(ruleTile);
+
+                    foreach (var overrideTile in overrideTiles)
+                        Add(overrideTile.m_InstanceTile);
+                }
+            }
+        }
+
+        public void DrawCustomFields()
+        {
+            if (ruleTileEditor)
+            {
+                ruleTileEditor.target.hideFlags = HideFlags.None;
+                ruleTileEditor.DrawCustomFields(true);
+                ruleTileEditor.target.hideFlags = HideFlags.NotEditable;
+            }
+        }
+
+        public void SaveInstanceTileAsset()
+        {
+            bool assetChanged = false;
+
+            if (overrideTile.m_InstanceTile)
+            {
+                if (!overrideTile.m_Tile || overrideTile.m_InstanceTile.GetType() != overrideTile.m_Tile.GetType())
+                {
+                    DestroyImmediate(overrideTile.m_InstanceTile, true);
+                    overrideTile.m_InstanceTile = null;
+                    assetChanged = true;
+                }
+            }
+            if (!overrideTile.m_InstanceTile)
+            {
+                if (overrideTile.m_Tile)
+                {
+                    var t = overrideTile.m_Tile.GetType();
+                    RuleTile instanceTile = ScriptableObject.CreateInstance(t) as RuleTile;
+                    instanceTile.hideFlags = HideFlags.NotEditable;
+                    AssetDatabase.AddObjectToAsset(instanceTile, overrideTile);
+                    overrideTile.m_InstanceTile = instanceTile;
+                    assetChanged = true;
+                }
+            }
+
+            if (overrideTile.m_InstanceTile)
+            {
+                string instanceTileName = overrideTile.m_Tile.name + " (Override)";
+                if (overrideTile.m_InstanceTile.name != instanceTileName)
+                {
+                    overrideTile.m_InstanceTile.name = instanceTileName;
+                    assetChanged = true;
+                }
+            }
+
+            if (assetChanged)
+                AssetDatabase.SaveAssets();
+        }
+
+        public void SaveTile()
+        {
+            EditorUtility.SetDirty(target);
+            SceneView.RepaintAll();
+
+            SaveInstanceTileAsset();
+        
+            if (overrideTile.m_InstanceTile)
+            {
+                overrideTile.Override();
+                RuleTileEditor.UpdateAffectedOverrideTiles(overrideTile.m_InstanceTile);
+            }
+
+            if (ruleTileEditor && ruleTileEditor.m_PreviewTilemaps != null)
+            {
+                foreach (var tilemap in ruleTileEditor.m_PreviewTilemaps)
+                    tilemap.RefreshAllTiles();
+            }
+        }
+
+        public override Texture2D RenderStaticPreview(string assetPath, Object[] subAssets, int width, int height)
+        {
+            if (ruleTileEditor)
+                return ruleTileEditor.RenderStaticPreview(assetPath, subAssets, width, height);
+
+            return base.RenderStaticPreview(assetPath, subAssets, width, height);
+        }
+
+        public override bool HasPreviewGUI()
+        {
+            if (ruleTileEditor)
+                return ruleTileEditor.HasPreviewGUI();
+
+            return false;
+        }
+
+        public override void OnPreviewSettings()
+        {
+            if (ruleTileEditor)
+                ruleTileEditor.OnPreviewSettings();
+        }
+
+        public override void OnPreviewGUI(Rect r, GUIStyle background)
+        {
+            if (ruleTileEditor)
+                ruleTileEditor.OnPreviewGUI(r, background);
         }
     }
 }

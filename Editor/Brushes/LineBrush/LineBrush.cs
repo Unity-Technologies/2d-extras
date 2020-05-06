@@ -11,7 +11,6 @@ namespace UnityEditor.Tilemaps
     /// Use this as an example to modify brush painting behaviour to making painting quicker with less actions.
     /// </summary>
     [CustomGridBrush(true, false, false, "Line Brush")]
-    [CreateAssetMenu(fileName = "New Line Brush", menuName = "Brushes/Line Brush")]
     public class LineBrush : GridBrush
     {
         /// <summary>
@@ -26,6 +25,12 @@ namespace UnityEditor.Tilemaps
         /// The current starting point of the line.
         /// </summary>
         public Vector3Int lineStart = Vector3Int.zero;
+
+        /// <summary>
+        /// Indicates whether the brush is currently
+        /// moving something using the "Move selection with active brush" tool.
+        /// </summary>
+        public bool IsMoving { get; private set; }
 
         /// <summary>
         /// Paints tiles and GameObjects into a given position within the selected layers.
@@ -54,11 +59,27 @@ namespace UnityEditor.Tilemaps
                 }
                 lineStartActive = false;
             }
+            else if (IsMoving)
+            {
+                base.Paint(grid, brushTarget, position);
+            }
             else
             {
                 lineStart = position;
                 lineStartActive = true;
             }
+        }
+
+        public override void MoveStart(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
+        {
+            base.MoveStart(gridLayout, brushTarget, position);
+            IsMoving = true;
+        }
+
+        public override void MoveEnd(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
+        {
+            base.MoveEnd(gridLayout, brushTarget, position);
+            IsMoving = false;
         }
 
         /// <summary>

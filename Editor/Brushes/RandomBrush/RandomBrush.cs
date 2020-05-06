@@ -11,7 +11,7 @@ namespace UnityEditor.Tilemaps
     /// Use this as an example to create brushes which store specific data per brush and to make brushes which randomize behaviour.
     /// </summary>
     [CustomGridBrush(false, false, false, "Random Brush")]
-    [CreateAssetMenu(fileName = "New Random Brush", menuName = "Brushes/Random Brush")]
+    [CreateAssetMenu(fileName = "New Random Brush", menuName = "2D Extras/Brushes/Random Brush", order = 359)]
     public class RandomBrush : GridBrush
     {
         internal struct SizeEnumerator : IEnumerator<Vector3Int>

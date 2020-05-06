@@ -11,7 +11,7 @@ namespace UnityEngine.Tilemaps
     /// The Sprite displayed for the Tile is randomized based on its location and will be fixed for that particular location.
     /// </summary>
     [Serializable]
-    [CreateAssetMenu(fileName = "New Random Tile", menuName = "Tiles/Random Tile")]
+    [CreateAssetMenu(fileName = "New Random Tile", menuName = "2D Extras/Tiles/Random Tile", order = 359)]
     public class RandomTile : Tile
     {
         /// <summary>
@@ -37,8 +37,10 @@ namespace UnityEngine.Tilemaps
                 hash ^= location.y;
                 hash = (hash + 0x46ac12fd) + (hash << 7);
                 hash = (hash + 0xbe9730af) ^ (hash << 11);
+                var oldState = Random.state;
                 Random.InitState((int)hash);
                 tileData.sprite = m_Sprites[(int) (m_Sprites.Length * Random.value)];
+                Random.state = oldState;
             }
         }
     }

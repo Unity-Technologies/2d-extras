@@ -1,5 +1,4 @@
 using System;
-using UnityEngine.Tilemaps;
 
 namespace UnityEngine
 {
@@ -14,7 +13,7 @@ namespace UnityEngine
         /// <summary>
         /// Returns the Neighbor Rule Class type for this Rule Tile.
         /// </summary>
-        public sealed override Type m_NeighborType { get { return typeof(T); } }
+        public sealed override Type m_NeighborType => typeof(T);
     }
 
     /// <summary>
@@ -22,190 +21,157 @@ namespace UnityEngine
     /// Use this for Hexagonal Grids.
     /// </summary>
     [Serializable]
-    [CreateAssetMenu(fileName = "New Hexagonal Rule Tile", menuName = "Tiles/Hexagonal Rule Tile")]
+    [CreateAssetMenu(fileName = "New Hexagonal Rule Tile", menuName = "2D Extras/Tiles/Hexagonal Rule Tile", order = 359)]
     public class HexagonalRuleTile : RuleTile
     {
-        private static readonly int[,] RotatedOrMirroredIndexes =
-        {
-            {3, 2, 1, 0, 5, 4}, // X, Pointed
-            {0, 5, 4, 3, 2, 1}, // Y, Pointed
-            {3, 4, 5, 0, 1, 2}, // XY
-            {0, 5, 4, 3, 2, 1}, // X, FlatTop
-            {3, 2, 1, 0, 5, 4}, // Y, FlatTop
-        };
 
-        private static readonly Vector3Int[,] PointedTopNeighborOffsets =
-        {
-            {
-                new Vector3Int(1, 0, 0), new Vector3Int(0, -1, 0), new Vector3Int(-1, -1, 0), new Vector3Int(-1, 0, 0), new Vector3Int(-1, 1, 0), new Vector3Int(0, 1, 0)
-            },
-            {
-                new Vector3Int(1, 0, 0), new Vector3Int(1, -1, 0), new Vector3Int(0, -1, 0), new Vector3Int(-1, 0, 0), new Vector3Int(0, 1, 0), new Vector3Int(1, 1, 0)
-            }
-        };
-        private static readonly Vector3Int[,] FlatTopNeighborOffsets =
-        {
-            {
-                new Vector3Int(1, 0, 0), new Vector3Int(0, 1, 0), new Vector3Int(-1, 1, 0), new Vector3Int(-1, 0, 0), new Vector3Int(-1, -1, 0), new Vector3Int(0, -1, 0)
-            },
-            {
-                new Vector3Int(1, 0, 0), new Vector3Int(1, 1, 0), new Vector3Int(0, 1, 0), new Vector3Int(-1, 0, 0), new Vector3Int(0, -1, 0), new Vector3Int(1, -1, 0)
-            }
-        };
+        public override int m_RotationAngle => 60;
 
-        private static readonly int NeighborCount = 6;
-
-        /// <summary>
-        /// Returns the number of neighbors a Rule Tile can have.
-        /// </summary>
-        public override int neighborCount
-        {
-            get { return NeighborCount; }
-        }
+        private static float[] m_CosAngleArr1 = {
+            Mathf.Cos(0 * Mathf.Deg2Rad),
+            Mathf.Cos(-60 * Mathf.Deg2Rad),
+            Mathf.Cos(-120 * Mathf.Deg2Rad),
+            Mathf.Cos(-180 * Mathf.Deg2Rad),
+            Mathf.Cos(-240 * Mathf.Deg2Rad),
+            Mathf.Cos(-300 * Mathf.Deg2Rad),
+        };
+        private static float[] m_SinAngleArr1 = {
+            Mathf.Sin(0 * Mathf.Deg2Rad),
+            Mathf.Sin(-60 * Mathf.Deg2Rad),
+            Mathf.Sin(-120 * Mathf.Deg2Rad),
+            Mathf.Sin(-180 * Mathf.Deg2Rad),
+            Mathf.Sin(-240 * Mathf.Deg2Rad),
+            Mathf.Sin(-300 * Mathf.Deg2Rad),
+        };
+        private static float[] m_CosAngleArr2 = {
+            Mathf.Cos(0 * Mathf.Deg2Rad),
+            Mathf.Cos(60 * Mathf.Deg2Rad),
+            Mathf.Cos(120 * Mathf.Deg2Rad),
+            Mathf.Cos(180 * Mathf.Deg2Rad),
+            Mathf.Cos(240 * Mathf.Deg2Rad),
+            Mathf.Cos(300 * Mathf.Deg2Rad),
+        };
+        private static float[] m_SinAngleArr2 = {
+            Mathf.Sin(0 * Mathf.Deg2Rad),
+            Mathf.Sin(60 * Mathf.Deg2Rad),
+            Mathf.Sin(120 * Mathf.Deg2Rad),
+            Mathf.Sin(180 * Mathf.Deg2Rad),
+            Mathf.Sin(240 * Mathf.Deg2Rad),
+            Mathf.Sin(300 * Mathf.Deg2Rad),
+        };
 
         /// <summary>
         /// Whether this is a flat top Hexagonal Tile
         /// </summary>
-        public bool m_FlatTop;
+        [DontOverride] public bool m_FlatTop;
 
-        /// <summary>
-        /// This method is called when the tile is refreshed.
-        /// </summary>
-        /// <param name="location">Position of the Tile on the Tilemap.</param>
-        /// <param name="tileMap">The Tilemap the tile is present on.</param>
-        public override void RefreshTile(Vector3Int location, ITilemap tileMap)
+        static float m_TilemapToWorldYScale = Mathf.Pow(1 - Mathf.Pow(0.5f, 2f), 0.5f);
+
+        public static Vector3 TilemapPositionToWorldPosition(Vector3Int tilemapPosition)
         {
-            if (m_TilingRules != null && m_TilingRules.Count > 0)
-            {
-                for (int i = 0; i < neighborCount; ++i)
-                {
-                    base.RefreshTile(location + GetOffsetPosition(location, i), tileMap);
-                }
-            }
-            base.RefreshTile(location, tileMap);
+            Vector3 worldPosition = new Vector3(tilemapPosition.x, tilemapPosition.y);
+            if (tilemapPosition.y % 2 != 0)
+                worldPosition.x += 0.5f;
+            worldPosition.y *= m_TilemapToWorldYScale;
+            return worldPosition;
+        }
+
+        public static Vector3Int WorldPositionToTilemapPosition(Vector3 worldPosition)
+        {
+            worldPosition.y /= m_TilemapToWorldYScale;
+            Vector3Int tilemapPosition = new Vector3Int();
+            tilemapPosition.y = Mathf.RoundToInt(worldPosition.y);
+            if (tilemapPosition.y % 2 != 0)
+                tilemapPosition.x = Mathf.RoundToInt(worldPosition.x - 0.5f);
+            else
+                tilemapPosition.x = Mathf.RoundToInt(worldPosition.x);
+            return tilemapPosition;
+        }
+
+        public override Vector3Int GetOffsetPosition(Vector3Int location, Vector3Int offset)
+        {
+            Vector3Int position = location + offset;
+
+            if (offset.y % 2 != 0 && location.y % 2 != 0)
+                position.x += 1;
+
+            return position;
+        }
+
+        public override Vector3Int GetOffsetPositionReverse(Vector3Int position, Vector3Int offset)
+        {
+            Vector3Int location = position - offset;
+
+            if (offset.y % 2 != 0 && location.y % 2 != 0)
+                location.x -= 1;
+
+            return location;
         }
 
         /// <summary>
-        /// Does a Rule Match given a Tiling Rule and neighboring Tiles.
+        /// Gets a rotated position given its original position and the rotation in degrees. 
         /// </summary>
-        /// <param name="rule">The Tiling Rule to match with.</param>
-        /// <param name="neighboringTiles">The neighboring Tiles to match with.</param>
-        /// <param name="transform">A transform matrix which will match the Rule.</param>
-        /// <returns>True if there is a match, False if not.</returns>
-        protected override bool RuleMatches(TilingRule rule, ref TileBase[] neighboringTiles, ref Matrix4x4 transform)
-        {
-            // Check rule against rotations of 0, 60, 120, 180, 240, 300
-            for (int angle = 0; angle <= (rule.m_RuleTransform == TilingRule.Transform.Rotated ? 300 : 0); angle += 60)
-            {
-                if (RuleMatches(rule, ref neighboringTiles, angle))
-                {
-                    transform = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), Vector3.one);
-                    return true;
-                }
-            }
-
-            // Check rule against x-axis mirror
-            if ((rule.m_RuleTransform == TilingRule.Transform.MirrorX) && RuleMatches(rule, ref neighboringTiles, true, false))
-            {
-                transform = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(-1f, 1f, 1f));
-                return true;
-            }
-
-            // Check rule against y-axis mirror
-            if ((rule.m_RuleTransform == TilingRule.Transform.MirrorY) && RuleMatches(rule, ref neighboringTiles, false, true))
-            {
-                transform = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1f, -1f, 1f));
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Returns a random transform matrix given the random transform rule.
-        /// </summary>
-        /// <param name="type">Random transform rule.</param>
-        /// <param name="original">The original transform matrix.</param>
-        /// <param name="perlinScale">The Perlin Scale factor of the Tile.</param>
-        /// <param name="position">Position of the Tile on the Tilemap.</param>
-        /// <returns>A random transform matrix.</returns>
-        protected override Matrix4x4 ApplyRandomTransform(TilingRule.Transform type, Matrix4x4 original, float perlinScale, Vector3Int position)
-        {
-            float perlin = GetPerlinValue(position, perlinScale, 200000f);
-            switch (type)
-            {
-                case TilingRule.Transform.MirrorX:
-                    return original * Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(perlin < 0.5 ? 1f : -1f, 1f, 1f));
-                case TilingRule.Transform.MirrorY:
-                    return original * Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1f, perlin < 0.5 ? 1f : -1f, 1f));
-                case TilingRule.Transform.Rotated:
-                    int angle = Mathf.Clamp(Mathf.FloorToInt(perlin * neighborCount), 0, neighborCount - 1) * (360 / neighborCount);
-                    return Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), Vector3.one);
-            }
-            return original;
-        }
-
-        /// <summary>
-        /// Gets and caches the neighboring Tiles around the given Tile on the Tilemap.
-        /// </summary>
-        /// <param name="tilemap">The Tilemap the tile is present on.</param>
-        /// <param name="position">Position of the Tile on the Tilemap.</param>
-        /// <param name="neighboringTiles">An array storing the neighboring Tiles</param>
-        protected override void GetMatchingNeighboringTiles(ITilemap tilemap, Vector3Int position, ref TileBase[] neighboringTiles)
-        {
-            if (neighboringTiles != null)
-                return;
-
-            if (m_CachedNeighboringTiles == null || m_CachedNeighboringTiles.Length < neighborCount)
-                m_CachedNeighboringTiles = new TileBase[neighborCount];
-
-            for (int index = 0; index < neighborCount; ++index)
-            {
-                Vector3Int tilePosition = position + GetOffsetPosition(position, index);
-                m_CachedNeighboringTiles[index] = tilemap.GetTile(tilePosition);
-            }
-            neighboringTiles = m_CachedNeighboringTiles;
-        }
-
-        /// <summary>
-        /// Gets a rotated index given its original index and the rotation in degrees. 
-        /// </summary>
-        /// <param name="original">Original index of Tile.</param>
+        /// <param name="position">Original position of Tile.</param>
         /// <param name="rotation">Rotation in degrees.</param>
-        /// <returns>Rotated Index of Tile.</returns>
-        protected override int GetRotatedIndex(int original, int rotation)
+        /// <returns>Rotated position of Tile.</returns>
+        public override Vector3Int GetRotatedPosition(Vector3Int position, int rotation)
         {
-            return (original + rotation / 60) % neighborCount;
+            if (rotation != 0)
+            {
+                Vector3 worldPosition = TilemapPositionToWorldPosition(position);
+
+                int index = rotation / 60;
+                if (m_FlatTop)
+                {
+                    worldPosition = new Vector3(
+                        worldPosition.x * m_CosAngleArr2[index] - worldPosition.y * m_SinAngleArr2[index],
+                        worldPosition.x * m_SinAngleArr2[index] + worldPosition.y * m_CosAngleArr2[index]
+                    );
+                }
+                else
+                {
+                    worldPosition = new Vector3(
+                        worldPosition.x * m_CosAngleArr1[index] - worldPosition.y * m_SinAngleArr1[index],
+                        worldPosition.x * m_SinAngleArr1[index] + worldPosition.y * m_CosAngleArr1[index]
+                    );
+                }
+
+                position = WorldPositionToTilemapPosition(worldPosition);
+            }
+            return position;
         }
 
         /// <summary>
-        /// Gets a mirrored index given its original index and the mirroring axii.
+        /// Gets a mirrored position given its original position and the mirroring axii.
         /// </summary>
-        /// <param name="original">Original index of Tile.</param>
+        /// <param name="position">Original position of Tile.</param>
         /// <param name="mirrorX">Mirror in the X Axis.</param>
         /// <param name="mirrorY">Mirror in the Y Axis.</param>
-        /// <returns>Mirrored Index of Tile.</returns>
-        protected override int GetMirroredIndex(int original, bool mirrorX, bool mirrorY)
+        /// <returns>Mirrored position of Tile.</returns>
+        public override Vector3Int GetMirroredPosition(Vector3Int position, bool mirrorX, bool mirrorY)
         {
-            if (mirrorX && mirrorY)
+            if (mirrorX || mirrorY)
             {
-                return RotatedOrMirroredIndexes[2, original];
-            }
-            if (mirrorX)
-            {
-                return RotatedOrMirroredIndexes[m_FlatTop ? 3 : 0, original];
-            }
-            if (mirrorY)
-            {
-                return RotatedOrMirroredIndexes[m_FlatTop ? 4 : 1, original];
-            }
-            return original;
-        }
+                Vector3 worldPosition = TilemapPositionToWorldPosition(position);
 
-        private Vector3Int GetOffsetPosition(Vector3Int location, int direction)
-        {
-            var parity = location.y & 1;
-            return m_FlatTop ? FlatTopNeighborOffsets[parity, direction] : PointedTopNeighborOffsets[parity, direction];
+                if (m_FlatTop)
+                {
+                    if (mirrorX)
+                        worldPosition.y *= -1;
+                    if (mirrorY)
+                        worldPosition.x *= -1;
+                }
+                else
+                {
+                    if (mirrorX)
+                        worldPosition.x *= -1;
+                    if (mirrorY)
+                        worldPosition.y *= -1;
+                }
+
+                position = WorldPositionToTilemapPosition(worldPosition);
+            }
+            return position;
         }
     }
 }

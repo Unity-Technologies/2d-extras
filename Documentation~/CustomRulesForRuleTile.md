@@ -1,26 +1,26 @@
 # Custom Rules for Rule Tile 
 
-###### *Contribution by: johnsoncodehk*
+__Contribution by:__ [johnsoncodehk](https://github.com/johnsoncodehk)
 
-This helps to create new custom Rule Tile with new matching options, instead of the default options: Don't Care, This and Not This for the default Rule Tile. Using this will create clickable options for each Rule in your custom Rule Tile.
+This template script is for creating new custom [Rule Tiles](RuleTile.md) with different matching options that differ from the [default options](RuleTile.md#Usage) of ‘Don't Care’, ‘This’ and ‘Not This’. Create clickable options for each Rule in your custom __Rule Tile__.
 
-### Features
+## Template features
 
-- Inheritable RuleTile
-- Customizable attributes
-- Can expand or rewrite neighbor rules and GUI display
-- Can be used by RuleOverrideTile
-- Template script (Menu: Assets/Create/Custom Rule Tile Script)
-- Neighbor rules tooltip
-- Backward compatible
+- Inheritable RuleTile.
+- Customizable properties.
+- Expand or rewrite both neighbor Rules and the GUI display.
+- Usable with by [RuleOverrideTile](RuleOverrideTile.md)
+- Create from a template script.
+- Neighbor Rules tooltips.
+- Backward compatible.
 
-### Usage
+## Creating a custom Rule Tile script
 
-From the Assets menu, select Create/Custom Rule Tile Script. This will prompt you to create a new file with a name. After creating the file, you can edit it to add new matching options and the algorithm for testing matches.
+Create a Custom Rule Tile script by going to __Assets > Create > Custom Rule Tile Script__. Name the newly created file when prompted. After creating the file, you can edit it to add new matching options and custom algorithms for testing matches.
 
 ### Examples
 
-- Custom Attributes:
+- Custom properties:
 
 ```csharp
 public class MyTile : RuleTile {
@@ -29,7 +29,7 @@ public class MyTile : RuleTile {
 }
 ```
 
-- Custom Rules:
+- Custom rules:
 
 ```csharp
 public class MyTile : RuleTile<MyTile.Neighbor> {
@@ -47,7 +47,7 @@ public class MyTile : RuleTile<MyTile.Neighbor> {
 }
 ```
 
-- Expansion Rules
+- Expansion rules
 
 ```csharp
 public class MyTile : RuleTile<MyTile.Neighbor> {

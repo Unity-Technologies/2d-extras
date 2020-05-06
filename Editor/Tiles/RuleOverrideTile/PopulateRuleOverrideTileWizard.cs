@@ -18,7 +18,7 @@ namespace UnityEditor.Tilemaps
         static bool MenuOptionValidation(MenuCommand menuCommand)
         {
             RuleOverrideTile tile = menuCommand.context as RuleOverrideTile;
-            return tile.m_Tile && !tile.m_Advanced;
+            return tile.m_Tile;
         }
 
         /// <summary>
