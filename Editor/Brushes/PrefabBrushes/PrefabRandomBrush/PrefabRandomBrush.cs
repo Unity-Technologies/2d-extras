@@ -12,6 +12,7 @@ namespace UnityEditor.Tilemaps
     {
         private const float k_PerlinOffset = 100000f;
 
+        #pragma warning disable 0649
         /// <summary>
         /// The selection of Prefabs to paint from
         /// </summary>
@@ -21,6 +22,7 @@ namespace UnityEditor.Tilemaps
         /// Factor for distribution of choice of Prefabs to paint
         /// </summary>
         [SerializeField] float m_PerlinScale = 0.5f;
+        #pragma warning restore 0649
 
         /// <summary>
         /// If true, erases any GameObjects that are in a given position within the selected layers with Erasing.

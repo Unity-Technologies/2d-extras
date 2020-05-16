@@ -10,10 +10,12 @@ namespace UnityEditor.Tilemaps
     [CustomGridBrush(false, true, false, "Prefab Brush")]
     public class PrefabBrush : BasePrefabBrush
     {
+        #pragma warning disable 0649
         /// <summary>
         /// The selection of Prefab to paint from
         /// </summary>
         [SerializeField] GameObject m_Prefab;
+        #pragma warning restore 0649
 
         /// <summary>
         /// If true, erases any GameObjects that are in a given position within the selected layers with Erasing.
