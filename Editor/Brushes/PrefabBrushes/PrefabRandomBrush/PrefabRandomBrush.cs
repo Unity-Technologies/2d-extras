@@ -15,12 +15,18 @@ namespace UnityEditor.Tilemaps
         /// <summary>
         /// The selection of Prefabs to paint from
         /// </summary>
-        public GameObject[] m_Prefabs;
+        [SerializeField] GameObject[] m_Prefabs;
 
         /// <summary>
         /// Factor for distribution of choice of Prefabs to paint
         /// </summary>
-        public float m_PerlinScale = 0.5f;
+        [SerializeField] float m_PerlinScale = 0.5f;
+
+        /// <summary>
+        /// If true, erases any GameObjects that are in a given position within the selected layers with Erasing.
+        /// Otherwise, erases only GameObjects that are created from owned Prefab in a given position within the selected layers with Erasing.
+        /// </summary>
+        bool m_EraseAnyObjects;
 
         /// <summary>
         /// Paints GameObject from containg Prefabs with randomly into a given position within the selected layers.
@@ -52,7 +58,8 @@ namespace UnityEditor.Tilemaps
         }
 
         /// <summary>
-        /// Erases GameObject that is created from containg Prefabs in a given position within the selected layers.
+        /// If "Erase Any Objects" is true, erases any GameObjects that are in a given position within the selected layers.
+        /// If "Erase Any Objects" is false, erases only GameObjects that are created from owned Prefab in a given position within the selected layers.
         /// The PrefabRandomBrush overrides this to provide Prefab erasing functionality.
         /// </summary>
         /// <param name="grid">Grid used for layout.</param>
@@ -69,7 +76,7 @@ namespace UnityEditor.Tilemaps
             {
                 foreach (var prefab in m_Prefabs)
                 {
-                    if (PrefabUtility.GetCorrespondingObjectFromSource(objectInCell) == prefab)
+                    if (objectInCell != null && (m_EraseAnyObjects || PrefabUtility.GetCorrespondingObjectFromSource(objectInCell) == prefab))
                     {
                         Undo.DestroyObjectImmediate(objectInCell);
                     }
@@ -81,35 +88,36 @@ namespace UnityEditor.Tilemaps
         {
             return Mathf.PerlinNoise((position.x + offset)*scale, (position.y + offset)*scale);
         }
-    }
-
-    /// <summary>
-    /// The Brush Editor for a Prefab Brush.
-    /// </summary>
-    [CustomEditor(typeof(PrefabRandomBrush))]
-    public class PrefabRandomBrushEditor : BasePrefabBrushEditor
-    {
-        private PrefabRandomBrush prefabBrush { get { return target as PrefabRandomBrush; } }
-
-        private SerializedProperty m_Prefabs;
-        
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            m_Prefabs = m_SerializedObject.FindProperty("m_Prefabs");
-        }
 
         /// <summary>
-        /// Callback for painting the inspector GUI for the PrefabBrush in the Tile Palette.
-        /// The PrefabBrush Editor overrides this to have a custom inspector for this Brush.
+        /// The Brush Editor for a Prefab Brush.
         /// </summary>
-        public override void OnPaintInspectorGUI()
+        [CustomEditor(typeof(PrefabRandomBrush))]
+        public class PrefabRandomBrushEditor : BasePrefabBrushEditor
         {
-            base.OnPaintInspectorGUI();
-            m_SerializedObject.UpdateIfRequiredOrScript();
-            prefabBrush.m_PerlinScale = EditorGUILayout.Slider("Perlin Scale", prefabBrush.m_PerlinScale, 0.001f, 0.999f);
-            EditorGUILayout.PropertyField(m_Prefabs, true);
-            m_SerializedObject.ApplyModifiedPropertiesWithoutUndo();
+            private PrefabRandomBrush prefabRandomBrush => target as PrefabRandomBrush;
+
+            private SerializedProperty m_Prefabs;
+
+            protected override void OnEnable()
+            {
+                base.OnEnable();
+                m_Prefabs = m_SerializedObject.FindProperty("m_Prefabs");
+            }
+
+            /// <summary>
+            /// Callback for painting the inspector GUI for the PrefabBrush in the Tile Palette.
+            /// The PrefabBrush Editor overrides this to have a custom inspector for this Brush.
+            /// </summary>
+            public override void OnPaintInspectorGUI()
+            {
+                base.OnPaintInspectorGUI();
+                m_SerializedObject.UpdateIfRequiredOrScript();
+                prefabRandomBrush.m_PerlinScale = EditorGUILayout.Slider("Perlin Scale", prefabRandomBrush.m_PerlinScale, 0.001f, 0.999f);
+                EditorGUILayout.PropertyField(m_Prefabs, true);
+                prefabRandomBrush.m_EraseAnyObjects = EditorGUILayout.Toggle("Erase Any Objects", prefabRandomBrush.m_EraseAnyObjects);
+                m_SerializedObject.ApplyModifiedPropertiesWithoutUndo();
+            }
         }
     }
 }

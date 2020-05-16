@@ -13,7 +13,13 @@ namespace UnityEditor.Tilemaps
         /// <summary>
         /// The selection of Prefab to paint from
         /// </summary>
-        public GameObject m_Prefab;
+        [SerializeField] GameObject m_Prefab;
+
+        /// <summary>
+        /// If true, erases any GameObjects that are in a given position within the selected layers with Erasing.
+        /// Otherwise, erases only GameObjects that are created from owned Prefab in a given position within the selected layers with Erasing.
+        /// </summary>
+        bool m_EraseAnyObjects;
 
         /// <summary>
         /// Paints GameObject from containg Prefab into a given position within the selected layers.
@@ -40,7 +46,8 @@ namespace UnityEditor.Tilemaps
         }
 
         /// <summary>
-        /// Erases GameObject that is created from containg Prefab in a given position within the selected layers.
+        /// If "Erase Any Objects" is true, erases any GameObjects that are in a given position within the selected layers.
+        /// If "Erase Any Objects" is false, erases only GameObjects that are created from owned Prefab in a given position within the selected layers.
         /// The PrefabBrush overrides this to provide Prefab erasing functionality.
         /// </summary>
         /// <param name="grid">Grid used for layout.</param>
@@ -55,38 +62,40 @@ namespace UnityEditor.Tilemaps
 
             foreach (var objectInCell in GetObjectsInCell(grid, brushTarget.transform, position))
             {
-                if (PrefabUtility.GetCorrespondingObjectFromSource(objectInCell) == m_Prefab)
+                if (m_EraseAnyObjects || PrefabUtility.GetCorrespondingObjectFromSource(objectInCell) == m_Prefab)
                 {
                     Undo.DestroyObjectImmediate(objectInCell);
                 }
             }
         }
-    }
-
-    /// <summary>
-    /// The Brush Editor for a Prefab Brush.
-    /// </summary>
-    [CustomEditor(typeof(PrefabBrush))]
-    public class PrefabBrushEditor : BasePrefabBrushEditor
-    {
-        private SerializedProperty m_Prefab;
-
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            m_Prefab = m_SerializedObject.FindProperty("m_Prefab");
-        }
 
         /// <summary>
-        /// Callback for painting the inspector GUI for the PrefabBrush in the Tile Palette.
-        /// The PrefabBrush Editor overrides this to have a custom inspector for this Brush.
+        /// The Brush Editor for a Prefab Brush.
         /// </summary>
-        public override void OnPaintInspectorGUI()
+        [CustomEditor(typeof(PrefabBrush))]
+        public class PrefabBrushEditor : BasePrefabBrushEditor
         {
-            base.OnPaintInspectorGUI();
-            m_SerializedObject.UpdateIfRequiredOrScript();
-            EditorGUILayout.PropertyField(m_Prefab, true);
-            m_SerializedObject.ApplyModifiedPropertiesWithoutUndo();
+            private PrefabBrush prefabBrush => target as PrefabBrush;
+            private SerializedProperty m_Prefab;
+
+            protected override void OnEnable()
+            {
+                base.OnEnable();
+                m_Prefab = m_SerializedObject.FindProperty(nameof(m_Prefab));
+            }
+
+            /// <summary>
+            /// Callback for painting the inspector GUI for the PrefabBrush in the Tile Palette.
+            /// The PrefabBrush Editor overrides this to have a custom inspector for this Brush.
+            /// </summary>
+            public override void OnPaintInspectorGUI()
+            {
+                base.OnPaintInspectorGUI();
+                m_SerializedObject.UpdateIfRequiredOrScript();
+                EditorGUILayout.PropertyField(m_Prefab, true);
+                prefabBrush.m_EraseAnyObjects = EditorGUILayout.Toggle("Erase Any Objects", prefabBrush.m_EraseAnyObjects);
+                m_SerializedObject.ApplyModifiedPropertiesWithoutUndo();
+            }
         }
     }
 }
