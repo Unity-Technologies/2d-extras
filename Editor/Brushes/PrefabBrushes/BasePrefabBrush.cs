@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace UnityEditor.Tilemaps
 { 
@@ -11,51 +12,24 @@ namespace UnityEditor.Tilemaps
         /// </summary>
         public Vector3 m_Anchor = new Vector3(0.5f, 0.5f, 0.5f);
 
-        /// <summary>
-        /// GameObject to instantiating
-        /// </summary>
-        protected GameObject Prefab = null;
-        
-        protected static Transform GetObjectInCell(GridLayout grid, Transform parent, Vector3Int position)
+        protected List<GameObject> GetObjectsInCell(GridLayout grid, Transform parent, Vector3Int position)
         {
+            var results = new List<GameObject>();
             var childCount = parent.childCount;
             for (var i = 0; i < childCount; i++)
             {
                 var child = parent.GetChild(i);
                 if (position == grid.WorldToCell(child.position))
                 {
-                    return child;
+                    results.Add(child.gameObject);
                 }
             }
-            return null;
+            return results;
         }
 
-        public override void Erase(GridLayout grid, GameObject brushTarget, Vector3Int position)
+        protected void InstantiatePrefabInCell(GridLayout grid, GameObject brushTarget, Vector3Int position, GameObject prefab)
         {
-            if (brushTarget.layer == 31)
-            {
-                return;
-            }
-                
-            var erased = GetObjectInCell(grid, brushTarget.transform, position);
-            if (erased != null)
-            {
-                Undo.DestroyObjectImmediate(erased.gameObject);
-            }
-        }
-
-        public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
-        {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31 || brushTarget == null)
-                return;
-            
-            var tileObject = GetObjectInCell(grid, brushTarget.transform, position);
-            if (tileObject)
-            {
-                return;
-            }
-            var instance = (GameObject)PrefabUtility.InstantiatePrefab(Prefab);
+            var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
             if (instance != null)
             {
                 Undo.MoveGameObjectToScene(instance, brushTarget.scene, "Paint Prefabs");
