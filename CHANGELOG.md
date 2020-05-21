@@ -8,6 +8,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Added CONTRIBUTING.md
 - Updated LICENSE.md
 
+### Added
+- [PrefabRandomBrush] Split functionality of PrefabBrush to PrefabBrush and PrefabRandomBrush
+- [PrefabBrush/PrefabRandomBrush] Add Erase Any Objects toggle to choose between erasing any Objects or Objects in the Brush
+
+### Changed
+- Consolidated menus items
+
 ### Fixed
 - [WeightedRandomTile] Fixed WeightedRandomTile messing up Random.seed!
 
