@@ -14,10 +14,14 @@ Thank you to all who have contributed to this repository!
 - [DoctorShinobi](https://github.com/DoctorShinobi)
 - [CraigGraff](https://github.com/CraigGraff)
 - [Autofire](https://github.com/Autofire)
-- [AVChemodanov](https://github.com/)
+- [AVChemodanov](https://github.com/AVChemodanov)
 - [ream88](https://github.com/ream88)
 - [Quickz](https://github.com/Quickz)
 - [capnslipp](https://github.com/capnslipp)
 - [TrentSterling](https://github.com/TrentSterling)
+- [vladderb](https://github.com/vladderb)
+- [trobol](https://github.com/trobol)
+- [HyagoOliveira](https://github.com/HyagoOliveira)
+- [RyotaMurohoshi](https://github.com/RyotaMurohoshi)
 
 If anybody has been missed, please do let us know!
