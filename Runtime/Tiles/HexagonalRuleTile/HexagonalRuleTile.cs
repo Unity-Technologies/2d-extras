@@ -21,7 +21,7 @@ namespace UnityEngine
     /// Use this for Hexagonal Grids.
     /// </summary>
     [Serializable]
-    [CreateAssetMenu(fileName = "New Hexagonal Rule Tile", menuName = "2D Extras/Tiles/Hexagonal Rule Tile", order = 359)]
+    [CreateAssetMenu(fileName = "New Hexagonal Rule Tile", menuName = "2D/Tiles/Hexagonal Rule Tile", order = 83)]
     public class HexagonalRuleTile : RuleTile
     {
 

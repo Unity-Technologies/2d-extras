@@ -14,7 +14,7 @@ namespace UnityEngine.Tilemaps
     /// Pipeline Tiles are tiles which take into consideration its orthogonal neighboring tiles and displays a sprite depending on whether the neighboring tile is the same tile.
     /// </summary>
     [Serializable]
-    [CreateAssetMenu(fileName = "New Pipeline Tile", menuName = "2D Extras/Tiles/Pipeline Tile", order = 359)]
+    [CreateAssetMenu(fileName = "New Pipeline Tile", menuName = "2D/Tiles/Pipeline Tile", order = 82)]
     public class PipelineTile : TileBase
     {
         /// <summary>

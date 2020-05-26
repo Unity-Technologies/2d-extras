@@ -27,7 +27,7 @@ namespace UnityEngine.Tilemaps
     /// The sprites can be weighted with a value to change its probability of appearing. The Sprite displayed for the Tile is randomized based on its location and will be fixed for that particular location.
     /// </summary>
     [Serializable]
-    [CreateAssetMenu(fileName = "New Weighted Random Tile", menuName = "2D Extras/Tiles/Weighted Random Tile", order = 359)]
+    [CreateAssetMenu(fileName = "New Weighted Random Tile", menuName = "2D/Tiles/Weighted Random Tile", order = 82)]
     public class WeightedRandomTile : Tile 
     {
         /// <summary>
