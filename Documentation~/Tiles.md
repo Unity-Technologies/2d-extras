@@ -6,11 +6,7 @@ The following are some implementations and examples of __Scriptables Tiles__ whi
 
 
 - [Animated Tile](AnimatedTile.md)
-- [Pipeline Tile](PipelineTile.md)
-- [Random Tile](RandomTile.md)
 - [Rule Tile](RuleTile.md)
 - [Rule Override Tile](RuleOverrideTile.md)
-- [Terrain Tile](TerrainTile.md)
-- [Weighted Random Tile](WeightedRandomTile.md)
 
 Refer to the [Scriptable Tiles](https://docs.unity3d.com/Manual/Tilemap-ScriptableTiles.html) documentation page for more information on creating your own Scriptable Tiles.
