@@ -1,6 +1,6 @@
 # Random Tile
 
-Random Tiles are tiles which pseudo-randomly pick a sprite from a given list of sprites and a target location, and displays that sprite. The Sprite displayed for the Tile is randomized based on its location and will be fixed for that particular location.
+Random Tiles are Tiles which pseudo-randomly pick a Sprite from a given list of Sprites and a target location, and displays that Sprite. The Sprite displayed for the Tile is randomized based on its location and remains fixed for that particular location.
 
 ### Properties
 
@@ -13,10 +13,10 @@ Random Tiles are tiles which pseudo-randomly pick a sprite from a given list of 
 
 ### Usage
 
-Set up the Random Tile with the Sprites to select from.
+Set up the Random Tile by first setting the number of Sprites to choose from by setting a value to the __Number of Sprites__ property.  Then select the Sprites that the Tiles chooses from for each Sprite entry.
 
 ![Random Tile Editor](images/RandomTileEditor.png)
 
-Paint the Random Tile using the Tile Palette tools.
+Paint the Random Tile onto the Tilemap with the [Tile Palette](https://docs.unity3d.com/Manual/Tilemap-Painting.html) tools.
 
 ![Scene View with Random Tile](images/RandomTile.png)

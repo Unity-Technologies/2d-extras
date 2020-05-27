@@ -1,21 +1,22 @@
 # Tint Brush
 
-This Brush changes the color of Tiles placed on a Tilemap.
+This Brush changes the color of Tiles placed on a Tilemap to the color selected.
 
-### Properties
+## Properties
 
-| Property  | Function                  |
-| --------- | ------------------------- |
-| __Color__ | Color of the Tile to tint |
+| Property  | Function                      |
+| --------- | ----------------------------- |
+| __Color__ | Select the Color of the tint. |
 
-### Usage
+## Usage
 
-To set a color to tint a Tile with, change the __Color__ property to the desired color.
-
-To change a color of a Tile, use the Paint tool to set the color of the Tile.
+Select the color to tint a Tile with in the Brush properties. Then use the Paint tool with the Brush to change the color of the Tiles you paint over.
 
 ![Scene View with Tint Brush](images/TintBrush.png)
 
-### Implementation
+## Implementation
 
-The TintBrush inherits from the GridBrush. It overrides the Paint method to set the color of a Tile. It overrides the Erase method to be able to set the color of a Tile back to the default white color.
+The TintBrush inherits from the GridBrush and implements the following overrides:
+
+- It overrides the Paint method to set the color of a Tile. 
+- It overrides the Erase method to be able to set the color of a Tile back to the default white color.

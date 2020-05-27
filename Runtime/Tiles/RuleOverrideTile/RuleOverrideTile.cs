@@ -10,7 +10,7 @@ namespace UnityEngine.Tilemaps
     /// </summary>
     [MovedFrom(true, "UnityEngine")]
     [Serializable]
-    [CreateAssetMenu(fileName = "New Rule Override Tile", menuName = "Tiles/Rule Override Tile")]
+    [CreateAssetMenu(fileName = "New Rule Override Tile", menuName = "2D/Tiles/Rule Override Tile", order = 83)]
     public class RuleOverrideTile : TileBase
     {
 

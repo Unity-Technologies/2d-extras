@@ -1,3 +1,4 @@
 # Other
 
-This section contains other useful scripts which you can use and other details.
+This section will contain other useful scripts which you can use and other details in the future.
+
