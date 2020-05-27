@@ -1,6 +1,6 @@
 # Prefab Brush
 
-__Contributions by:__  [Pepperized](https://github.com/Pepperized), [superkerokero](https://github.com/superkerokero)
+__Contributions by:__  [Pepperized](https://github.com/Pepperized), [superkerokero](https://github.com/superkerokero), [vladderb](https://github.com/vladderb), [RyotaMurohoshi](https://github.com/RyotaMurohoshi)
 
 This Brush instances and places randomly selected Prefabs onto the targeted location and parents the instanced object to the paint target. Use this Brush as an example to create Brushes which can quickly place assorted types of GameObjects onto structured locations.
 
