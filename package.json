@@ -12,5 +12,17 @@
     },
     "relatedPackages": {
       "com.unity.2d.tilemap.extras.tests": "1.5.0-preview"
-    }
+    },
+    "samples": [
+        {
+            "displayName": "Pipeline Rule Tile",
+            "description": "An example implementation of a Rule Tile with rules matching four-way orthogonal neighbors.",
+            "path": "Samples~/PipelineRuleTile"
+        },
+        {
+            "displayName": "Terrain Rule Tile",
+            "description": "An example implementation of a Rule Tile with rules matching eight-way orthogonal and diagonal neighbors.",
+            "path": "Samples~/TerrainRuleTile"
+        }
+    ]
 }
