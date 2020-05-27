@@ -24,7 +24,7 @@ namespace UnityEditor.Tilemaps
         bool m_EraseAnyObjects;
 
         /// <summary>
-        /// Paints GameObject from containg Prefab into a given position within the selected layers.
+        /// Paints GameObject from containing Prefab into a given position within the selected layers.
         /// The PrefabBrush overrides this to provide Prefab painting functionality.
         /// </summary>
         /// <param name="grid">Grid used for layout.</param>
