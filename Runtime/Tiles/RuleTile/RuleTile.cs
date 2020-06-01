@@ -43,6 +43,11 @@ namespace UnityEngine
         /// The Default Collider Type set when creating a new Rule.
         /// </summary>
         public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
+        /// <summary>
+        /// When instantiating GameObjects from any Rules, apply the original GameObject's Transform onto
+        /// the Rule's Transform to get the final Transform for the instantiated GameObject.
+        /// </summary>
+        public bool m_ApplyGameObjectTransform = false;
 
         public virtual int m_RotationAngle => 90;
         public int m_RotationCount => 360 / m_RotationAngle;
@@ -293,6 +298,31 @@ namespace UnityEngine
                     if (RuleMatches(rule, location, tilemap, ref transform))
                     {
                         transform = orientMatrix * transform;
+                        if (m_ApplyGameObjectTransform)
+                        {
+                            transform *= rule.m_GameObject.transform.localToWorldMatrix;
+                            if (tmpMap.orientation == Tilemap.Orientation.YX
+                                || tmpMap.orientation == Tilemap.Orientation.ZX
+                                || tmpMap.orientation == Tilemap.Orientation.ZY)
+                            {
+                                var inverseRotation = Matrix4x4.identity;
+                                inverseRotation.m00 = -inverseRotation.m00;
+                                inverseRotation.m11 = -inverseRotation.m11;
+                                transform *= inverseRotation;
+                                if (tmpMap.orientation == Tilemap.Orientation.YX)
+                                {
+                                    transform.m23 *= -1;
+                                }
+                                else if (tmpMap.orientation == Tilemap.Orientation.ZX)
+                                {
+                                    transform.m13 *= -1;
+                                }
+                                else
+                                {
+                                    transform.m03 *= -1;
+                                }
+                            }
+                        }
 
                         // Converts the tile's translation, rotation, & scale matrix to values to be used by the instantiated Game Object
                         gameObjectTranslation = new Vector3(transform.m03, transform.m13, transform.m23);
@@ -702,9 +732,9 @@ namespace UnityEngine
             return position;
         }
 
-        public virtual Vector3Int GetOffsetPosition(Vector3Int location, Vector3Int offset)
+        public virtual Vector3Int GetOffsetPosition(Vector3Int position, Vector3Int offset)
         {
-            return location + offset;
+            return position + offset;
         }
 
         public virtual Vector3Int GetOffsetPositionReverse(Vector3Int position, Vector3Int offset)
