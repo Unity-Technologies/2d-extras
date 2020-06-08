@@ -2,6 +2,7 @@
 
 #if UNITY_EDITOR
 using UnityEditor;
+using System.Collections.Generic;
 #endif
 
 namespace UnityEngine.Tilemaps
@@ -92,7 +93,130 @@ namespace UnityEngine.Tilemaps
     [CustomEditor(typeof(AnimatedTile))]
     public class AnimatedTileEditor : Editor
     {
+        private static class Styles
+        {
+            public static readonly GUIContent orderAnimatedTileSpritesInfo =
+                EditorGUIUtility.TrTextContent("Place sprites shown based on the order of animation.");
+            public static readonly GUIContent emptyAnimatedTileInfo =
+                EditorGUIUtility.TrTextContent(
+                    "Drag Sprite or Sprite Texture assets here to start creating an Animated Tile.");
+        }
+
         private AnimatedTile tile { get { return (target as AnimatedTile); } }
+
+        private List<Sprite> dragAndDropSprites;
+
+        private void DisplayClipboardText(GUIContent clipboardText, Rect position)
+        {
+            Color old = GUI.color;
+            GUI.color = Color.gray;
+            var infoSize = GUI.skin.label.CalcSize(clipboardText);
+            Rect rect = new Rect(position.center.x - infoSize.x * .5f
+                , position.center.y - infoSize.y * .5f
+                , infoSize.x
+                , infoSize.y);
+            GUI.Label(rect, clipboardText);
+            GUI.color = old;
+        }
+
+        private bool dragAndDropActive
+        {
+            get
+            {
+                return dragAndDropSprites != null
+                       && dragAndDropSprites.Count > 0;
+            }
+        }
+        
+        private void DragAndDropClear()
+        {
+            dragAndDropSprites = null;
+            DragAndDrop.visualMode = DragAndDropVisualMode.None;
+            Event.current.Use();
+        }
+
+        private static List<Sprite> GetSpritesFromTexture(Texture2D texture)
+        {
+            string path = AssetDatabase.GetAssetPath(texture);
+            Object[] assets = AssetDatabase.LoadAllAssetsAtPath(path);
+            List<Sprite> sprites = new List<Sprite>();
+
+            foreach (Object asset in assets)
+            {
+                if (asset is Sprite)
+                {
+                    sprites.Add(asset as Sprite);
+                }
+            }
+
+            return sprites;
+        }
+
+        private static List<Sprite> GetValidSingleSprites(Object[] objects)
+        {
+            List<Sprite> result = new List<Sprite>();
+            foreach (Object obj in objects)
+            {
+                if (obj is Sprite)
+                {
+                    result.Add(obj as Sprite);
+                }
+                else if (obj is Texture2D)
+                {
+                    Texture2D texture = obj as Texture2D;
+                    List<Sprite> sprites = GetSpritesFromTexture(texture);
+                    if (sprites.Count > 0)
+                    {
+                        result.AddRange(sprites);
+                    }
+                }
+            }
+            return result;
+        }
+
+        private void HandleDragAndDrop(Rect guiRect)
+        {
+            if (DragAndDrop.objectReferences.Length == 0 || !guiRect.Contains(Event.current.mousePosition))
+                return;
+
+            switch (Event.current.type)
+            {
+                case EventType.DragUpdated:
+                {
+                    dragAndDropSprites = GetValidSingleSprites(DragAndDrop.objectReferences);
+                    if (dragAndDropActive)
+                    {
+                        DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
+                        Event.current.Use();
+                        GUI.changed = true;
+                    }
+                }
+                break;
+                case EventType.DragPerform:
+                {
+                    if (!dragAndDropActive)
+                        return;
+
+                    Undo.RecordObject(tile, "Drag and Drop to Animated Tile");
+                    Array.Resize<Sprite>(ref tile.m_AnimatedSprites, dragAndDropSprites.Count);
+                    Array.Copy(dragAndDropSprites.ToArray(), tile.m_AnimatedSprites, dragAndDropSprites.Count);
+                    DragAndDropClear();
+                    GUI.changed = true;
+                    EditorUtility.SetDirty(tile);
+                    GUIUtility.ExitGUI();
+                }
+                break;
+                case EventType.Repaint:
+                    // Handled in Render()
+                    break;
+            }
+
+            if (Event.current.type == EventType.DragExited ||
+                Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
+            {
+                DragAndDropClear();
+            }
+        }
 
         public override void OnInspectorGUI()
         {
@@ -100,45 +224,58 @@ namespace UnityEngine.Tilemaps
             int count = EditorGUILayout.DelayedIntField("Number of Animated Sprites", tile.m_AnimatedSprites != null ? tile.m_AnimatedSprites.Length : 0);
             if (count < 0)
                 count = 0;
-                
+
             if (tile.m_AnimatedSprites == null || tile.m_AnimatedSprites.Length != count)
             {
                 Array.Resize<Sprite>(ref tile.m_AnimatedSprites, count);
             }
 
             if (count == 0)
-                return;
-
-            EditorGUILayout.LabelField("Place sprites shown based on the order of animation.");
-            EditorGUILayout.Space();
-
-            for (int i = 0; i < count; i++)
             {
-                tile.m_AnimatedSprites[i] = (Sprite) EditorGUILayout.ObjectField("Sprite " + (i+1), tile.m_AnimatedSprites[i], typeof(Sprite), false, null);
+                Rect rect = EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight * 5);
+                HandleDragAndDrop(rect);
+                EditorGUI.DrawRect(rect, dragAndDropActive && rect.Contains(Event.current.mousePosition) ? Color.white : Color.black);
+                var innerRect = new Rect(rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 2);
+                EditorGUI.DrawRect(innerRect, EditorGUIUtility.isProSkin
+                    ? (Color) new Color32 (56, 56, 56, 255)
+                    : (Color) new Color32 (194, 194, 194, 255));
+                DisplayClipboardText(Styles.emptyAnimatedTileInfo, rect);
+                GUILayout.Space(rect.height);
             }
-            
-            float minSpeed = EditorGUILayout.FloatField("Minimum Speed", tile.m_MinSpeed);
-            float maxSpeed = EditorGUILayout.FloatField("Maximum Speed", tile.m_MaxSpeed);
-            if (minSpeed < 0.0f)
-                minSpeed = 0.0f;
-                
-            if (maxSpeed < 0.0f)
-                maxSpeed = 0.0f;
-                
-            if (maxSpeed < minSpeed)
-                maxSpeed = minSpeed;
-            
-            tile.m_MinSpeed = minSpeed;
-            tile.m_MaxSpeed = maxSpeed;
-
-            using (new EditorGUI.DisabledScope(0 < tile.m_AnimationStartFrame && tile.m_AnimationStartFrame <= tile.m_AnimatedSprites.Length))
+            else
             {
-                tile.m_AnimationStartTime = EditorGUILayout.FloatField("Start Time", tile.m_AnimationStartTime);    
+                EditorGUILayout.LabelField(Styles.orderAnimatedTileSpritesInfo);
+                EditorGUILayout.Space();
+                for (int i = 0; i < count; i++)
+                {
+                    tile.m_AnimatedSprites[i] = (Sprite) EditorGUILayout.ObjectField("Sprite " + (i+1), tile.m_AnimatedSprites[i], typeof(Sprite), false, null);
+                }
             }
 
-            tile.m_AnimationStartFrame = EditorGUILayout.IntField("Start Frame", tile.m_AnimationStartFrame);
+            using (new EditorGUI.DisabledScope(tile.m_AnimatedSprites.Length == 0))
+            {
+                float minSpeed = EditorGUILayout.FloatField("Minimum Speed", tile.m_MinSpeed);
+                float maxSpeed = EditorGUILayout.FloatField("Maximum Speed", tile.m_MaxSpeed);
+                if (minSpeed < 0.0f)
+                    minSpeed = 0.0f;
+                
+                if (maxSpeed < 0.0f)
+                    maxSpeed = 0.0f;
+                
+                if (maxSpeed < minSpeed)
+                    maxSpeed = minSpeed;
+            
+                tile.m_MinSpeed = minSpeed;
+                tile.m_MaxSpeed = maxSpeed;
 
-            tile.m_TileColliderType=(Tile.ColliderType) EditorGUILayout.EnumPopup("Collider Type", tile.m_TileColliderType);
+                using (new EditorGUI.DisabledScope(0 < tile.m_AnimationStartFrame && tile.m_AnimationStartFrame <= tile.m_AnimatedSprites.Length))
+                {
+                    tile.m_AnimationStartTime = EditorGUILayout.FloatField("Start Time", tile.m_AnimationStartTime);    
+                }
+                tile.m_AnimationStartFrame = EditorGUILayout.IntField("Start Frame", tile.m_AnimationStartFrame);
+                tile.m_TileColliderType = (Tile.ColliderType) EditorGUILayout.EnumPopup("Collider Type", tile.m_TileColliderType);
+            }
+
             if (EditorGUI.EndChangeCheck())
                 EditorUtility.SetDirty(tile);
         }
