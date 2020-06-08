@@ -2,7 +2,9 @@
 
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEditorInternal;
 using System.Collections.Generic;
+using System.Linq;
 #endif
 
 namespace UnityEngine.Tilemaps
@@ -107,6 +109,57 @@ namespace UnityEngine.Tilemaps
 
         private List<Sprite> dragAndDropSprites;
 
+        private ReorderableList reorderableList;
+
+        private void OnEnable()
+        {
+            reorderableList = new ReorderableList(tile.m_AnimatedSprites, typeof(Sprite), true, true, true, true);
+            reorderableList.drawHeaderCallback = OnDrawHeader;
+            reorderableList.drawElementCallback = OnDrawElement;
+            reorderableList.elementHeightCallback = GetElementHeight;
+            reorderableList.onAddCallback = OnAddElement;
+            reorderableList.onRemoveCallback = OnRemoveElement;
+        }
+
+        private void OnDrawHeader(Rect rect)
+        {
+            GUI.Label(rect, Styles.orderAnimatedTileSpritesInfo);
+        }
+
+        private void OnDrawElement(Rect rect, int index, bool isActive, bool isFocused)
+        {
+            if (tile.m_AnimatedSprites != null && index < tile.m_AnimatedSprites.Length)
+                tile.m_AnimatedSprites[index] = (Sprite) EditorGUI.ObjectField(rect, "Sprite " + (index+1), tile.m_AnimatedSprites[index], typeof(Sprite), false);
+        }
+
+        private float GetElementHeight(int index)
+        {
+            return 3 * EditorGUI.GetPropertyHeight(SerializedPropertyType.ObjectReference,
+                null);
+        }
+
+        private void OnAddElement(ReorderableList list)
+        {
+            if (tile.m_AnimatedSprites == null)
+            {
+                tile.m_AnimatedSprites = new Sprite[1];
+            }
+            else
+            {
+                Array.Resize<Sprite>(ref tile.m_AnimatedSprites, tile.m_AnimatedSprites.Length + 1);
+            }
+        }
+
+        private void OnRemoveElement(ReorderableList list)
+        {
+            if (tile.m_AnimatedSprites != null && tile.m_AnimatedSprites.Length > 0 && list.index < tile.m_AnimatedSprites.Length)
+            {
+                var sprites = tile.m_AnimatedSprites.ToList();
+                sprites.RemoveAt(list.index);
+                tile.m_AnimatedSprites = sprites.ToArray();
+            }
+        }
+        
         private void DisplayClipboardText(GUIContent clipboardText, Rect position)
         {
             Color old = GUI.color;
@@ -198,7 +251,7 @@ namespace UnityEngine.Tilemaps
                     if (!dragAndDropActive)
                         return;
 
-                    Undo.RecordObject(tile, "Drag and Drop to Animated Tile");
+                    Undo.RegisterCompleteObjectUndo(tile, "Drag and Drop to Animated Tile");
                     Array.Resize<Sprite>(ref tile.m_AnimatedSprites, dragAndDropSprites.Count);
                     Array.Copy(dragAndDropSprites.ToArray(), tile.m_AnimatedSprites, dragAndDropSprites.Count);
                     DragAndDropClear();
@@ -242,15 +295,15 @@ namespace UnityEngine.Tilemaps
                     : (Color) new Color32 (194, 194, 194, 255));
                 DisplayClipboardText(Styles.emptyAnimatedTileInfo, rect);
                 GUILayout.Space(rect.height);
-            }
-            else
-            {
-                EditorGUILayout.LabelField(Styles.orderAnimatedTileSpritesInfo);
                 EditorGUILayout.Space();
-                for (int i = 0; i < count; i++)
-                {
-                    tile.m_AnimatedSprites[i] = (Sprite) EditorGUILayout.ObjectField("Sprite " + (i+1), tile.m_AnimatedSprites[i], typeof(Sprite), false, null);
-                }
+            }
+
+            if (reorderableList != null)
+            {
+                var tileCount = tile.m_AnimatedSprites != null ? tile.m_AnimatedSprites.Length : 0;
+                if (reorderableList.count != tileCount)
+                    reorderableList.list = tile.m_AnimatedSprites;
+                reorderableList.DoLayoutList();
             }
 
             using (new EditorGUI.DisabledScope(tile.m_AnimatedSprites.Length == 0))
