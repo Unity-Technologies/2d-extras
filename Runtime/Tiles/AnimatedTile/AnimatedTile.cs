@@ -99,7 +99,8 @@ namespace UnityEngine.Tilemaps
                 EditorGUIUtility.TrTextContent("Place sprites shown based on the order of animation.");
             public static readonly GUIContent emptyAnimatedTileInfo =
                 EditorGUIUtility.TrTextContent(
-                    "Drag Sprite or Sprite Texture assets here to start creating an Animated Tile.");
+                    "Drag Sprite or Sprite Texture assets \n" +
+                    " to start creating an Animated Tile.");
         }
 
         private AnimatedTile tile { get { return (target as AnimatedTile); } }
