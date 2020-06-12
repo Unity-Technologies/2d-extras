@@ -119,6 +119,7 @@ namespace UnityEngine.Tilemaps
             reorderableList.elementHeightCallback = GetElementHeight;
             reorderableList.onAddCallback = OnAddElement;
             reorderableList.onRemoveCallback = OnRemoveElement;
+            reorderableList.onReorderCallback = OnReorderElement;
         }
 
         private void OnDrawHeader(Rect rect)
@@ -158,6 +159,12 @@ namespace UnityEngine.Tilemaps
                 sprites.RemoveAt(list.index);
                 tile.m_AnimatedSprites = sprites.ToArray();
             }
+        }
+
+        private void OnReorderElement(ReorderableList list)
+        {
+            // Fix for 2020.1, which does not track changes when reordering in the list
+            EditorUtility.SetDirty(tile);
         }
         
         private void DisplayClipboardText(GUIContent clipboardText, Rect position)
@@ -301,7 +308,7 @@ namespace UnityEngine.Tilemaps
             if (reorderableList != null)
             {
                 var tileCount = tile.m_AnimatedSprites != null ? tile.m_AnimatedSprites.Length : 0;
-                if (reorderableList.count != tileCount)
+                if (reorderableList.list == null || reorderableList.count != tileCount)
                     reorderableList.list = tile.m_AnimatedSprites;
                 reorderableList.DoLayoutList();
             }
