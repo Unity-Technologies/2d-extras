@@ -74,16 +74,16 @@ namespace UnityEditor.Tilemaps
         /// Picks tiles from selected Tilemaps and child GameObjects, given the coordinates of the cells.
         /// The GroupBrush overrides this to locate groups of Tiles from the picking position.
         /// </summary>
-        /// <param name="gridLayout">Grid to pick data from.</param>
+        /// <param name="grid">Grid to pick data from.</param>
         /// <param name="brushTarget">Target of the picking operation. By default the currently selected GameObject.</param>
         /// <param name="position">The coordinates of the cells to paint data from.</param>
         /// <param name="pickStart">Pivot of the picking brush.</param>
-        public override void Pick(GridLayout gridLayout, GameObject brushTarget, BoundsInt position, Vector3Int pickStart)
+        public override void Pick(GridLayout grid, GameObject brushTarget, BoundsInt position, Vector3Int pickStart)
         {
             // Do standard pick if user has selected a custom bounds
             if (position.size.x > 1 || position.size.y > 1 || position.size.z > 1)
             {
-                base.Pick(gridLayout, brushTarget, position, pickStart);
+                base.Pick(grid, brushTarget, position, pickStart);
                 return;
             }
 

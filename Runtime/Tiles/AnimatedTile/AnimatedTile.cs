@@ -55,7 +55,7 @@ namespace UnityEngine.Tilemaps
         /// <param name="position">Position of the Tile on the Tilemap.</param>
         /// <param name="tilemap">The Tilemap the tile is present on.</param>
         /// <param name="tileData">Data to render the tile.</param>
-        public override void GetTileData(Vector3Int location, ITilemap tileMap, ref TileData tileData)
+        public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
         {
             tileData.transform = Matrix4x4.identity;
             tileData.color = Color.white;
@@ -73,7 +73,7 @@ namespace UnityEngine.Tilemaps
         /// <param name="tilemap">The Tilemap the tile is present on.</param>
         /// <param name="tileAnimationData">Data to run an animation on the tile.</param>
         /// <returns>Whether the call was successful.</returns>
-        public override bool GetTileAnimationData(Vector3Int location, ITilemap tileMap, ref TileAnimationData tileAnimationData)
+        public override bool GetTileAnimationData(Vector3Int position, ITilemap tilemap, ref TileAnimationData tileAnimationData)
         {
             if (m_AnimatedSprites.Length > 0)
             {
@@ -82,7 +82,7 @@ namespace UnityEngine.Tilemaps
                 tileAnimationData.animationStartTime = m_AnimationStartTime;
                 if (0 < m_AnimationStartFrame && m_AnimationStartFrame <= m_AnimatedSprites.Length)
                 {
-                    var tilemapComponent = tileMap.GetComponent<Tilemap>();
+                    var tilemapComponent = tilemap.GetComponent<Tilemap>();
                     if (tilemapComponent != null && tilemapComponent.animationFrameRate > 0)
                         tileAnimationData.animationStartTime = (m_AnimationStartFrame - 1) / tilemapComponent.animationFrameRate;
                 }
@@ -280,6 +280,9 @@ namespace UnityEngine.Tilemaps
             }
         }
 
+        /// <summary>
+        /// Draws an Inspector for the AnimatedTile.
+        /// </summary>
         public override void OnInspectorGUI()
         {
             EditorGUI.BeginChangeCheck();
@@ -314,23 +317,25 @@ namespace UnityEngine.Tilemaps
                 reorderableList.DoLayoutList();
             }
 
-            using (new EditorGUI.DisabledScope(tile.m_AnimatedSprites.Length == 0))
+            using (new EditorGUI.DisabledScope(tile.m_AnimatedSprites == null || tile.m_AnimatedSprites.Length == 0))
             {
                 float minSpeed = EditorGUILayout.FloatField("Minimum Speed", tile.m_MinSpeed);
                 float maxSpeed = EditorGUILayout.FloatField("Maximum Speed", tile.m_MaxSpeed);
                 if (minSpeed < 0.0f)
                     minSpeed = 0.0f;
-                
+
                 if (maxSpeed < 0.0f)
                     maxSpeed = 0.0f;
-                
+
                 if (maxSpeed < minSpeed)
                     maxSpeed = minSpeed;
-            
+
                 tile.m_MinSpeed = minSpeed;
                 tile.m_MaxSpeed = maxSpeed;
 
-                using (new EditorGUI.DisabledScope(0 < tile.m_AnimationStartFrame && tile.m_AnimationStartFrame <= tile.m_AnimatedSprites.Length))
+                using (new EditorGUI.DisabledScope(tile.m_AnimatedSprites == null 
+                                                   || (0 < tile.m_AnimationStartFrame 
+                                                    && tile.m_AnimationStartFrame <= tile.m_AnimatedSprites.Length)))
                 {
                     tile.m_AnimationStartTime = EditorGUILayout.FloatField("Start Time", tile.m_AnimationStartTime);    
                 }

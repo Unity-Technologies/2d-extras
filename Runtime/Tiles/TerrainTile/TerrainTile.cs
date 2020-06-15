@@ -22,16 +22,16 @@ namespace UnityEngine.Tilemaps
         /// <summary>
         /// This method is called when the tile is refreshed.
         /// </summary>
-        /// <param name="location">Position of the Tile on the Tilemap.</param>
-        /// <param name="tileMap">The Tilemap the tile is present on.</param>
-        public override void RefreshTile(Vector3Int location, ITilemap tileMap)
+        /// <param name="position">Position of the Tile on the Tilemap.</param>
+        /// <param name="tilemap">The Tilemap the tile is present on.</param>
+        public override void RefreshTile(Vector3Int position, ITilemap tilemap)
         {
             for (int yd = -1; yd <= 1; yd++)
                 for (int xd = -1; xd <= 1; xd++)
                 {
-                    Vector3Int position = new Vector3Int(location.x + xd, location.y + yd, location.z);
-                    if (TileValue(tileMap, position))
-                        tileMap.RefreshTile(position);
+                    Vector3Int pos = new Vector3Int(position.x + xd, position.y + yd, position.z);
+                    if (TileValue(tilemap, pos))
+                        tilemap.RefreshTile(pos);
                 }
         }
 
@@ -41,9 +41,9 @@ namespace UnityEngine.Tilemaps
         /// <param name="position">Position of the Tile on the Tilemap.</param>
         /// <param name="tilemap">The Tilemap the tile is present on.</param>
         /// <param name="tileData">Data to render the tile.</param>
-        public override void GetTileData(Vector3Int location, ITilemap tileMap, ref TileData tileData)
+        public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
         {
-            UpdateTile(location, tileMap, ref tileData);
+            UpdateTile(position, tilemap, ref tileData);
         }
 
         private void UpdateTile(Vector3Int location, ITilemap tileMap, ref TileData tileData)
@@ -188,6 +188,9 @@ namespace UnityEngine.Tilemaps
     {
         private TerrainTile tile { get { return (target as TerrainTile); } }
 
+        /// <summary>
+        /// OnEnable for TerrainTile.
+        /// </summary>
         public void OnEnable()
         {
             if (tile.m_Sprites == null || tile.m_Sprites.Length != 15)
@@ -197,7 +200,9 @@ namespace UnityEngine.Tilemaps
             }
         }
 
-
+        /// <summary>
+        /// Draws an Inspector for the Terrain Tile.
+        /// </summary>
         public override void OnInspectorGUI()
         {
             EditorGUILayout.LabelField("Place sprites shown based on the contents of the sprite.");

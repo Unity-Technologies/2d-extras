@@ -2,7 +2,7 @@
 
 __Contributions by:__ [johnsoncodehk](https://github.com/johnsoncodehk), [DreadBoy](https://github.com/DreadBoy), [AVChemodanov](https://github.com/AVChemodanov), [DoctorShinobi](https://github.com/DoctorShinobi)
 
-This is a generic visual Tile that other Tiles such as [Terrain Tiles](TerrainTile.md), [Pipeline Tile](PipelineTile.md), [Random Tile](RandomTile.md) or [Animated Tiles](AnimatedTile..md) are based on. The Rule Tile is for the Rectangle Grid type, the Hexagonal Rule Tile is for the Hexagonal Grid type, and the Isometric Rule Tile is for the Isometric Grid types. All the different types of Rule Tiles possess the same properties.
+This is a generic visual Tile that other Tiles such as [Terrain Tiles](TerrainTile.md), [Pipeline Tile](PipelineTile.md), [Random Tile](RandomTile.md) or [Animated Tiles](AnimatedTile.md) are based on. The Rule Tile is for the Rectangle Grid type, the Hexagonal Rule Tile is for the Hexagonal Grid type, and the Isometric Rule Tile is for the Isometric Grid types. All the different types of Rule Tiles possess the same properties.
 
 ## Properties
 
@@ -44,7 +44,7 @@ This is a generic visual Tile that other Tiles such as [Terrain Tiles](TerrainTi
 | __Size__   | The number of Sprites in the animation.                      |
 | __Sprite__ | The Sprite for the Tile which fits this Rule. A random Sprite will be chosen out of this when placing the Tile. |
 
-## Usage
+## <a name="Usage"></a>Usage
 
 Set up the Rule Tile with the required rules with the __Rule Tile editor__. In the Rule Tile editor, you can change, add or remove Rules in the Tiling Rules list. Click on the + or - buttons to add or remove Rules. Select and hold the top left corner of each row to drag them up or down to change the order of the Rules in the list.
 

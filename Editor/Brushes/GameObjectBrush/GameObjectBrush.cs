@@ -418,6 +418,7 @@ namespace UnityEditor.Tilemaps
 
         /// <summary>Gets the index to the GameObjectBrush::ref::BrushCell based on the position of the BrushCell.</summary>
         /// <param name="brushPosition">Position of the BrushCell.</param>
+        /// <returns>The cell index for the position of the BrushCell.</returns>
         public int GetCellIndex(Vector3Int brushPosition)
         {
             return GetCellIndex(brushPosition.x, brushPosition.y, brushPosition.z);
@@ -427,6 +428,7 @@ namespace UnityEditor.Tilemaps
         /// <param name="x">X Position of the BrushCell.</param>
         /// <param name="y">Y Position of the BrushCell.</param>
         /// <param name="z">Z Position of the BrushCell.</param>
+        /// <returns>The cell index for the position of the BrushCell.</returns>
         public int GetCellIndex(int x, int y, int z)
         {
             return x + m_Size.x * y + m_Size.x * m_Size.y * z;
@@ -439,6 +441,7 @@ namespace UnityEditor.Tilemaps
         /// <param name="sizex">X Size of Brush.</param>
         /// <param name="sizey">Y Size of Brush.</param>
         /// <param name="sizez">Z Size of Brush.</param>
+        /// <returns>The cell index for the position of the BrushCell.</returns>
         public int GetCellIndex(int x, int y, int z, int sizex, int sizey, int sizez)
         {
             return x + sizex * y + sizex * sizey * z;
@@ -448,7 +451,7 @@ namespace UnityEditor.Tilemaps
         /// <param name="x">X Position of the BrushCell.</param>
         /// <param name="y">Y Position of the BrushCell.</param>
         /// <param name="z">Z Position of the BrushCell.</param>
-        /// <returns>Index to the BrushCell.</returns>
+        /// <returns>The cell index for the position of the BrushCell.</returns>
         public int GetCellIndexWrapAround(int x, int y, int z)
         {
             return (x % m_Size.x) + m_Size.x * (y % m_Size.y) + m_Size.x * m_Size.y * (z % m_Size.z);
