@@ -21,6 +21,7 @@ namespace UnityEngine
     /// Use this for Isometric Grids.
     /// </summary>
     [Serializable]
+    [HelpURL("https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/RuleTile.html")]
     [CreateAssetMenu(fileName = "New Isometric Rule Tile", menuName = "2D/Tiles/Isometric Rule Tile", order = 83)]
     public class IsometricRuleTile : RuleTile
     {

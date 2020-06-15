@@ -8,6 +8,7 @@ namespace UnityEditor.Tilemaps
     /// This Brush instances, places and manipulates GameObjects onto the scene.
     /// Use this as an example to create brushes which targets objects other than tiles for manipulation.
     /// </summary>
+    [HelpURL("https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/GameObjectBrush.html")]
     [CustomGridBrush(true, false, false, "GameObject Brush")]
     public class GameObjectBrush : GridBrushBase
     {

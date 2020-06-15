@@ -10,6 +10,7 @@ namespace UnityEditor.Tilemaps
     /// This Brush helps draw lines of Tiles onto a Tilemap.
     /// Use this as an example to modify brush painting behaviour to making painting quicker with less actions.
     /// </summary>
+    [HelpURL("https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/LineBrush.html")]
     [CustomGridBrush(true, false, false, "Line Brush")]
     public class LineBrush : GridBrush
     {

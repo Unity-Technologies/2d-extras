@@ -9,6 +9,7 @@ namespace UnityEngine.Tilemaps
     /// </summary>
     [MovedFrom(true, "UnityEngine")]
     [Serializable]
+    [HelpURL("https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/RuleOverrideTile.html")]
     [CreateAssetMenu(fileName = "New Advanced Rule Override Tile", menuName = "2D/Tiles/Advanced Rule Override Tile", order = 83)]
     public class AdvancedRuleOverrideTile : RuleOverrideTile
     {

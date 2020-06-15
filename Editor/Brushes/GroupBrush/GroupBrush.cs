@@ -8,6 +8,7 @@ namespace UnityEditor.Tilemaps
     /// <summary>
     /// This Brush helps to pick Tiles which are grouped together by position. Gaps can be set to identify if Tiles belong to a Group. Limits can be set to ensure that an over-sized Group will not be picked. Use this as an example to create brushes that have the ability to choose and pick whichever Tiles it is interested in.
     /// </summary>
+    [HelpURL("https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/GroupBrush.html")]
     [CustomGridBrush(true, false, false, "Group Brush")]
     public class GroupBrush : GridBrush
     {

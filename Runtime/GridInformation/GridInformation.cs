@@ -19,6 +19,7 @@ namespace UnityEngine.Tilemaps
     /// A simple MonoBehaviour that stores and provides information based on Grid positions and keywords.
     /// </summary>
     [Serializable]
+    [HelpURL("https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/GridInformation.html")]
     [AddComponentMenu("Tilemap/Grid Information")]
     public class GridInformation : MonoBehaviour, ISerializationCallbackReceiver
     {

@@ -10,6 +10,7 @@ namespace UnityEditor.Tilemaps
     /// This Brush helps to place random Tiles onto a Tilemap.
     /// Use this as an example to create brushes which store specific data per brush and to make brushes which randomize behaviour.
     /// </summary>
+    [HelpURL("https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/RandomBrush.html")]
     [CustomGridBrush(false, false, false, "Random Brush")]
     [CreateAssetMenu(fileName = "New Random Brush", menuName = "2D/Brushes/Random Brush", order = 84)]
     public class RandomBrush : GridBrush
