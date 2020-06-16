@@ -2,7 +2,7 @@
 
 __Contributions by:__ [johnsoncodehk](https://github.com/johnsoncodehk), [DreadBoy](https://github.com/DreadBoy), [AVChemodanov](https://github.com/AVChemodanov), [DoctorShinobi](https://github.com/DoctorShinobi)
 
-This is a generic visual Tile that other Tiles such as [Terrain Tiles](TerrainTile.md), [Pipeline Tile](PipelineTile.md), [Random Tile](RandomTile.md) or [Animated Tiles](AnimatedTile.md) are based on. The Rule Tile is for the Rectangle Grid type, the Hexagonal Rule Tile is for the Hexagonal Grid type, and the Isometric Rule Tile is for the Isometric Grid types. All the different types of Rule Tiles possess the same properties.
+This is a generic visual Tile that other Tiles such as Terrain Tiles, Pipeline Tile, Random Tile or [Animated Tiles](AnimatedTile.md) are based on. The Rule Tile is for the Rectangle Grid type, the Hexagonal Rule Tile is for the Hexagonal Grid type, and the Isometric Rule Tile is for the Isometric Grid types. All the different types of Rule Tiles possess the same properties.
 
 ## Properties
 
