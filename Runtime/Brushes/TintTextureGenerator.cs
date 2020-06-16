@@ -95,6 +95,7 @@ public class TintTextureGenerator : MonoBehaviour
     /// </summary>
     /// <param name="grid">Grid to set color to</param>
     /// <param name="position">Position of the Grid to set color to</param>
+    /// <param name="color">Color to set to</param>
     public void SetColor(Grid grid, Vector3Int position, Color color)
     {
         if (grid == null)

@@ -90,6 +90,9 @@ namespace UnityEngine.Tilemaps
         [HideInInspector]
         private List<Color> m_PositionColorValues = new List<Color>();
 
+        /// <summary>
+        /// Callback before serializing this GridInformation
+        /// </summary>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
             Grid grid = GetComponentInParent<Grid>();
@@ -141,6 +144,9 @@ namespace UnityEngine.Tilemaps
             }
         }
 
+        /// <summary>
+        /// Callback after deserializing this GridInformation
+        /// </summary>
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             m_PositionProperties.Clear();
