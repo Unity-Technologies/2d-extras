@@ -42,7 +42,14 @@ This is a generic visual Tile that other Tiles such as Terrain Tiles, Pipeline T
 | ---------- | ------------------------------------------------------------ |
 | __Speed__  | The speed at which the animation is played.                  |
 | __Size__   | The number of Sprites in the animation.                      |
-| __Sprite__ | The Sprite for the Tile which fits this Rule. A random Sprite will be chosen out of this when placing the Tile. |
+| __Sprite__ | The Sprite for the Tile which fits this Rule. Sprites will be shown in sequence based on the order of the list. |
+
+## Editor Properties
+
+| Property                | Function                                                |
+| ----------------------- | ------------------------------------------------------- |
+| __Extend Neighbor__     | Enabling this allows you to increase the range of neighbors beyond the 3x3 box.        |
+
 
 ## <a name="Usage"></a>Usage
 
@@ -81,6 +88,10 @@ If you want the Rule Tile to have a Random output, you can set the Output to Ran
 If you want the Rule Tile to output a Sprite Animation, you can set the Output to Animation. This will allow you to specify a number of Sprites to animate sequentially. The speed of the Animation can be randomized as well by changing the __Speed__ property.
 
 ![Rule Tile with Animation Output](images/RuleTileOutputAnimation.png)
+
+When <b>Extend Neighbors</b> is enabled, the 3x3 box can be extended to allow for more specific neighbor matching. The Transform rule matching (eg. Rotated, Mirror) will apply for the extended neighbors set.
+
+![Rule Tile with Animation Output](images/RuleTileRuleExtendNeighbor.png)
 
 Paint the Rule Tile using the Tile Palette tools.
 
