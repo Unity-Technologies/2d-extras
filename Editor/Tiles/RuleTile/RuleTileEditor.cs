@@ -330,6 +330,7 @@ namespace UnityEditor
             Rect toggleRect = new Rect(rect.xMax - rect.height, rect.y, rect.height, rect.height);
             Rect toggleLabelRect = new Rect(rect.x, rect.y, rect.width - toggleRect.width - 5f, rect.height);
 
+            EditorGUI.BeginChangeCheck();
             extendNeighbor = EditorGUI.Toggle(toggleRect, extendNeighbor);
             EditorGUI.LabelField(toggleLabelRect, "Extend Neighbor", new GUIStyle()
             {
@@ -337,6 +338,17 @@ namespace UnityEditor
                 fontStyle = FontStyle.Bold,
                 fontSize = 10,
             });
+            if (EditorGUI.EndChangeCheck())
+            {
+                // Required to adjust element height changes
+                var rolType = GetType("UnityEditorInternal.ReorderableList");
+                if (rolType != null)
+                {
+                    var clearCacheMethod = rolType.GetMethod("ClearCache", BindingFlags.Instance | BindingFlags.NonPublic);
+                    if (clearCacheMethod != null)
+                        clearCacheMethod.Invoke(m_ReorderableList, null);
+                }
+            }
         }
 
         /// <summary>
@@ -808,17 +820,6 @@ namespace UnityEditor
             var type = Type.GetType(TypeName);
             if (type != null)
                 return type;
-
-            if (TypeName.Contains("."))
-            {
-                var assemblyName = TypeName.Substring(0, TypeName.IndexOf('.'));
-                var assembly = Assembly.Load(assemblyName);
-                if (assembly == null)
-                    return null;
-                type = assembly.GetType(TypeName);
-                if (type != null)
-                    return type;
-            }
 
             var currentAssembly = Assembly.GetExecutingAssembly();
             var referencedAssemblies = currentAssembly.GetReferencedAssemblies();
