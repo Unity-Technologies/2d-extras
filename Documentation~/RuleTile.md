@@ -71,13 +71,15 @@ Edit the 3x3 box to set up the Rule the Tile must match. The 3x3 box represents 
 
 If all of the neighbors of the Rule Tile match the options set for their respective directions, then the Rule is considered matched and the rest of the Rule properties are applied.
 
+When the Rule is set to Fixed, the Rule will only match exactly the conditions set for its neighbours. The example below will only match if there are 
+
 ![Rule Tile with Fixed Rule](images/RuleTileRuleFixed.png)
 
 When the Rule is set to Rotated, the 3x3 box will be rotated 90 degrees each time the Rule fails to match and it will try to match again with this rotated 3x3 box. If the Rule now matches, the contents of this Rule will be applied as well as the rotation required to match the Rule. Use this if you want the Rule to match for the four 90 degree rotations if rotation is possible.
 
 ![Rule Tile with Rotated Rule](images/RuleTileRuleRotated.png)
 
-When the Rule is set to Mirror X or Mirror Y, the 3x3 box will be mirrored in that axis each time the Rule fails to match and it will try to match again with this mirrored 3x3 box. If the Rule now matches, the contents of this Rule will be applied as well as the mirroring required to match the Rule. Use this if you want the Rule to match for the mirrored locations if mirroring is possible.
+When the Rule is set to Mirror X, Mirror Y or Mirror XY, the 3x3 box will be mirrored in that axis each time the Rule fails to match and it will try to match again with this mirrored 3x3 box. If the Rule now matches, the contents of this Rule will be applied as well as the mirroring required to match the Rule. Use this if you want the Rule to match for the mirrored locations if mirroring is possible.
 
 ![Rule Tile with Mirror XY Rule](images/RuleTileRuleMirror.png)
 
