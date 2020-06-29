@@ -502,6 +502,7 @@ namespace UnityEditor
                     GUI.DrawTexture(rect, autoTransforms[4]);
                     break;
             }
+            GUI.Label(rect, new GUIContent("", ruleTransform.ToString()));
         }
 
         /// <summary>
