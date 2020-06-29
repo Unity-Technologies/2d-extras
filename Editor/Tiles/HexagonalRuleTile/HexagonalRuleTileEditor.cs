@@ -189,6 +189,7 @@ namespace UnityEditor
             base.CreatePreview();
 
             m_PreviewGrid.cellLayout = GridLayout.CellLayout.Hexagon;
+            m_PreviewGrid.cellSize = new Vector3(0.8659766f, 1.0f, 1.0f);
             m_PreviewGrid.cellSwizzle = hexTile.m_FlatTop ? GridLayout.CellSwizzle.YXZ : GridLayout.CellSwizzle.XYZ;
 
             foreach (var tilemap in m_PreviewTilemaps)

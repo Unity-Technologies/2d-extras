@@ -389,8 +389,14 @@ namespace UnityEditor
                 if (property != null)
                     EditorGUILayout.PropertyField(property, true);
             }
+
             if (EditorGUI.EndChangeCheck())
+            {
                 serializedObject.ApplyModifiedProperties();
+                DestroyPreview();
+                CreatePreview();
+            }
+
         }
 
         /// <summary>
