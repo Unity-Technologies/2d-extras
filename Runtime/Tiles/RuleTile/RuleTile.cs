@@ -519,7 +519,7 @@ namespace UnityEngine
             foreach (Vector3Int offset in neighborPositions)
             {
                 Vector3Int offsetPosition = GetOffsetPositionReverse(position, offset);
-                TileBase tile = baseTilemap.GetTile(offsetPosition);
+                TileBase tile = tilemap.GetTile(offsetPosition);
                 RuleTile ruleTile = null;
 
                 if (tile is RuleTile)
