@@ -6,6 +6,9 @@ using UnityEngine.Scripting.APIUpdating;
 
 namespace UnityEditor.Tilemaps
 {
+    /// <summary>
+    /// Wizard for populating RuleOverrideTile from a SpriteSheet
+    /// </summary>
     [MovedFrom(true, "UnityEditor")]
     public class PopulateRuleOverideTileWizard : ScriptableWizard 
     {

@@ -41,17 +41,17 @@ namespace UnityEngine.Tilemaps
         /// <param name="position">Position of the Tile on the Tilemap.</param>
         /// <param name="tilemap">The Tilemap the tile is present on.</param>
         /// <param name="tileData">Data to render the tile.</param>
-        public override void GetTileData(Vector3Int location, ITilemap tileMap, ref TileData tileData) 
+        public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData) 
         {
-            base.GetTileData(location, tileMap, ref tileData);
+            base.GetTileData(position, tilemap, ref tileData);
             
             if (Sprites == null || Sprites.Length <= 0) return;
             
             var oldState = Random.state;
-            long hash = location.x;
+            long hash = position.x;
             hash = hash + 0xabcd1234 + (hash << 15);
             hash = hash + 0x0987efab ^ (hash >> 11);
-            hash ^= location.y;
+            hash ^= position.y;
             hash = hash + 0x46ac12fd + (hash << 7);
             hash = hash + 0xbe9730af ^ (hash << 11);
             Random.InitState((int) hash);
@@ -62,9 +62,11 @@ namespace UnityEngine.Tilemaps
 
             // Pick a random weight and choose a sprite depending on it
             var randomWeight = Random.Range(0, cumulativeWeight);
-            foreach (var spriteInfo in Sprites) {
+            foreach (var spriteInfo in Sprites) 
+            {
                 randomWeight -= spriteInfo.Weight;
-                if (randomWeight < 0) {
+                if (randomWeight < 0) 
+                {
                     tileData.sprite = spriteInfo.Sprite;    
                     break;
                 }
@@ -84,12 +86,18 @@ namespace UnityEngine.Tilemaps
             get { return target as WeightedRandomTile; }
         }
 
+        /// <summary>
+        /// OnEnable for WeightedRandomTile.
+        /// </summary>
         public void OnEnable()
         {
             m_Color = serializedObject.FindProperty("m_Color");
             m_ColliderType = serializedObject.FindProperty("m_ColliderType");
         }
 
+        /// <summary>
+        /// Draws an Inspector for the WeightedRandomTile.
+        /// </summary>
         public override void OnInspectorGUI() 
         {
             serializedObject.Update();

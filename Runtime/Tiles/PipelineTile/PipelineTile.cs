@@ -26,16 +26,16 @@ namespace UnityEngine.Tilemaps
         /// <summary>
         /// This method is called when the tile is refreshed.
         /// </summary>
-        /// <param name="location">Position of the Tile on the Tilemap.</param>
-        /// <param name="tileMap">The Tilemap the tile is present on.</param>
-        public override void RefreshTile(Vector3Int location, ITilemap tileMap)
+        /// <param name="position">Position of the Tile on the Tilemap.</param>
+        /// <param name="tilemap">The Tilemap the tile is present on.</param>
+        public override void RefreshTile(Vector3Int position, ITilemap tilemap)
         {
             for (int yd = -1; yd <= 1; yd++)
                 for (int xd = -1; xd <= 1; xd++)
                 {
-                    Vector3Int position = new Vector3Int(location.x + xd, location.y + yd, location.z);
-                    if (TileValue(tileMap, position))
-                        tileMap.RefreshTile(position);
+                    Vector3Int pos = new Vector3Int(position.x + xd, position.y + yd, position.z);
+                    if (TileValue(tilemap, pos))
+                        tilemap.RefreshTile(pos);
                 }
         }
 
@@ -45,23 +45,23 @@ namespace UnityEngine.Tilemaps
         /// <param name="position">Position of the Tile on the Tilemap.</param>
         /// <param name="tilemap">The Tilemap the tile is present on.</param>
         /// <param name="tileData">Data to render the tile.</param>
-        public override void GetTileData(Vector3Int location, ITilemap tileMap, ref TileData tileData)
+        public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
         {
-            UpdateTile(location, tileMap, ref tileData);
+            UpdateTile(position, tilemap, ref tileData);
         }
 
-        private void UpdateTile(Vector3Int location, ITilemap tileMap, ref TileData tileData)
+        private void UpdateTile(Vector3Int position, ITilemap tilemap, ref TileData tileData)
         {
             tileData.transform = Matrix4x4.identity;
             tileData.color = Color.white;
 
-            int mask = TileValue(tileMap, location + new Vector3Int(0, 1, 0)) ? 1 : 0;
-            mask += TileValue(tileMap, location + new Vector3Int(1, 0, 0)) ? 2 : 0;
-            mask += TileValue(tileMap, location + new Vector3Int(0, -1, 0)) ? 4 : 0;
-            mask += TileValue(tileMap, location + new Vector3Int(-1, 0, 0)) ? 8 : 0;
+            int mask = TileValue(tilemap, position + new Vector3Int(0, 1, 0)) ? 1 : 0;
+            mask += TileValue(tilemap, position + new Vector3Int(1, 0, 0)) ? 2 : 0;
+            mask += TileValue(tilemap, position + new Vector3Int(0, -1, 0)) ? 4 : 0;
+            mask += TileValue(tilemap, position + new Vector3Int(-1, 0, 0)) ? 8 : 0;
 
             int index = GetIndex((byte)mask);
-            if (index >= 0 && index < m_Sprites.Length && TileValue(tileMap, location))
+            if (index >= 0 && index < m_Sprites.Length && TileValue(tilemap, position))
             {
                 tileData.sprite = m_Sprites[index];
                 tileData.transform = GetTransform((byte)mask);
@@ -127,12 +127,18 @@ namespace UnityEngine.Tilemaps
     {
         private PipelineTile tile { get { return (target as PipelineTile); } }
 
+        /// <summary>
+        /// OnEnable for PipelineTile.
+        /// </summary>
         public void OnEnable()
         {
             if (tile.m_Sprites == null || tile.m_Sprites.Length != 5)
                 tile.m_Sprites = new Sprite[5];
         }
 
+        /// <summary>
+        /// Draws an Inspector for the PipelineTile.
+        /// </summary>
         public override void OnInspectorGUI()
         {
             EditorGUILayout.LabelField("Place sprites shown based on the number of tiles bordering it.");

@@ -1,0 +1,5 @@
+{
+    "displayName": "Pipeline Rule Tile",
+	"interactiveImport": "false",
+    "description": "An example implementation of a Rule Tile with rules matching four-way orthogonal neighbors.",
+}

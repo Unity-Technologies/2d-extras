@@ -5,20 +5,28 @@ using System.Collections.Generic;
 
 namespace UnityEditor
 {
+    /// <summary>
+    /// The Editor for an AdvancedRuleOverrideTileEditor.
+    /// </summary>
     [CustomEditor(typeof(AdvancedRuleOverrideTile))]
     public class AdvancedRuleOverrideTileEditor : RuleOverrideTileEditor
     {
-
+        /// <summary>
+        /// The AdvancedRuleOverrideTile being edited.
+        /// </summary>
         public new AdvancedRuleOverrideTile overrideTile => target as AdvancedRuleOverrideTile;
 
         List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>> m_Rules = new List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>>();
-        ReorderableList m_RuleList;
-        int m_MissingOriginalRuleIndex;
+        private ReorderableList m_RuleList;
+        private int m_MissingOriginalRuleIndex;
 
         static float k_DefaultElementHeight { get { return RuleTileEditor.k_DefaultElementHeight; } }
         static float k_SingleLineHeight { get { return RuleTileEditor.k_SingleLineHeight; } }
         static float k_LabelWidth { get { return RuleTileEditor.k_LabelWidth; } }
 
+        /// <summary>
+        /// OnEnable for the AdvancedRuleOverrideTileEditor
+        /// </summary>
         public override void OnEnable()
         {
             if (m_RuleList == null)
@@ -30,6 +38,9 @@ namespace UnityEditor
             }
         }
 
+        /// <summary>
+        /// Draws the Inspector GUI for the AdvancedRuleOverrideTileEditor
+        /// </summary>
         public override void OnInspectorGUI()
         {
             serializedObject.UpdateIfRequiredOrScript();
@@ -51,12 +62,23 @@ namespace UnityEditor
             m_RuleList.DoLayoutList();
         }
 
+        /// <summary>
+        /// Draws the Header for the Rule list
+        /// </summary>
+        /// <param name="rect">Rect to draw the header in</param>
         public void DrawRulesHeader(Rect rect)
         {
             GUI.Label(rect, "Tiling Rules", EditorStyles.label);
         }
 
-        public void DrawRuleElement(Rect rect, int index, bool selected, bool focused)
+        /// <summary>
+        /// Draws the Rule element for the Rule list
+        /// </summary>
+        /// <param name="rect">Rect to draw the Rule Element in</param>
+        /// <param name="index">Index of the Rule Element to draw</param>
+        /// <param name="active">Whether the Rule Element is active</param>
+        /// <param name="focused">Whether the Rule Element is focused</param>
+        public void DrawRuleElement(Rect rect, int index, bool active, bool focused)
         {
             RuleTile.TilingRule originalRule = m_Rules[index].Key;
             RuleTile.TilingRuleOutput overrideRule = m_Rules[index].Value;
@@ -92,6 +114,14 @@ namespace UnityEditor
             }
         }
 
+        /// <summary>
+        /// Draw a Rule Override for the AdvancedRuleOverrideTileEditor
+        /// </summary>
+        /// <param name="rect">Rect to draw the Rule in</param>
+        /// <param name="rule">The Rule Override to draw</param>
+        /// <param name="isOverride">Whether the original Rule is being overridden</param>
+        /// <param name="originalRule">Original Rule to override</param>
+        /// <param name="isMissing">Whether the original Rule is missing</param>
         public void DrawRule(Rect rect, RuleTile.TilingRuleOutput rule, bool isOverride, RuleTile.TilingRule originalRule, bool isMissing)
         {
             if (isMissing)
@@ -128,6 +158,11 @@ namespace UnityEditor
             }
         }
 
+        /// <summary>
+        /// Returns the height for an indexed Rule Element
+        /// </summary>
+        /// <param name="index">Index of the Rule Element</param>
+        /// <returns>Height of the indexed Rule Element</returns>
         public float GetRuleElementHeight(int index)
         {
             var originalRule = m_Rules[index].Key;

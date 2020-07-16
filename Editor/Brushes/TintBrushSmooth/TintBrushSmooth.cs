@@ -41,7 +41,7 @@ namespace UnityEditor.Tilemaps
         /// Tints tiles into a given position within the selected layers.
         /// The TintBrushSmooth overrides this to set the color of the Grid position to tint it.
         /// </summary>
-        /// <param name="gridLayout">Grid used for layout.</param>
+        /// <param name="grid">Grid used for layout.</param>
         /// <param name="brushTarget">Target of the paint operation. By default the currently selected GameObject.</param>
         /// <param name="position">The coordinates of the cell to paint data to.</param>
         public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
@@ -59,7 +59,7 @@ namespace UnityEditor.Tilemaps
         /// Resets the color of the tiles in a given position within the selected layers to White.
         /// The TintBrushSmooth overrides this to set the color of the Grid position to White.
         /// </summary>
-        /// <param name="gridLayout">Grid used for layout.</param>
+        /// <param name="grid">Grid used for layout.</param>
         /// <param name="brushTarget">Target of the erase operation. By default the currently selected GameObject.</param>
         /// <param name="position">The coordinates of the cell to erase data from.</param>
         public override void Erase(GridLayout grid, GameObject brushTarget, Vector3Int position)
@@ -75,7 +75,7 @@ namespace UnityEditor.Tilemaps
         /// Picks the tint color given the coordinates of the cells.
         /// The TintBrushSmoot overrides this to provide color picking functionality.
         /// </summary>
-        /// <param name="gridLayout">Grid to pick data from.</param>
+        /// <param name="grid">Grid to pick data from.</param>
         /// <param name="brushTarget">Target of the picking operation. By default the currently selected GameObject.</param>
         /// <param name="position">The coordinates of the cells to paint data from.</param>
         /// <param name="pivot">Pivot of the picking brush.</param>

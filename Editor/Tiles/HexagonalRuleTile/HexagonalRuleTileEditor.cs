@@ -3,13 +3,23 @@ using UnityEngine.Tilemaps;
 
 namespace UnityEditor
 {
+    /// <summary>
+    /// The Editor for a HexagonalRuleTile.
+    /// </summary>
     [CustomEditor(typeof(HexagonalRuleTile), true)]
     [CanEditMultipleObjects]
     public class HexagonalRuleTileEditor : RuleTileEditor
     {
-
+        /// <summary>
+        /// The HexagonalRuleTile being edited.
+        /// </summary>
         public HexagonalRuleTile hexTile => target as HexagonalRuleTile;
 
+        /// <summary>
+        /// Gets the index for a Rule with the HexagonalRuleTile to display an arrow.
+        /// </summary>
+        /// <param name="position">The adjacent position of the arrow.</param>
+        /// <returns>Returns the index for a Rule with the HexagonalRuleTile to display an arrow.</returns>
         public override int GetArrowIndex(Vector3Int position)
         {
             if (position.y % 2 != 0)
@@ -47,6 +57,12 @@ namespace UnityEditor
             return -1;
         }
 
+        /// <summary>
+        /// Get the GUI bounds for a Rule.
+        /// </summary>
+        /// <param name="bounds">Cell bounds of the Rule.</param>
+        /// <param name="rule">Rule to get GUI bounds for.</param>
+        /// <returns>The GUI bounds for a rule.</returns>
         public override BoundsInt GetRuleGUIBounds(BoundsInt bounds, RuleTile.TilingRule rule)
         {
             foreach (var n in rule.GetNeighbors())
@@ -60,12 +76,24 @@ namespace UnityEditor
             return base.GetRuleGUIBounds(bounds, rule);
         }
 
+        /// <summary>
+        /// Gets the GUI matrix size for a Rule of a HexagonalRuleTile
+        /// </summary>
+        /// <param name="bounds">Cell bounds of the Rule.</param>
+        /// <returns>Returns the GUI matrix size for a Rule of a HexagonalRuleTile.</returns>
         public override Vector2 GetMatrixSize(BoundsInt bounds)
         {
             Vector2 size = base.GetMatrixSize(bounds);
             return hexTile.m_FlatTop ? new Vector2(size.y, size.x) : size;
         }
 
+        /// <summary>
+        /// Draws a Rule Matrix for the given Rule for a HexagonalRuleTile.
+        /// </summary>
+        /// <param name="tile">Tile to draw rule for.</param>
+        /// <param name="rect">GUI Rect to draw rule at.</param>
+        /// <param name="bounds">Cell bounds of the Rule.</param>
+        /// <param name="tilingRule">Rule to draw Rule Matrix for.</param>
         public override void RuleMatrixOnGUI(RuleTile tile, Rect rect, BoundsInt bounds, RuleTile.TilingRule tilingRule)
         {
             bool flatTop = hexTile.m_FlatTop;
@@ -153,11 +181,15 @@ namespace UnityEditor
             }
         }
 
-        public override void CreatePreview()
+        /// <summary>
+        /// Creates a Preview for the HexagonalRuleTile.
+        /// </summary>
+        protected override void CreatePreview()
         {
             base.CreatePreview();
 
             m_PreviewGrid.cellLayout = GridLayout.CellLayout.Hexagon;
+            m_PreviewGrid.cellSize = new Vector3(0.8659766f, 1.0f, 1.0f);
             m_PreviewGrid.cellSwizzle = hexTile.m_FlatTop ? GridLayout.CellSwizzle.YXZ : GridLayout.CellSwizzle.XYZ;
 
             foreach (var tilemap in m_PreviewTilemaps)
