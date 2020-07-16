@@ -26,15 +26,15 @@ namespace UnityEngine.Tilemaps
         /// <param name="position">Position of the Tile on the Tilemap.</param>
         /// <param name="tilemap">The Tilemap the tile is present on.</param>
         /// <param name="tileData">Data to render the tile.</param>
-        public override void GetTileData(Vector3Int location, ITilemap tileMap, ref TileData tileData)
+        public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
         {
-            base.GetTileData(location, tileMap, ref tileData);
+            base.GetTileData(position, tilemap, ref tileData);
             if ((m_Sprites != null) && (m_Sprites.Length > 0))
             {
-                long hash = location.x;
+                long hash = position.x;
                 hash = (hash + 0xabcd1234) + (hash << 15);
                 hash = (hash + 0x0987efab) ^ (hash >> 11);
-                hash ^= location.y;
+                hash ^= position.y;
                 hash = (hash + 0x46ac12fd) + (hash << 7);
                 hash = (hash + 0xbe9730af) ^ (hash << 11);
                 var oldState = Random.state;
@@ -54,12 +54,18 @@ namespace UnityEngine.Tilemaps
 
         private RandomTile tile { get { return (target as RandomTile); } }
 
+        /// <summary>
+        /// OnEnable for RandomTile.
+        /// </summary>
         public void OnEnable()
         {
             m_Color = serializedObject.FindProperty("m_Color");
             m_ColliderType = serializedObject.FindProperty("m_ColliderType");
         }
-        
+
+        /// <summary>
+        /// Draws an Inspector for the RandomTile.
+        /// </summary>
         public override void OnInspectorGUI()
         {
             serializedObject.Update();

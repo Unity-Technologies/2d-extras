@@ -19,6 +19,7 @@ namespace UnityEngine.Tilemaps
     /// A simple MonoBehaviour that stores and provides information based on Grid positions and keywords.
     /// </summary>
     [Serializable]
+    [HelpURL("https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/GridInformation.html")]
     [AddComponentMenu("Tilemap/Grid Information")]
     public class GridInformation : MonoBehaviour, ISerializationCallbackReceiver
     {
@@ -89,6 +90,9 @@ namespace UnityEngine.Tilemaps
         [HideInInspector]
         private List<Color> m_PositionColorValues = new List<Color>();
 
+        /// <summary>
+        /// Callback before serializing this GridInformation
+        /// </summary>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
             Grid grid = GetComponentInParent<Grid>();
@@ -140,6 +144,9 @@ namespace UnityEngine.Tilemaps
             }
         }
 
+        /// <summary>
+        /// Callback after deserializing this GridInformation
+        /// </summary>
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             m_PositionProperties.Clear();

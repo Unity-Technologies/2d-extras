@@ -21,10 +21,13 @@ namespace UnityEngine
     /// Use this for Hexagonal Grids.
     /// </summary>
     [Serializable]
+    [HelpURL("https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/RuleTile.html")]
     [CreateAssetMenu(fileName = "New Hexagonal Rule Tile", menuName = "2D/Tiles/Hexagonal Rule Tile", order = 83)]
     public class HexagonalRuleTile : RuleTile
     {
-
+        /// <summary>
+        /// Angle in which the HexagonalRuleTile is rotated by for matching in Degrees.
+        /// </summary>
         public override int m_RotationAngle => 60;
 
         private static float[] m_CosAngleArr1 = {
@@ -67,6 +70,11 @@ namespace UnityEngine
 
         static float m_TilemapToWorldYScale = Mathf.Pow(1 - Mathf.Pow(0.5f, 2f), 0.5f);
 
+        /// <summary>
+        /// Converts a Tilemap Position to World Position.
+        /// </summary>
+        /// <param name="tilemapPosition">Tilemap Position to convert.</param>
+        /// <returns>World Position.</returns>
         public static Vector3 TilemapPositionToWorldPosition(Vector3Int tilemapPosition)
         {
             Vector3 worldPosition = new Vector3(tilemapPosition.x, tilemapPosition.y);
@@ -76,6 +84,11 @@ namespace UnityEngine
             return worldPosition;
         }
 
+        /// <summary>
+        /// Converts a World Position to Tilemap Position.
+        /// </summary>
+        /// <param name="worldPosition">World Position to convert.</param>
+        /// <returns>Tilemap Position.</returns>
         public static Vector3Int WorldPositionToTilemapPosition(Vector3 worldPosition)
         {
             worldPosition.y /= m_TilemapToWorldYScale;
@@ -88,24 +101,36 @@ namespace UnityEngine
             return tilemapPosition;
         }
 
-        public override Vector3Int GetOffsetPosition(Vector3Int location, Vector3Int offset)
+        /// <summary>
+        /// Get the offset for the given position with the given offset.
+        /// </summary>
+        /// <param name="position">Position to offset.</param>
+        /// <param name="offset">Offset for the position.</param>
+        /// <returns>The offset position.</returns>
+        public override Vector3Int GetOffsetPosition(Vector3Int position, Vector3Int offset)
         {
-            Vector3Int position = location + offset;
+            Vector3Int offsetPosition = position + offset;
 
-            if (offset.y % 2 != 0 && location.y % 2 != 0)
-                position.x += 1;
+            if (offset.y % 2 != 0 && position.y % 2 != 0)
+                offsetPosition.x += 1;
 
-            return position;
+            return offsetPosition;
         }
 
+        /// <summary>
+        /// Get the reversed offset for the given position with the given offset.
+        /// </summary>
+        /// <param name="position">Position to offset.</param>
+        /// <param name="offset">Offset for the position.</param>
+        /// <returns>The reversed offset position.</returns>
         public override Vector3Int GetOffsetPositionReverse(Vector3Int position, Vector3Int offset)
         {
-            Vector3Int location = position - offset;
+            Vector3Int offsetPosition = position - offset;
 
-            if (offset.y % 2 != 0 && location.y % 2 != 0)
-                location.x -= 1;
+            if (offset.y % 2 != 0 && position.y % 2 != 0)
+                offsetPosition.x -= 1;
 
-            return location;
+            return offsetPosition;
         }
 
         /// <summary>

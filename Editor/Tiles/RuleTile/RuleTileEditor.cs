@@ -9,6 +9,9 @@ using Object = UnityEngine.Object;
 
 namespace UnityEditor
 {
+    /// <summary>
+    /// The Editor for a RuleTile.
+    /// </summary>
     [CustomEditor(typeof(RuleTile), true)]
     [CanEditMultipleObjects]
     public class RuleTileEditor : Editor
@@ -29,6 +32,10 @@ namespace UnityEditor
         private const string s_Fixed = "iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMjHxIGmVAAAA50lEQVQ4T51Ruw6CQBCkwBYKWkIgQAs9gfgCvgb4BML/qWBM9Bdo9QPIuVOQ3JIzosVkc7Mzty9NCPE3lORaKMm1YA/LsnTXdbdhGJ6iKHoVRTEi+r4/OI6zN01Tl/XM7HneLsuyW13XU9u2ous6gYh3kiR327YPsp6ZgyDom6aZYFqiqqqJ8mdZz8xoca64BHjkZT0zY0aVcQbysp6Z4zj+Vvkp65mZttxjOSozdkEzD7KemekcxzRNHxDOHSDiQ/DIy3pmpjtuSJBThStGKMtyRKSOLnSm3DCMz3f+FUpyLZTkOgjtDSWORSDbpbmNAAAAAElFTkSuQmCC";
 
         private static Texture2D[] s_Arrows;
+
+        /// <summary>
+        /// Array of arrow textures used for marking positions for Rule matches
+        /// </summary>
         public static Texture2D[] arrows
         {
             get
@@ -51,6 +58,9 @@ namespace UnityEditor
         }
 
         private static Texture2D[] s_AutoTransforms;
+        /// <summary>
+        /// Arrays of textures used for marking transform Rule matches
+        /// </summary>
         public static Texture2D[] autoTransforms
         {
             get
@@ -68,20 +78,56 @@ namespace UnityEditor
             }
         }
 
+        /// <summary>
+        /// The RuleTile being edited
+        /// </summary>
         public RuleTile tile => target as RuleTile;
-        public ReorderableList m_ReorderableList;
+        /// <summary>
+        /// Reorderable list for Rules
+        /// </summary>
+        private ReorderableList m_ReorderableList;
+        /// <summary>
+        /// Whether the RuleTile can extend its neighbors beyond directly adjacent ones
+        /// </summary>
         public bool extendNeighbor;
 
+        /// <summary>
+        /// Preview Utility for rendering previews
+        /// </summary>
         public PreviewRenderUtility m_PreviewUtility;
+        /// <summary>
+        /// Grid for rendering previews
+        /// </summary>
         public Grid m_PreviewGrid;
+        /// <summary>
+        /// List of Tilemaps for rendering previews
+        /// </summary>
         public List<Tilemap> m_PreviewTilemaps;
+        /// <summary>
+        /// List of TilemapRenderers for rendering previews
+        /// </summary>
         public List<TilemapRenderer> m_PreviewTilemapRenderers;
 
+        /// <summary>
+        /// Default height for a Rule Element
+        /// </summary>
         public const float k_DefaultElementHeight = 48f;
+        /// <summary>
+        /// Padding between Rule Elements
+        /// </summary>
         public const float k_PaddingBetweenRules = 26f;
+        /// <summary>
+        /// Single line height
+        /// </summary>
         public const float k_SingleLineHeight = 16f;
+        /// <summary>
+        /// Width for labels
+        /// </summary>
         public const float k_LabelWidth = 80f;
 
+        /// <summary>
+        /// OnEnable for the RuleTileEditor
+        /// </summary>
         public virtual void OnEnable()
         {
             m_ReorderableList = new ReorderableList(tile.m_TilingRules, typeof(RuleTile.TilingRule), true, true, true, true);
@@ -92,11 +138,20 @@ namespace UnityEditor
             m_ReorderableList.onAddCallback = OnAddElement;
         }
 
+        /// <summary>
+        /// OnDisable for the RuleTileEditor
+        /// </summary>
         public virtual void OnDisable()
         {
             DestroyPreview();
         }
 
+        /// <summary>
+        /// Get the GUI bounds for a Rule.
+        /// </summary>
+        /// <param name="bounds">Cell bounds of the Rule.</param>
+        /// <param name="rule">Rule to get GUI bounds for.</param>
+        /// <returns>The GUI bounds for a rule.</returns>
         public virtual BoundsInt GetRuleGUIBounds(BoundsInt bounds, RuleTile.TilingRule rule)
         {
             if (extendNeighbor)
@@ -113,6 +168,10 @@ namespace UnityEditor
             return bounds;
         }
 
+        /// <summary>
+        /// Callback when the Rule list is updated
+        /// </summary>
+        /// <param name="list">Reorderable list for Rules</param>
         public void ListUpdated(ReorderableList list)
         {
             HashSet<int> usedIdSet = new HashSet<int>();
@@ -124,12 +183,17 @@ namespace UnityEditor
             }
         }
 
-        public float GetElementHeight(int index)
+        private float GetElementHeight(int index)
         {
             RuleTile.TilingRule rule = tile.m_TilingRules[index];
             return GetElementHeight(rule);
         }
 
+        /// <summary>
+        /// Gets the GUI element height for a TilingRule 
+        /// </summary>
+        /// <param name="rule">Rule to get height for</param>
+        /// <returns>GUI element height for a TilingRule</returns>
         public float GetElementHeight(RuleTile.TilingRule rule)
         {
             BoundsInt bounds = GetRuleGUIBounds(rule.GetBounds(), rule);
@@ -140,6 +204,11 @@ namespace UnityEditor
             return Mathf.Max(inspectorHeight, matrixHeight);
         }
 
+        /// <summary>
+        /// Gets the GUI element height for a TilingRuleOutput 
+        /// </summary>
+        /// <param name="rule">Rule to get height for</param>
+        /// <returns>GUI element height for a TilingRuleOutput </returns>
         public float GetElementHeight(RuleTile.TilingRuleOutput rule)
         {
             float inspectorHeight = k_DefaultElementHeight + k_PaddingBetweenRules;
@@ -157,12 +226,24 @@ namespace UnityEditor
             return inspectorHeight;
         }
 
+        /// <summary>
+        /// Gets the GUI matrix size for a Rule of a RuleTile
+        /// </summary>
+        /// <param name="bounds">Cell bounds of the Rule.</param>
+        /// <returns>Returns the GUI matrix size for a Rule of a RuleTile.</returns>
         public virtual Vector2 GetMatrixSize(BoundsInt bounds)
         {
             return new Vector2(bounds.size.x * k_SingleLineHeight, bounds.size.y * k_SingleLineHeight);
         }
 
-        public virtual void OnDrawElement(Rect rect, int index, bool isactive, bool isfocused)
+        /// <summary>
+        /// Draws the Rule element for the Rule list
+        /// </summary>
+        /// <param name="rect">Rect to draw the Rule Element in</param>
+        /// <param name="index">Index of the Rule Element to draw</param>
+        /// <param name="isactive">Whether the Rule Element is active</param>
+        /// <param name="isfocused">Whether the Rule Element is focused</param>
+        protected virtual void OnDrawElement(Rect rect, int index, bool isactive, bool isfocused)
         {
             RuleTile.TilingRule rule = tile.m_TilingRules[index];
             BoundsInt bounds = GetRuleGUIBounds(rule.GetBounds(), rule);
@@ -180,7 +261,7 @@ namespace UnityEditor
             SpriteOnGUI(spriteRect, rule);
         }
 
-        public void OnAddElement(ReorderableList list)
+        private void OnAddElement(ReorderableList list)
         {
             RuleTile.TilingRule rule = new RuleTile.TilingRule();
             rule.m_Output = RuleTile.TilingRule.OutputSprite.Single;
@@ -190,6 +271,9 @@ namespace UnityEditor
             tile.m_TilingRules.Add(rule);
         }
 
+        /// <summary>
+        /// Saves any changes to the RuleTile
+        /// </summary>
         public void SaveTile()
         {
             EditorUtility.SetDirty(target);
@@ -198,6 +282,10 @@ namespace UnityEditor
             UpdateAffectedOverrideTiles(tile);
         }
 
+        /// <summary>
+        /// Updates all RuleOverrideTiles which override the given RUleTile
+        /// </summary>
+        /// <param name="target">RuleTile which has been updated</param>
         public static void UpdateAffectedOverrideTiles(RuleTile target)
         {
             List<RuleOverrideTile> overrideTiles = FindAffectedOverrideTiles(target);
@@ -208,6 +296,11 @@ namespace UnityEditor
             }
         }
 
+        /// <summary>
+        /// Gets all RuleOverrideTiles which override the given RuleTile
+        /// </summary>
+        /// <param name="target">RuleTile which has been updated</param>
+        /// <returns>A list of RuleOverrideTiles which override the given RuleTile</returns>
         public static List<RuleOverrideTile> FindAffectedOverrideTiles(RuleTile target)
         {
             List<RuleOverrideTile> overrideTiles = new List<RuleOverrideTile>();
@@ -226,6 +319,10 @@ namespace UnityEditor
             return overrideTiles;
         }
 
+        /// <summary>
+        /// Draws the header for the Rule list
+        /// </summary>
+        /// <param name="rect">GUI Rect to draw the header at</param>
         public void OnDrawHeader(Rect rect)
         {
             GUI.Label(rect, "Tiling Rules");
@@ -233,6 +330,7 @@ namespace UnityEditor
             Rect toggleRect = new Rect(rect.xMax - rect.height, rect.y, rect.height, rect.height);
             Rect toggleLabelRect = new Rect(rect.x, rect.y, rect.width - toggleRect.width - 5f, rect.height);
 
+            EditorGUI.BeginChangeCheck();
             extendNeighbor = EditorGUI.Toggle(toggleRect, extendNeighbor);
             EditorGUI.LabelField(toggleLabelRect, "Extend Neighbor", new GUIStyle()
             {
@@ -240,8 +338,22 @@ namespace UnityEditor
                 fontStyle = FontStyle.Bold,
                 fontSize = 10,
             });
+            if (EditorGUI.EndChangeCheck())
+            {
+                // Required to adjust element height changes
+                var rolType = GetType("UnityEditorInternal.ReorderableList");
+                if (rolType != null)
+                {
+                    var clearCacheMethod = rolType.GetMethod("ClearCache", BindingFlags.Instance | BindingFlags.NonPublic);
+                    if (clearCacheMethod != null)
+                        clearCacheMethod.Invoke(m_ReorderableList, null);
+                }
+            }
         }
 
+        /// <summary>
+        /// Draws the Inspector GUI for the RuleTileEditor
+        /// </summary>
         public override void OnInspectorGUI()
         {
             EditorGUI.BeginChangeCheck();
@@ -261,6 +373,10 @@ namespace UnityEditor
                 SaveTile();
         }
 
+        /// <summary>
+        /// Draw editor fields for custom properties for the RuleTile
+        /// </summary>
+        /// <param name="isOverrideInstance">Whether override fields are drawn</param>
         public void DrawCustomFields(bool isOverrideInstance)
         {
             var customFields = tile.GetCustomFields(isOverrideInstance);
@@ -273,10 +389,21 @@ namespace UnityEditor
                 if (property != null)
                     EditorGUILayout.PropertyField(property, true);
             }
+
             if (EditorGUI.EndChangeCheck())
+            {
                 serializedObject.ApplyModifiedProperties();
+                DestroyPreview();
+                CreatePreview();
+            }
+
         }
 
+        /// <summary>
+        /// Gets the index for a Rule with the RuleTile to display an arrow.
+        /// </summary>
+        /// <param name="position">The relative position of the arrow from the center.</param>
+        /// <returns>Returns the index for a Rule with the RuleTile to display an arrow.</returns>
         public virtual int GetArrowIndex(Vector3Int position)
         {
             if (Mathf.Abs(position.x) == Mathf.Abs(position.y))
@@ -307,6 +434,12 @@ namespace UnityEditor
             return -1;
         }
 
+        /// <summary>
+        /// Draws a neighbor matching rule
+        /// </summary>
+        /// <param name="rect">Rect to draw on</param>
+        /// <param name="position">The relative position of the arrow from the center</param>
+        /// <param name="neighbor">The index to the neighbor matching criteria</param>
         public virtual void RuleOnGUI(Rect rect, Vector3Int position, int neighbor)
         {
             switch (neighbor)
@@ -326,6 +459,11 @@ namespace UnityEditor
             }
         }
 
+        /// <summary>
+        /// Draws a tooltip for the neighbor matching rule
+        /// </summary>
+        /// <param name="rect">Rect to draw on</param>
+        /// <param name="neighbor">The index to the neighbor matching criteria</param>
         public void RuleTooltipOnGUI(Rect rect, int neighbor)
         {
             var allConsts = tile.m_NeighborType.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.FlattenHierarchy);
@@ -339,6 +477,11 @@ namespace UnityEditor
             }
         }
 
+        /// <summary>
+        /// Draws a transform matching rule
+        /// </summary>
+        /// <param name="rect">Rect to draw on</param>
+        /// <param name="ruleTransform">The transform matching criteria</param>
         public virtual void RuleTransformOnGUI(Rect rect, RuleTile.TilingRule.Transform ruleTransform)
         {
             switch (ruleTransform)
@@ -359,8 +502,16 @@ namespace UnityEditor
                     GUI.DrawTexture(rect, autoTransforms[4]);
                     break;
             }
+            GUI.Label(rect, new GUIContent("", ruleTransform.ToString()));
         }
 
+        /// <summary>
+        /// Handles a neighbor matching Rule update from user mouse input
+        /// </summary>
+        /// <param name="rect">Rect containing neighbor matching Rule GUI</param>
+        /// <param name="tilingRule">Tiling Rule to update neighbor matching rule</param>
+        /// <param name="neighbors">A dictionary of neighbors</param>
+        /// <param name="position">The relative position of the neighbor matching Rule</param>
         public void RuleNeighborUpdate(Rect rect, RuleTile.TilingRule tilingRule, Dictionary<Vector3Int, int> neighbors, Vector3Int position)
         {
             if (Event.current.type == EventType.MouseDown && ContainsMousePosition(rect))
@@ -394,6 +545,11 @@ namespace UnityEditor
             }
         }
 
+        /// <summary>
+        /// Handles a transform matching Rule update from user mouse input
+        /// </summary>
+        /// <param name="rect">Rect containing transform matching Rule GUI</param>
+        /// <param name="tilingRule">Tiling Rule to update transform matching rule</param>
         public void RuleTransformUpdate(Rect rect, RuleTile.TilingRule tilingRule)
         {
             if (Event.current.type == EventType.MouseDown && ContainsMousePosition(rect))
@@ -404,16 +560,32 @@ namespace UnityEditor
             }
         }
 
+        /// <summary>
+        /// Determines the current mouse position is within the given Rect.
+        /// </summary>
+        /// <param name="rect">Rect to test mouse position for.</param>
+        /// <returns>True if the current mouse position is within the given Rect. False otherwise.</returns>
         public virtual bool ContainsMousePosition(Rect rect)
         {
             return rect.Contains(Event.current.mousePosition);
         }
 
+        /// <summary>
+        /// Gets the offset change for a mouse click input
+        /// </summary>
+        /// <returns>The offset change for a mouse click input</returns>
         public static int GetMouseChange()
         {
             return Event.current.button == 1 ? -1 : 1;
         }
 
+        /// <summary>
+        /// Draws a Rule Matrix for the given Rule for a RuleTile.
+        /// </summary>
+        /// <param name="tile">Tile to draw rule for.</param>
+        /// <param name="rect">GUI Rect to draw rule at.</param>
+        /// <param name="bounds">Cell bounds of the Rule.</param>
+        /// <param name="tilingRule">Rule to draw Rule Matrix for.</param>
         public virtual void RuleMatrixOnGUI(RuleTile tile, Rect rect, BoundsInt bounds, RuleTile.TilingRule tilingRule)
         {
             Handles.color = EditorGUIUtility.isProSkin ? new Color(1f, 1f, 1f, 0.2f) : new Color(0f, 0f, 0f, 0.2f);
@@ -445,18 +617,25 @@ namespace UnityEditor
             }
         }
 
-        public void RuleMatrixIconOnGUI(RuleTile.TilingRule tilingRule, Dictionary<Vector3Int, int> neighbors, Vector3Int pos, Rect rect)
+        /// <summary>
+        /// Draws a Rule Matrix Icon for the given matching Rule for a RuleTile with the given position
+        /// </summary>
+        /// <param name="tilingRule">Tile to draw rule for.</param>
+        /// <param name="neighbors">A dictionary of neighbors</param>
+        /// <param name="position">The relative position of the neighbor matching Rule</param>
+        /// <param name="rect">GUI Rect to draw icon at</param>
+        public void RuleMatrixIconOnGUI(RuleTile.TilingRule tilingRule, Dictionary<Vector3Int, int> neighbors, Vector3Int position, Rect rect)
         {
             using (var check = new EditorGUI.ChangeCheckScope())
             {
-                if (pos.x != 0 || pos.y != 0)
+                if (position.x != 0 || position.y != 0)
                 {
-                    if (neighbors.ContainsKey(pos))
+                    if (neighbors.ContainsKey(position))
                     {
-                        RuleOnGUI(rect, pos, neighbors[pos]);
-                        RuleTooltipOnGUI(rect, neighbors[pos]);
+                        RuleOnGUI(rect, position, neighbors[position]);
+                        RuleTooltipOnGUI(rect, neighbors[position]);
                     }
-                    RuleNeighborUpdate(rect, tilingRule, neighbors, pos);
+                    RuleNeighborUpdate(rect, tilingRule, neighbors, position);
                 }
                 else
                 {
@@ -470,11 +649,21 @@ namespace UnityEditor
             }
         }
 
+        /// <summary>
+        /// Draws a Sprite field for the Rule
+        /// </summary>
+        /// <param name="rect">Rect to draw Sprite Inspector in</param>
+        /// <param name="tilingRule">Rule to draw Sprite Inspector for</param>
         public virtual void SpriteOnGUI(Rect rect, RuleTile.TilingRuleOutput tilingRule)
         {
             tilingRule.m_Sprites[0] = EditorGUI.ObjectField(rect, tilingRule.m_Sprites[0], typeof(Sprite), false) as Sprite;
         }
 
+        /// <summary>
+        /// Draws an Inspector for the Rule
+        /// </summary>
+        /// <param name="rect">Rect to draw Inspector in</param>
+        /// <param name="tilingRule">Rule to draw Inspector for</param>
         public void RuleInspectorOnGUI(Rect rect, RuleTile.TilingRuleOutput tilingRule)
         {
             float y = rect.yMin;
@@ -522,12 +711,21 @@ namespace UnityEditor
             }
         }
 
+        /// <summary>
+        /// Whether the RuleTile has a preview GUI
+        /// </summary>
+        /// <returns>True</returns>
         public override bool HasPreviewGUI()
         {
             return true;
         }
 
-        public override void OnPreviewGUI(Rect r, GUIStyle background)
+        /// <summary>
+        /// Draws the preview GUI for the RuleTile
+        /// </summary>
+        /// <param name="rect">Rect to draw the preview GUI</param>
+        /// <param name="background">The GUIStyle of the background for the preview</param>
+        public override void OnPreviewGUI(Rect rect, GUIStyle background)
         {
             if (m_PreviewUtility == null)
                 CreatePreview();
@@ -535,15 +733,18 @@ namespace UnityEditor
             if (Event.current.type != EventType.Repaint)
                 return;
 
-            m_PreviewUtility.BeginPreview(r, background);
+            m_PreviewUtility.BeginPreview(rect, background);
             m_PreviewUtility.camera.orthographicSize = 2;
-            if (r.height > r.width)
-                m_PreviewUtility.camera.orthographicSize *= (float)r.height / r.width;
+            if (rect.height > rect.width)
+                m_PreviewUtility.camera.orthographicSize *= (float)rect.height / rect.width;
             m_PreviewUtility.camera.Render();
-            m_PreviewUtility.EndAndDrawPreview(r);
+            m_PreviewUtility.EndAndDrawPreview(rect);
         }
 
-        public virtual void CreatePreview()
+        /// <summary>
+        /// Creates a Preview for the RuleTile.
+        /// </summary>
+        protected virtual void CreatePreview()
         {
             m_PreviewUtility = new PreviewRenderUtility(true);
             m_PreviewUtility.camera.orthographic = true;
@@ -579,7 +780,10 @@ namespace UnityEditor
             m_PreviewTilemaps[3].SetTile(new Vector3Int(1, -2, 0), tile);
         }
 
-        public void DestroyPreview()
+        /// <summary>
+        /// Handles cleanup for the Preview GUI
+        /// </summary>
+        protected virtual void DestroyPreview()
         {
             if (m_PreviewUtility != null)
             {
@@ -591,6 +795,14 @@ namespace UnityEditor
             }
         }
 
+        /// <summary>
+        /// Renders a static preview Texture2D for a RuleTile asset
+        /// </summary>
+        /// <param name="assetPath">Asset path of the RuleTile</param>
+        /// <param name="subAssets">Arrays of assets from the given Asset path</param>
+        /// <param name="width">Width of the static preview</param>
+        /// <param name="height">Height of the static preview </param>
+        /// <returns>Texture2D containing static preview for the RuleTile asset</returns>
         public override Texture2D RenderStaticPreview(string assetPath, Object[] subAssets, int width, int height)
         {
             if (tile.m_DefaultSprite != null)
@@ -610,22 +822,11 @@ namespace UnityEditor
             return base.RenderStaticPreview(assetPath, subAssets, width, height);
         }
 
-        public static Type GetType(string TypeName)
+        private static Type GetType(string TypeName)
         {
             var type = Type.GetType(TypeName);
             if (type != null)
                 return type;
-
-            if (TypeName.Contains("."))
-            {
-                var assemblyName = TypeName.Substring(0, TypeName.IndexOf('.'));
-                var assembly = Assembly.Load(assemblyName);
-                if (assembly == null)
-                    return null;
-                type = assembly.GetType(TypeName);
-                if (type != null)
-                    return type;
-            }
 
             var currentAssembly = Assembly.GetExecutingAssembly();
             var referencedAssemblies = currentAssembly.GetReferencedAssemblies();
@@ -642,6 +843,11 @@ namespace UnityEditor
             return null;
         }
 
+        /// <summary>
+        /// Converts a Base64 string to a Texture2D
+        /// </summary>
+        /// <param name="base64">Base64 string containing image data</param>
+        /// <returns>Texture2D containing an image from the given Base64 string</returns>
         public static Texture2D Base64ToTexture(string base64)
         {
             Texture2D t = new Texture2D(1, 1);
@@ -650,13 +856,23 @@ namespace UnityEditor
             return t;
         }
 
+        /// <summary>
+        /// Wrapper for serializing a list of Rules
+        /// </summary>
         [Serializable]
         class RuleTileRuleWrapper
         {
+            /// <summary>
+            /// List of Rules to serialize
+            /// </summary>
             [SerializeField]
             public List<RuleTile.TilingRule> rules = new List<RuleTile.TilingRule>();
         }
 
+        /// <summary>
+        /// Copies all Rules from a RuleTile to the clipboard
+        /// </summary>
+        /// <param name="item">MenuCommand storing the RuleTile to copy from</param>
         [MenuItem("CONTEXT/RuleTile/Copy All Rules")]
         public static void CopyAllRules(MenuCommand item)
         {
@@ -669,7 +885,10 @@ namespace UnityEditor
             var rulesJson = EditorJsonUtility.ToJson(rulesWrapper);
             EditorGUIUtility.systemCopyBuffer = rulesJson;
         }
-
+        /// <summary>
+        /// Pastes all Rules from the clipboard to a RuleTile
+        /// </summary>
+        /// <param name="item">MenuCommand storing the RuleTile to paste to</param>
         [MenuItem("CONTEXT/RuleTile/Paste Rules")]
         public static void PasteRules(MenuCommand item)
         {

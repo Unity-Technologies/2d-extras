@@ -12,6 +12,13 @@ namespace UnityEditor.Tilemaps
         /// </summary>
         public Vector3 m_Anchor = new Vector3(0.5f, 0.5f, 0.5f);
 
+        /// <summary>
+        /// Gets all children of the parent Transform which are within the given Grid's cell position.
+        /// </summary>
+        /// <param name="grid">Grid to determine cell position.</param>
+        /// <param name="parent">Parent transform to get child Objects from.</param>
+        /// <param name="position">Cell position to get Objects from.</param>
+        /// <returns>A list of GameObjects within the given Grid's cell position.</returns>
         protected List<GameObject> GetObjectsInCell(GridLayout grid, Transform parent, Vector3Int position)
         {
             var results = new List<GameObject>();
@@ -27,6 +34,13 @@ namespace UnityEditor.Tilemaps
             return results;
         }
 
+        /// <summary>
+        /// Instantiates a Prefab into the given Grid's cell position parented to the brush target.
+        /// </summary>
+        /// <param name="grid">Grid to determine cell position.</param>
+        /// <param name="brushTarget">Target to instantiate child to.</param>
+        /// <param name="position">Cell position to instantiate to.</param>
+        /// <param name="prefab">Prefab to instantiate.</param>
         protected void InstantiatePrefabInCell(GridLayout grid, GameObject brushTarget, Vector3Int position, GameObject prefab)
         {
             var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
@@ -40,11 +54,21 @@ namespace UnityEditor.Tilemaps
         }
     }
     
+    /// <summary>
+    /// The Base Brush Editor for a Prefab Brush.
+    /// </summary>
     public class BasePrefabBrushEditor :  GridBrushEditor
     {
         private SerializedProperty m_Anchor;
+
+        /// <summary>
+        /// SerializedObject representation of the target Prefab Brush
+        /// </summary>
         protected SerializedObject m_SerializedObject;
 
+        /// <summary>
+        /// OnEnable for the BasePrefabBrushEditor
+        /// </summary>
         protected override void OnEnable()
         {
             base.OnEnable();

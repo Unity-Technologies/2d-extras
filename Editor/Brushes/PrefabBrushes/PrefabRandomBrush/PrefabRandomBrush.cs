@@ -101,6 +101,9 @@ namespace UnityEditor.Tilemaps
 
             private SerializedProperty m_Prefabs;
 
+            /// <summary>
+            /// OnEnable for the PrefabRandomBrushEditor
+            /// </summary>
             protected override void OnEnable()
             {
                 base.OnEnable();

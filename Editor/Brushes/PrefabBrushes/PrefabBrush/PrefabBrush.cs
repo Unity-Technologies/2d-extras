@@ -69,6 +69,9 @@ namespace UnityEditor.Tilemaps
             private PrefabBrush prefabBrush => target as PrefabBrush;
             private SerializedProperty m_Prefab;
 
+            /// <summary>
+            /// OnEnable for the PrefabBrushEditor
+            /// </summary>
             protected override void OnEnable()
             {
                 base.OnEnable();
