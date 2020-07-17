@@ -15,6 +15,8 @@ namespace UnityEditor.Tilemaps
         /// The selection of Prefab to paint from
         /// </summary>
         [SerializeField] GameObject m_Prefab;
+        Quaternion m_Rotation = default;
+        
         #pragma warning restore 0649
 
         /// <summary>
@@ -30,6 +32,13 @@ namespace UnityEditor.Tilemaps
         /// <param name="grid">Grid used for layout.</param>
         /// <param name="brushTarget">Target of the paint operation. By default the currently selected GameObject.</param>
         /// <param name="position">The coordinates of the cell to paint data to.</param>
+        
+        
+        public override void Rotate(RotationDirection direction, GridLayout.CellLayout layout)
+        {
+            m_Rotation = Quaternion.Euler(0f, 0f, direction == RotationDirection.Clockwise ? m_Rotation.eulerAngles.z+90f : m_Rotation.eulerAngles.z-90f);
+        }
+        
         public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
             // Do not allow editing palettes
@@ -43,7 +52,7 @@ namespace UnityEditor.Tilemaps
 
             if (!existPrefabObjectInCell)
             {
-                base.InstantiatePrefabInCell(grid, brushTarget, position, m_Prefab);
+                base.InstantiatePrefabInCell(grid, brushTarget, position, m_Prefab, m_Rotation);
             }
         }
 

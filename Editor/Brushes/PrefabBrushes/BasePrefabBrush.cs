@@ -27,7 +27,7 @@ namespace UnityEditor.Tilemaps
             return results;
         }
 
-        protected void InstantiatePrefabInCell(GridLayout grid, GameObject brushTarget, Vector3Int position, GameObject prefab)
+        protected void InstantiatePrefabInCell(GridLayout grid, GameObject brushTarget, Vector3Int position, GameObject prefab, Quaternion rotation = default)
         {
             var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
             if (instance != null)
@@ -36,6 +36,7 @@ namespace UnityEditor.Tilemaps
                 Undo.RegisterCreatedObjectUndo((Object)instance, "Paint Prefabs");
                 instance.transform.SetParent(brushTarget.transform);
                 instance.transform.position = grid.LocalToWorld(grid.CellToLocalInterpolated(position + m_Anchor));
+				instance.transform.rotation = rotation;
             }
         }
     }
