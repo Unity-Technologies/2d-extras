@@ -23,8 +23,6 @@ namespace UnityEditor.Tilemaps
         /// </summary>
         bool m_EraseAnyObjects;
 
-        Vector3Int brushStartPosition = null;
-
         /// <summary>
         /// Paints GameObject from containg Prefab into a given position within the selected layers.
         /// The PrefabBrush overrides this to provide Prefab painting functionality.
@@ -34,7 +32,6 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The coordinates of the cell to paint data to.</param>
         public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
-            Debug.Log("Paint Called");
             // Do not allow editing palettes
             if (brushTarget.layer == 31 || brushTarget == null)
             {
@@ -50,30 +47,23 @@ namespace UnityEditor.Tilemaps
             }
         }
 
-        public override void BoxFill(GridLayout grid, GameObject brushTarget, Vector3Int position)
+        /// <summary>
+        /// Paints the PrefabBrush instance's prefab into all positions specified by the box fill tool.
+        /// </summary>
+        /// <param name="grid">Grid used for layout.</param>
+        /// <param name="brushTarget">Target of the box fill operation. By default the currently selected GameObject.</param>
+        /// <param name="bounds">The cooridnate boundries to fill.</param>
+        public override void BoxFill(GridLayout grid, GameObject brushTarget, BoundsInt bounds)
         {
-            Debug.Log("BoxFill Called");
-            if (brushStartPosition == null) {
-                brushStartPosition = position;
-            } else {
-                IEnumerable<Vector3Int> range = Range(brushStartPosition, position);
-                foreach(Vector3Int tilePosition in range) this.Paint(grid, brushTarget, tilePosition);
-
-                brushStartPosition = null;
-            }
-        }
-
-        public static IEnumerable<Vector3Int> Range(Vector3 startPos, Vector3 endPos) {
-            IEnumerable<int> xRange = Enumerable.Range(startPos.x, endPos.x);
-            foreach(int x in xRange) {
-                IEnumerable<int> yRange = Enumerable.Range(startPos.y, endPos.y);
-                foreach(int y in yRange) {
-                    IEnumerable<int> zRange = Enumerable.Range(startPos.z, endPos.z);
-                    foreach(int z in zRange) yield return new Vector3Int(x, y, z);
-                }
+            // Do not allow editing palettes
+            if (brushTarget.layer == 31 || brushTarget == null)
+            {
+                return;
             }
 
-            yield break;
+            foreach(Vector3Int tilePosition in bounds.allPositionsWithin) {
+                this.Paint(grid, brushTarget, tilePosition);
+            }
         }
 
         /// <summary>
