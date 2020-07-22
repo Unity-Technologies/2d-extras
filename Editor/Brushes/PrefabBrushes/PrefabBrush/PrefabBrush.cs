@@ -57,6 +57,25 @@ namespace UnityEditor.Tilemaps
         }
 
         /// <summary>
+        /// Paints the PrefabBrush instance's prefab into all positions specified by the box fill tool.
+        /// </summary>
+        /// <param name="grid">Grid used for layout.</param>
+        /// <param name="brushTarget">Target of the box fill operation. By default the currently selected GameObject.</param>
+        /// <param name="bounds">The cooridnate boundries to fill.</param>
+        public override void BoxFill(GridLayout grid, GameObject brushTarget, BoundsInt bounds)
+        {
+            // Do not allow editing palettes
+            if (brushTarget.layer == 31 || brushTarget == null)
+            {
+                return;
+            }
+
+            foreach(Vector3Int tilePosition in bounds.allPositionsWithin) {
+                this.Paint(grid, brushTarget, tilePosition);
+            }
+        }
+
+        /// <summary>
         /// If "Erase Any Objects" is true, erases any GameObjects that are in a given position within the selected layers.
         /// If "Erase Any Objects" is false, erases only GameObjects that are created from owned Prefab in a given position within the selected layers.
         /// The PrefabBrush overrides this to provide Prefab erasing functionality.
