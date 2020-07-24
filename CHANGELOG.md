@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Updated for Unity 2020.1
 - [GameObjectBrush] Allow painting, erasing and picking on Tile Palette
+- [GameObjectBrush] Add Paint on Scene view to GameObjectBrush
+- [PrefabBush] Add BoxFill to PrefabBrush
+- [PrefabBush] Add Rotation to PrefabBrush
 - Consolidated menu items
 
 ## [1.5.0-preview] - 2020-02-14
