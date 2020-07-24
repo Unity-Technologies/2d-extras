@@ -10,8 +10,9 @@ namespace UnityEditor.Tilemaps
     /// This Brush helps to place random Tiles onto a Tilemap.
     /// Use this as an example to create brushes which store specific data per brush and to make brushes which randomize behaviour.
     /// </summary>
+    [HelpURL("https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/RandomBrush.html")]
     [CustomGridBrush(false, false, false, "Random Brush")]
-    [CreateAssetMenu(fileName = "New Random Brush", menuName = "2D Extras/Brushes/Random Brush", order = 359)]
+    [CreateAssetMenu(fileName = "New Random Brush", menuName = "2D/Brushes/Random Brush", order = 84)]
     public class RandomBrush : GridBrush
     {
         internal struct SizeEnumerator : IEnumerator<Vector3Int>
@@ -72,7 +73,9 @@ namespace UnityEditor.Tilemaps
         [Serializable]
         public struct RandomTileSet
         {
-            // A set of tiles to be painted as a set
+            /// <summary>
+            /// A set of tiles to be painted as a set
+            /// </summary>
             public TileBase[] randomTiles;
         }
 
@@ -100,7 +103,7 @@ namespace UnityEditor.Tilemaps
         /// Paints RandomTileSets into a given position within the selected layers.
         /// The RandomBrush overrides this to provide randomized painting functionality.
         /// </summary>
-        /// <param name="gridLayout">Grid used for layout.</param>
+        /// <param name="grid">Grid used for layout.</param>
         /// <param name="brushTarget">Target of the paint operation. By default the currently selected GameObject.</param>
         /// <param name="position">The coordinates of the cell to paint data to.</param>
         public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
@@ -134,7 +137,7 @@ namespace UnityEditor.Tilemaps
         /// </summary>
         /// <param name="gridLayout">Grid to pick data from.</param>
         /// <param name="brushTarget">Target of the picking operation. By default the currently selected GameObject.</param>
-        /// <param name="position">The coordinates of the cells to paint data from.</param>
+        /// <param name="bounds">The coordinates of the cells to paint data from.</param>
         /// <param name="pickStart">Pivot of the picking brush.</param>
         public override void Pick(GridLayout gridLayout, GameObject brushTarget, BoundsInt bounds, Vector3Int pickStart)
         {
@@ -187,7 +190,7 @@ namespace UnityEditor.Tilemaps
         /// Paints preview data into a cell of a grid given the coordinates of the cell.
         /// The RandomBrush Editor overrides this to draw the preview of the brush for RandomTileSets
         /// </summary>
-        /// <param name="gridLayout">Grid to paint data to.</param>
+        /// <param name="grid">Grid to paint data to.</param>
         /// <param name="brushTarget">Target of the paint operation. By default the currently selected GameObject.</param>
         /// <param name="position">The coordinates of the cell to paint data to.</param>
         public override void PaintPreview(GridLayout grid, GameObject brushTarget, Vector3Int position)

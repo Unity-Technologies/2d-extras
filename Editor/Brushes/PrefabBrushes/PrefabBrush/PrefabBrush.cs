@@ -6,7 +6,7 @@ namespace UnityEditor.Tilemaps
     /// <summary>
     /// This Brush instances and places a containing prefab onto the targeted location and parents the instanced object to the paint target.
     /// </summary>
-    [CreateAssetMenu(fileName = "New Prefab Brush", menuName = "2D Extras/Brushes/Prefab Brush", order = 359)]
+    [CreateAssetMenu(fileName = "New Prefab Brush", menuName = "2D/Brushes/Prefab Brush", order = 84)]
     [CustomGridBrush(false, true, false, "Prefab Brush")]
     public class PrefabBrush : BasePrefabBrush
     {
@@ -26,27 +26,25 @@ namespace UnityEditor.Tilemaps
         bool m_EraseAnyObjects;
 
         /// <summary>
-        /// Paints GameObject from containg Prefab into a given position within the selected layers.
+        /// Rotates the brush in the given direction.
+        /// </summary>
+        /// <param name="direction">Direction to rotate by.</param>
+        /// <param name="layout">Cell Layout for rotating.</param>
+        public override void Rotate(RotationDirection direction, GridLayout.CellLayout layout)
+        {
+            var angle = layout == GridLayout.CellLayout.Hexagon ? 60f : 90f;
+            m_Rotation = Quaternion.Euler(0f, 0f, direction == RotationDirection.Clockwise ? m_Rotation.eulerAngles.z + angle : m_Rotation.eulerAngles.z - angle);
+        }
+
+        /// <summary>
+        /// Paints GameObject from containing Prefab into a given position within the selected layers.
         /// The PrefabBrush overrides this to provide Prefab painting functionality.
         /// </summary>
         /// <param name="grid">Grid used for layout.</param>
         /// <param name="brushTarget">Target of the paint operation. By default the currently selected GameObject.</param>
         /// <param name="position">The coordinates of the cell to paint data to.</param>
-        
-        
-        public override void Rotate(RotationDirection direction, GridLayout.CellLayout layout)
-        {
-            m_Rotation = Quaternion.Euler(0f, 0f, direction == RotationDirection.Clockwise ? m_Rotation.eulerAngles.z+90f : m_Rotation.eulerAngles.z-90f);
-        }
-        
         public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31 || brushTarget == null)
-            {
-                return;
-            }
-
             var objectsInCell = GetObjectsInCell(grid, brushTarget.transform, position);
             var existPrefabObjectInCell = objectsInCell.Any(objectInCell => PrefabUtility.GetCorrespondingObjectFromSource(objectInCell) == m_Prefab);
 
@@ -64,12 +62,6 @@ namespace UnityEditor.Tilemaps
         /// <param name="bounds">The cooridnate boundries to fill.</param>
         public override void BoxFill(GridLayout grid, GameObject brushTarget, BoundsInt bounds)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31 || brushTarget == null)
-            {
-                return;
-            }
-
             foreach(Vector3Int tilePosition in bounds.allPositionsWithin) {
                 this.Paint(grid, brushTarget, tilePosition);
             }
@@ -85,11 +77,6 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The coordinates of the cell to erase data from.</param>
         public override void Erase(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
-            if (brushTarget.layer == 31 || brushTarget.transform == null)
-            {
-                return;
-            }
-
             foreach (var objectInCell in GetObjectsInCell(grid, brushTarget.transform, position))
             {
                 if (m_EraseAnyObjects || PrefabUtility.GetCorrespondingObjectFromSource(objectInCell) == m_Prefab)
@@ -108,6 +95,9 @@ namespace UnityEditor.Tilemaps
             private PrefabBrush prefabBrush => target as PrefabBrush;
             private SerializedProperty m_Prefab;
 
+            /// <summary>
+            /// OnEnable for the PrefabBrushEditor
+            /// </summary>
             protected override void OnEnable()
             {
                 base.OnEnable();

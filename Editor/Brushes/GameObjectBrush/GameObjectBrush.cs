@@ -1,5 +1,8 @@
 using System;
+using System.Linq;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace UnityEditor.Tilemaps
@@ -8,11 +11,20 @@ namespace UnityEditor.Tilemaps
     /// This Brush instances, places and manipulates GameObjects onto the scene.
     /// Use this as an example to create brushes which targets objects other than tiles for manipulation.
     /// </summary>
+    [HelpURL("https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/GameObjectBrush.html")]
     [CustomGridBrush(true, false, false, "GameObject Brush")]
     public class GameObjectBrush : GridBrushBase
     {
+        [Serializable]
+        internal class HiddenGridLayout
+        {
+            public Vector3 cellSize = Vector3.one;
+            public Vector3 cellGap = Vector3.zero;
+            public GridLayout.CellLayout cellLayout = GridLayout.CellLayout.Rectangle;
+            public GridLayout.CellSwizzle cellSwizzle = GridLayout.CellSwizzle.XYZ;
+        }
+
         [SerializeField]
-        [HideInInspector]
         private BrushCell[] m_Cells;
 
         [SerializeField]
@@ -27,11 +39,20 @@ namespace UnityEditor.Tilemaps
         [HideInInspector]
         private bool m_CanChangeZPosition;
 
+        [SerializeField] 
+        [HideInInspector] 
+        internal HiddenGridLayout hiddenGridLayout = new HiddenGridLayout();
+
+        /// <summary>
+        /// GameObject used for painting onto the Scene root
+        /// </summary>
+        [HideInInspector]
+        public GameObject hiddenGrid;
+
         /// <summary>
         /// Anchor Point of the Instantiated GameObject in the cell when painting
         /// </summary>
         public Vector3 m_Anchor = new Vector3(0.5f, 0.5f, 0.5f);
-
         /// <summary>Size of the brush in cells. </summary>
         public Vector3Int size { get { return m_Size; } set { m_Size = value; SizeUpdated(); } }
         /// <summary>Pivot of the brush. </summary>
@@ -40,12 +61,6 @@ namespace UnityEditor.Tilemaps
         public BrushCell[] cells { get { return m_Cells; } }
         /// <summary>Number of brush cells in the brush.</summary>
         public int cellCount { get { return m_Cells != null ? m_Cells.Length : 0; } }
-        /// <summary>Whether the brush can change Z Position</summary>
-        public bool canChangeZPosition
-        {
-            get { return m_CanChangeZPosition; }
-            set { m_CanChangeZPosition = value; }
-        }
 
         /// <summary>
         /// This Brush instances, places and manipulates GameObjects onto the scene.
@@ -54,6 +69,24 @@ namespace UnityEditor.Tilemaps
         {
             Init(Vector3Int.one, Vector3Int.zero);
             SizeUpdated();
+        }
+
+        private void OnEnable()
+        {
+            hiddenGrid = new GameObject();
+            hiddenGrid.name = "(Paint on SceneRoot)";
+            hiddenGrid.hideFlags = HideFlags.HideAndDontSave;
+            hiddenGrid.transform.position = Vector3.zero;
+            var grid = hiddenGrid.AddComponent<Grid>();
+            grid.cellSize = hiddenGridLayout.cellSize;
+            grid.cellGap = hiddenGridLayout.cellGap;
+            grid.cellSwizzle = hiddenGridLayout.cellSwizzle;
+            grid.cellLayout = hiddenGridLayout.cellLayout;
+        }
+
+        private void OnDisable()
+        {
+            DestroyImmediate(hiddenGrid);
         }
 
         /// <summary>
@@ -85,18 +118,21 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The coordinates of the cell to paint data to.</param>
         public override void Paint(GridLayout gridLayout, GameObject brushTarget, Vector3Int position)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
             Vector3Int min = position - pivot;
             BoundsInt bounds = new BoundsInt(min, m_Size);
+            
+            if (brushTarget == hiddenGrid)
+                brushTarget = null;
             BoxFill(gridLayout, brushTarget, bounds);
         }
 
         private void PaintCell(GridLayout grid, Vector3Int position, Transform parent, BrushCell cell)
         {
-            if (cell.gameObject != null)
+            if (cell.gameObject == null)
+                return;
+
+            var existingGO = GetObjectInCell(grid, parent, position);
+            if (existingGO == null)
             {
                 SetSceneCell(grid, parent, position, cell.gameObject, cell.offset, cell.scale, cell.orientation, m_Anchor);
             }
@@ -111,12 +147,11 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The coordinates of the cell to erase data from.</param>
         public override void Erase(GridLayout gridLayout, GameObject brushTarget, Vector3Int position)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
             Vector3Int min = position - pivot;
             BoundsInt bounds = new BoundsInt(min, m_Size);
+            
+            if (brushTarget == hiddenGrid)
+                brushTarget = null;
             BoxErase(gridLayout, brushTarget, bounds);
         }
 
@@ -134,18 +169,14 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The bounds to box fill data into.</param>
         public override void BoxFill(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
-            if (brushTarget == null)
-                return;
-
+            if (brushTarget == hiddenGrid)
+                brushTarget = null;
+            
             foreach (Vector3Int location in position.allPositionsWithin)
             {
                 Vector3Int local = location - position.min;
                 BrushCell cell = m_Cells[GetCellIndexWrapAround(local.x, local.y, local.z)];
-                PaintCell(gridLayout, location, brushTarget.transform, cell);
+                PaintCell(gridLayout, location, brushTarget != null ? brushTarget.transform : null, cell);
             }
         }
 
@@ -158,16 +189,12 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The bounds to erase data from.</param>
         public override void BoxErase(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
-            if (brushTarget == null)
-                return;
-
+            if (brushTarget == hiddenGrid)
+                brushTarget = null;
+            
             foreach (Vector3Int location in position.allPositionsWithin)
             {
-                EraseCell(gridLayout, location, brushTarget.transform);
+                EraseCell(gridLayout, location, brushTarget != null ? brushTarget.transform : null);
             }
         }
 
@@ -187,7 +214,7 @@ namespace UnityEditor.Tilemaps
         /// </summary>
         /// <param name="direction">Direction to rotate by.</param>
         /// <param name="layout">Cell Layout for rotating.</param>
-        public override void Rotate(RotationDirection direction, Grid.CellLayout layout)
+        public override void Rotate(RotationDirection direction, GridLayout.CellLayout layout)
         {
             Vector3Int oldSize = m_Size;
             BrushCell[] oldCells = m_Cells.Clone() as BrushCell[];
@@ -219,7 +246,7 @@ namespace UnityEditor.Tilemaps
         /// <summary>Flips the brush in the given axis.</summary>
         /// <param name="flip">Axis to flip by.</param>
         /// <param name="layout">Cell Layout for flipping.</param>
-        public override void Flip(FlipAxis flip, Grid.CellLayout layout)
+        public override void Flip(FlipAxis flip, GridLayout.CellLayout layout)
         {
             if (flip == FlipAxis.X)
                 FlipX();
@@ -237,46 +264,42 @@ namespace UnityEditor.Tilemaps
         /// <param name="pivot">Pivot of the picking brush.</param>
         public override void Pick(GridLayout gridLayout, GameObject brushTarget, BoundsInt position, Vector3Int pivot)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
             Reset();
             UpdateSizeAndPivot(new Vector3Int(position.size.x, position.size.y, 1), new Vector3Int(pivot.x, pivot.y, 0));
 
+            if (brushTarget == hiddenGrid)
+                brushTarget = null;
+            
             foreach (Vector3Int pos in position.allPositionsWithin)
             {
                 Vector3Int brushPosition = new Vector3Int(pos.x - position.x, pos.y - position.y, 0);
-                PickCell(pos, brushPosition, gridLayout, brushTarget.transform);
+                PickCell(pos, brushPosition, gridLayout, brushTarget != null ? brushTarget.transform : null);
             }
         }
 
         private void PickCell(Vector3Int position, Vector3Int brushPosition, GridLayout grid, Transform parent)
         {
-            if (parent != null)
+            Vector3 cellCenter = grid.LocalToWorld(grid.CellToLocalInterpolated(position + m_Anchor));
+            GameObject go = GetObjectInCell(grid, parent, position);
+
+            if (go != null)
             {
-                Vector3 cellCenter = grid.LocalToWorld(grid.CellToLocalInterpolated(position + m_Anchor));
-                GameObject go = GetObjectInCell(grid, parent, position);
-
-                if (go != null)
+                Object prefab = PrefabUtility.GetCorrespondingObjectFromSource(go);
+                if (prefab)
                 {
-                    Object prefab = PrefabUtility.GetCorrespondingObjectFromSource(go);
-
-                    if (prefab)
-                    {
-                        SetGameObject(brushPosition, (GameObject) prefab);
-                    }
-                    else
-                    {
-                        GameObject newInstance = Instantiate(go);
-                        newInstance.hideFlags = HideFlags.HideAndDontSave;
-                        SetGameObject(brushPosition, newInstance);
-                    }
-
-                    SetOffset(brushPosition, go.transform.position - cellCenter);
-                    SetScale(brushPosition, go.transform.localScale);
-                    SetOrientation(brushPosition, go.transform.localRotation);
+                    SetGameObject(brushPosition, (GameObject) prefab);
                 }
+                else
+                {
+                    GameObject newInstance = Instantiate(go);
+                    newInstance.hideFlags = HideFlags.HideAndDontSave;
+                    newInstance.SetActive(false);
+                    SetGameObject(brushPosition, newInstance);
+                }
+
+                SetOffset(brushPosition, go.transform.position - cellCenter);
+                SetScale(brushPosition, go.transform.localScale);
+                SetOrientation(brushPosition, go.transform.localRotation);
             }
         }
 
@@ -289,21 +312,18 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">Position where the move operation has started.</param>
         public override void MoveStart(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
             Reset();
             UpdateSizeAndPivot(new Vector3Int(position.size.x, position.size.y, 1), Vector3Int.zero);
 
-            if (brushTarget != null)
+            if (brushTarget == hiddenGrid)
+                brushTarget = null;
+
+            var targetTransform = brushTarget != null ? brushTarget.transform : null;
+            foreach (Vector3Int pos in position.allPositionsWithin)
             {
-                foreach (Vector3Int pos in position.allPositionsWithin)
-                {
-                    Vector3Int brushPosition = new Vector3Int(pos.x - position.x, pos.y - position.y, 0);
-                    PickCell(pos, brushPosition, gridLayout, brushTarget.transform);
-                    ClearSceneCell(gridLayout, brushTarget.transform, brushPosition);
-                }
+                Vector3Int brushPosition = new Vector3Int(pos.x - position.x, pos.y - position.y, 0);
+                PickCell(pos, brushPosition, gridLayout, targetTransform);
+                ClearSceneCell(gridLayout, targetTransform, brushPosition);
             }
         }
 
@@ -316,10 +336,6 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">Position where the move operation has ended.</param>
         public override void MoveEnd(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
             Paint(gridLayout, brushTarget, position.min);
             Reset();
         }
@@ -444,6 +460,7 @@ namespace UnityEditor.Tilemaps
 
         /// <summary>Gets the index to the GameObjectBrush::ref::BrushCell based on the position of the BrushCell.</summary>
         /// <param name="brushPosition">Position of the BrushCell.</param>
+        /// <returns>The cell index for the position of the BrushCell.</returns>
         public int GetCellIndex(Vector3Int brushPosition)
         {
             return GetCellIndex(brushPosition.x, brushPosition.y, brushPosition.z);
@@ -453,6 +470,7 @@ namespace UnityEditor.Tilemaps
         /// <param name="x">X Position of the BrushCell.</param>
         /// <param name="y">Y Position of the BrushCell.</param>
         /// <param name="z">Z Position of the BrushCell.</param>
+        /// <returns>The cell index for the position of the BrushCell.</returns>
         public int GetCellIndex(int x, int y, int z)
         {
             return x + m_Size.x * y + m_Size.x * m_Size.y * z;
@@ -465,6 +483,7 @@ namespace UnityEditor.Tilemaps
         /// <param name="sizex">X Size of Brush.</param>
         /// <param name="sizey">Y Size of Brush.</param>
         /// <param name="sizez">Z Size of Brush.</param>
+        /// <returns>The cell index for the position of the BrushCell.</returns>
         public int GetCellIndex(int x, int y, int z, int sizex, int sizey, int sizez)
         {
             return x + sizex * y + sizex * sizey * z;
@@ -474,7 +493,7 @@ namespace UnityEditor.Tilemaps
         /// <param name="x">X Position of the BrushCell.</param>
         /// <param name="y">Y Position of the BrushCell.</param>
         /// <param name="z">Z Position of the BrushCell.</param>
-        /// <returns>Index to the BrushCell.</returns>
+        /// <returns>The cell index for the position of the BrushCell.</returns>
         public int GetCellIndexWrapAround(int x, int y, int z)
         {
             return (x % m_Size.x) + m_Size.x * (y % m_Size.y) + m_Size.x * m_Size.y * (z % m_Size.z);
@@ -482,20 +501,13 @@ namespace UnityEditor.Tilemaps
 
         private static GameObject GetObjectInCell(GridLayout grid, Transform parent, Vector3Int position)
         {
-            int childCount = parent.childCount;
-            Vector3 min = grid.LocalToWorld(grid.CellToLocalInterpolated(position));
-            Vector3 max = grid.LocalToWorld(grid.CellToLocalInterpolated(position + Vector3Int.one));
-            
-            // Infinite bounds on Z for 2D convenience
-            min = new Vector3(min.x, min.y, float.MinValue);
-            max = new Vector3(max.x, max.y, float.MaxValue);
-
-            Bounds bounds = new Bounds((max + min) * .5f, max - min);
+            var scene = SceneManager.GetActiveScene();
+            int childCount = parent != null ? parent.childCount : scene.rootCount;
 
             for (int i = 0; i < childCount; i++)
             {
-                Transform child = parent.GetChild(i);
-                if (bounds.Contains(child.position))
+                var child = parent != null ? parent.GetChild(i) : scene.GetRootGameObjects()[i].transform;
+                if (position == grid.WorldToCell(child.position))
                     return child.gameObject;
             }
             return null;
@@ -524,23 +536,27 @@ namespace UnityEditor.Tilemaps
 
         private static void SetSceneCell(GridLayout grid, Transform parent, Vector3Int position, GameObject go, Vector3 offset, Vector3 scale, Quaternion orientation, Vector3 anchor)
         {
-            if (parent == null || go == null)
+            if (go == null)
                 return;
 
             GameObject instance = null;
             if (PrefabUtility.IsPartOfPrefabAsset(go))
             {
-                instance = (GameObject) PrefabUtility.InstantiatePrefab(go);
+                instance = (GameObject) PrefabUtility.InstantiatePrefab(go, parent != null ? parent.root.gameObject.scene : SceneManager.GetActiveScene());
+                instance.transform.parent = parent;
             }
             else
             {
-                instance = Instantiate(go);
-                instance.hideFlags = HideFlags.None;
+                instance = Instantiate(go, parent);
                 instance.name = go.name;
+                instance.SetActive(true);
+                foreach (var renderer in instance.GetComponentsInChildren<Renderer>())
+                {
+                    renderer.enabled = true;
+                }
             }
 
             Undo.RegisterCreatedObjectUndo(instance, "Paint GameObject");
-            instance.transform.SetParent(parent);
             instance.transform.position = grid.LocalToWorld(grid.CellToLocalInterpolated(new Vector3Int(position.x, position.y, position.z) + anchor));
             instance.transform.localRotation = orientation;
             instance.transform.localScale = scale;
@@ -549,9 +565,6 @@ namespace UnityEditor.Tilemaps
 
         private static void ClearSceneCell(GridLayout grid, Transform parent, Vector3Int position)
         {
-            if (parent == null)
-                return;
-
             GameObject erased = GetObjectInCell(grid, parent, new Vector3Int(position.x, position.y, position.z));
             if (erased != null)
                 Undo.DestroyObjectImmediate(erased);
@@ -572,6 +585,15 @@ namespace UnityEditor.Tilemaps
                 }
             }
             return hash;
+        }
+
+        internal void UpdateHiddenGridLayout()
+        {
+            var grid = hiddenGrid.GetComponent<Grid>();
+            hiddenGridLayout.cellSize = grid.cellSize;
+            hiddenGridLayout.cellGap = grid.cellGap;
+            hiddenGridLayout.cellSwizzle = grid.cellSwizzle;
+            hiddenGridLayout.cellLayout = grid.cellLayout;
         }
 
         /// <summary>
@@ -631,6 +653,9 @@ namespace UnityEditor.Tilemaps
     [CustomEditor(typeof(GameObjectBrush))]
     public class GameObjectBrushEditor : GridBrushEditorBase
     {
+        private bool hiddenGridFoldout;
+        private Editor hiddenGridEditor;
+
         /// <summary>
         /// The GameObjectBrush for this Editor
         /// </summary>
@@ -661,8 +686,46 @@ namespace UnityEditor.Tilemaps
         /// </summary>
         public override void OnPaintInspectorGUI()
         {
-            GUILayout.Label("Pick, paint and erase GameObject(s) in the scene.");
-            GUILayout.Label("Limited to children of the currently selected GameObject.");
+            base.OnInspectorGUI();
+
+            hiddenGridFoldout = EditorGUILayout.Foldout(hiddenGridFoldout, "SceneRoot Grid");
+            if (hiddenGridFoldout)
+            {
+                EditorGUI.indentLevel++;
+                using (new EditorGUI.DisabledScope(GridPaintingState.scenePaintTarget != brush.hiddenGrid))
+                {
+                    if (hiddenGridEditor == null)
+                    {
+                        hiddenGridEditor = Editor.CreateEditor(brush.hiddenGrid.GetComponent<Grid>());
+                    }
+                    brush.hiddenGrid.hideFlags = HideFlags.None;
+                    EditorGUI.BeginChangeCheck();
+                    hiddenGridEditor.OnInspectorGUI();
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        brush.UpdateHiddenGridLayout();
+                        EditorUtility.SetDirty(brush);
+                        SceneView.RepaintAll();
+                    }
+                    brush.hiddenGrid.hideFlags = HideFlags.HideAndDontSave;
+                }
+                EditorGUI.indentLevel--;
+            }
         }
+
+        /// <summary>
+        /// The targets that the GameObjectBrush can paint on
+        /// </summary>
+        public override GameObject[] validTargets
+        {
+            get
+            {
+                StageHandle currentStageHandle = StageUtility.GetCurrentStageHandle();
+                var results = currentStageHandle.FindComponentsOfType<GridLayout>().Where(x => x.gameObject.scene.isLoaded 
+                    && x.gameObject.activeInHierarchy).Select(x => x.gameObject);
+                return results.Prepend(brush.hiddenGrid).ToArray();
+            }
+        }
+
     }
 }

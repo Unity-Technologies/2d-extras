@@ -19,15 +19,11 @@ namespace UnityEditor.Tilemaps
         /// Tints tiles into a given position within the selected layers.
         /// The TintBrush overrides this to set the color of the Tile to tint it.
         /// </summary>
-        /// <param name="gridLayout">Grid used for layout.</param>
+        /// <param name="grid">Grid used for layout.</param>
         /// <param name="brushTarget">Target of the paint operation. By default the currently selected GameObject.</param>
         /// <param name="position">The coordinates of the cell to paint data to.</param>
         public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
             Tilemap tilemap = brushTarget.GetComponent<Tilemap>();
             if (tilemap != null)
             {
@@ -39,15 +35,11 @@ namespace UnityEditor.Tilemaps
         /// Resets the color of the tiles in a given position within the selected layers to White.
         /// The TintBrush overrides this to set the color of the Tile to White.
         /// </summary>
-        /// <param name="gridLayout">Grid used for layout.</param>
+        /// <param name="grid">Grid used for layout.</param>
         /// <param name="brushTarget">Target of the erase operation. By default the currently selected GameObject.</param>
         /// <param name="position">The coordinates of the cell to erase data from.</param>
         public override void Erase(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
-            // Do not allow editing palettes
-            if (brushTarget.layer == 31)
-                return;
-
             Tilemap tilemap = brushTarget.GetComponent<Tilemap>();
             if (tilemap != null)
             {

@@ -23,7 +23,8 @@ namespace UnityEngine
     /// Generic visual tile for creating different tilesets like terrain, pipeline, random or animated tiles.
     /// </summary>
     [Serializable]
-    [CreateAssetMenu(fileName = "New Rule Tile", menuName = "2D Extras/Tiles/Rule Tile", order = 359)]
+    [HelpURL("https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/RuleTile.html")]
+    [CreateAssetMenu(fileName = "New Rule Tile", menuName = "2D/Tiles/Rule Tile", order = 83)]
     public class RuleTile : TileBase
     {
         /// <summary>
@@ -44,7 +45,14 @@ namespace UnityEngine
         /// </summary>
         public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
 
+        /// <summary>
+        /// Angle in which the RuleTile is rotated by for matching in Degrees.
+        /// </summary>
         public virtual int m_RotationAngle => 90;
+
+        /// <summary>
+        /// Number of rotations the RuleTile can be rotated by for matching.
+        /// </summary>
         public int m_RotationCount => 360 / m_RotationAngle;
 
         /// <summary>
@@ -54,6 +62,9 @@ namespace UnityEngine
         [Serializable]
         public class TilingRuleOutput
         {
+            /// <summary>
+            /// Id for this Rule.
+            /// </summary>
             public int m_Id;
             /// <summary>
             /// The output Sprites for this Rule.
@@ -148,6 +159,10 @@ namespace UnityEngine
             }
         }
 
+        /// <summary>
+        /// The data structure holding the Rule information for matching Rule Tiles with
+        /// its neighbors.
+        /// </summary>
         [Serializable]
         public class TilingRule : TilingRuleOutput
         {
@@ -174,6 +189,10 @@ namespace UnityEngine
             /// </summary>
             public Transform m_RuleTransform;
 
+            /// <summary>
+            /// Returns all neighbors of this Tile as a dictionary
+            /// </summary>
+            /// <returns>A dictionary of neighbors for this Tile</returns>
             public Dictionary<Vector3Int, int> GetNeighbors()
             {
                 Dictionary<Vector3Int, int> dict = new Dictionary<Vector3Int, int>();
@@ -184,12 +203,20 @@ namespace UnityEngine
                 return dict;
             }
 
+            /// <summary>
+            /// Applies the values from the given dictionary as this Tile's neighbors
+            /// </summary>
+            /// <param name="dict">Dictionary to apply values from</param>
             public void ApplyNeighbors(Dictionary<Vector3Int, int> dict)
             {
                 m_NeighborPositions = dict.Keys.ToList();
                 m_Neighbors = dict.Values.ToList();
             }
 
+            /// <summary>
+            /// Gets the cell bounds of the TilingRule.
+            /// </summary>
+            /// <returns>Returns the cell bounds of the TilingRule.</returns>
             public BoundsInt GetBounds()
             {
                 BoundsInt bounds = new BoundsInt(Vector3Int.zero, Vector3Int.one);
@@ -204,6 +231,9 @@ namespace UnityEngine
             }
         }
 
+        /// <summary>
+        /// Attribute which marks a property which cannot be overridden by a RuleOverrideTile
+        /// </summary>
         public class DontOverride : Attribute { }
 
         /// <summary>
@@ -211,6 +241,9 @@ namespace UnityEngine
         /// </summary>
         [HideInInspector] public List<TilingRule> m_TilingRules = new List<RuleTile.TilingRule>();
 
+        /// <summary>
+        /// Returns a set of neighboring positions for this RuleTile
+        /// </summary>
         public HashSet<Vector3Int> neighborPositions
         {
             get
@@ -224,6 +257,9 @@ namespace UnityEngine
 
         private HashSet<Vector3Int> m_NeighborPositions = new HashSet<Vector3Int>();
 
+        /// <summary>
+        /// Updates the neighboring positions of this RuleTile
+        /// </summary>
         public void UpdateNeighborPositions()
         {
             m_CacheTilemapsNeighborPositions.Clear();
@@ -270,11 +306,11 @@ namespace UnityEngine
         /// <summary>
         /// StartUp is called on the first frame of the running Scene.
         /// </summary>
-        /// <param name="location">Position of the Tile on the Tilemap.</param>
+        /// <param name="position">Position of the Tile on the Tilemap.</param>
         /// <param name="tilemap">The Tilemap the tile is present on.</param>
         /// <param name="instantiatedGameObject">The GameObject instantiated for the Tile.</param>
         /// <returns>Whether StartUp was successful</returns>
-        public override bool StartUp(Vector3Int location, ITilemap tilemap, GameObject instantiatedGameObject)
+        public override bool StartUp(Vector3Int position, ITilemap tilemap, GameObject instantiatedGameObject)
         {
             if (instantiatedGameObject != null)
             {
@@ -290,7 +326,7 @@ namespace UnityEngine
                 foreach (TilingRule rule in m_TilingRules)
                 {
                     Matrix4x4 transform = iden;
-                    if (RuleMatches(rule, location, tilemap, ref transform))
+                    if (RuleMatches(rule, position, tilemap, ref transform))
                     {
                         transform = orientMatrix * transform;
 
@@ -311,7 +347,7 @@ namespace UnityEngine
                     gameObjectScale = orientMatrix.lossyScale;
                 }
 
-                instantiatedGameObject.transform.localPosition = gameObjectTranslation + tmpMap.CellToLocalInterpolated(location + tmpMap.tileAnchor);
+                instantiatedGameObject.transform.localPosition = gameObjectTranslation + tmpMap.CellToLocalInterpolated(position + tmpMap.tileAnchor);
                 instantiatedGameObject.transform.localRotation = gameObjectRotation;
                 instantiatedGameObject.transform.localScale = gameObjectScale;
             }
@@ -466,24 +502,24 @@ namespace UnityEngine
         /// <summary>
         /// This method is called when the tile is refreshed.
         /// </summary>
-        /// <param name="location">Position of the Tile on the Tilemap.</param>
+        /// <param name="position">Position of the Tile on the Tilemap.</param>
         /// <param name="tilemap">The Tilemap the tile is present on.</param>
-        public override void RefreshTile(Vector3Int location, ITilemap tilemap)
+        public override void RefreshTile(Vector3Int position, ITilemap tilemap)
         {
-            base.RefreshTile(location, tilemap);
+            base.RefreshTile(position, tilemap);
 
-            Tilemap tilemap_2 = tilemap.GetComponent<Tilemap>();
+            Tilemap baseTilemap = tilemap.GetComponent<Tilemap>();
 
             ReleaseDestroyedTilemapCacheData(); // Prevent memory leak
 
-            if (IsTilemapUsedTilesChange(tilemap_2))
-                CachingTilemapNeighborPositions(tilemap_2);
+            if (IsTilemapUsedTilesChange(baseTilemap))
+                CachingTilemapNeighborPositions(baseTilemap);
 
-            HashSet<Vector3Int> neighborPositions = m_CacheTilemapsNeighborPositions[tilemap_2].Value;
+            HashSet<Vector3Int> neighborPositions = m_CacheTilemapsNeighborPositions[baseTilemap].Value;
             foreach (Vector3Int offset in neighborPositions)
             {
-                Vector3Int position = GetOffsetPositionReverse(location, offset);
-                TileBase tile = tilemap_2.GetTile(position);
+                Vector3Int offsetPosition = GetOffsetPositionReverse(position, offset);
+                TileBase tile = tilemap.GetTile(offsetPosition);
                 RuleTile ruleTile = null;
 
                 if (tile is RuleTile)
@@ -491,9 +527,9 @@ namespace UnityEngine
                 else if (tile is RuleOverrideTile)
                     ruleTile = (tile as RuleOverrideTile).m_Tile;
 
-                if (ruleTile)
+                if (ruleTile != null)
                     if (ruleTile.neighborPositions.Contains(offset))
-                        base.RefreshTile(position, tilemap);
+                        base.RefreshTile(offsetPosition, tilemap);
             }
         }
 
@@ -501,6 +537,7 @@ namespace UnityEngine
         /// Does a Rule Match given a Tiling Rule and neighboring Tiles.
         /// </summary>
         /// <param name="rule">The Tiling Rule to match with.</param>
+        /// <param name="position">Position of the Tile on the Tilemap.</param>
         /// <param name="tilemap">The tilemap to match with.</param>
         /// <param name="transform">A transform matrix which will match the Rule.</param>
         /// <returns>True if there is a match, False if not.</returns>
@@ -591,6 +628,11 @@ namespace UnityEngine
             return original;
         }
 
+        /// <summary>
+        /// Returns custom fields for this RuleTile
+        /// </summary>
+        /// <param name="isOverrideInstance">Whether override fields are returned</param>
+        /// <returns>Custom fields for this RuleTile</returns>
         public FieldInfo[] GetCustomFields(bool isOverrideInstance)
         {
             return this.GetType().GetFields()
@@ -623,6 +665,7 @@ namespace UnityEngine
         /// Checks if there is a match given the neighbor matching rule and a Tile with a rotation angle.
         /// </summary>
         /// <param name="rule">Neighbor matching rule.</param>
+        /// <param name="position">Position of the Tile on the Tilemap.</param>
         /// <param name="tilemap">Tilemap to match.</param>
         /// <param name="angle">Rotation angle for matching.</param>
         /// <returns>True if there is a match, False if not.</returns>
@@ -645,6 +688,7 @@ namespace UnityEngine
         /// Checks if there is a match given the neighbor matching rule and a Tile with mirrored axii.
         /// </summary>
         /// <param name="rule">Neighbor matching rule.</param>
+        /// <param name="position">Position of the Tile on the Tilemap.</param>
         /// <param name="tilemap">Tilemap to match.</param>
         /// <param name="mirrorX">Mirror X Axis for matching.</param>
         /// <param name="mirrorY">Mirror Y Axis for matching.</param>
@@ -702,11 +746,23 @@ namespace UnityEngine
             return position;
         }
 
-        public virtual Vector3Int GetOffsetPosition(Vector3Int location, Vector3Int offset)
+        /// <summary>
+        /// Get the offset for the given position with the given offset.
+        /// </summary>
+        /// <param name="position">Position to offset.</param>
+        /// <param name="offset">Offset for the position.</param>
+        /// <returns>The offset position.</returns>
+        public virtual Vector3Int GetOffsetPosition(Vector3Int position, Vector3Int offset)
         {
-            return location + offset;
+            return position + offset;
         }
 
+        /// <summary>
+        /// Get the reversed offset for the given position with the given offset.
+        /// </summary>
+        /// <param name="position">Position to offset.</param>
+        /// <param name="offset">Offset for the position.</param>
+        /// <returns>The reversed offset position.</returns>
         public virtual Vector3Int GetOffsetPositionReverse(Vector3Int position, Vector3Int offset)
         {
             return position - offset;
