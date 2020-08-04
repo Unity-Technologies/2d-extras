@@ -11,7 +11,6 @@ namespace UnityEngine.Tilemaps
     [MovedFrom(true, "UnityEngine")]
     [Serializable]
     [HelpURL("https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/RuleOverrideTile.html")]
-    [CreateAssetMenu(fileName = "New Rule Override Tile", menuName = "2D/Tiles/Rule Override Tile", order = 83)]
     public class RuleOverrideTile : TileBase
     {
 

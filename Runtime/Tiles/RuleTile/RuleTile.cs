@@ -24,7 +24,6 @@ namespace UnityEngine
     /// </summary>
     [Serializable]
     [HelpURL("https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/RuleTile.html")]
-    [CreateAssetMenu(fileName = "New Rule Tile", menuName = "2D/Tiles/Rule Tile", order = 83)]
     public class RuleTile : TileBase
     {
         /// <summary>
