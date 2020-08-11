@@ -15,14 +15,19 @@
     },
     "samples": [
         {
-            "displayName": "Pipeline Rule Tile",
-            "description": "An example implementation of a Rule Tile with rules matching four-way orthogonal neighbors.",
-            "path": "Samples~/PipelineRuleTile"
+          "displayName": "Waterfall Animated Tile",
+          "description": "An example implementation of an Animated Tile.",
+          "path": "Samples~/WaterfallAnimatedTile"
         },
         {
-            "displayName": "Terrain Rule Tile",
-            "description": "An example implementation of a Rule Tile with rules matching eight-way orthogonal and diagonal neighbors.",
-            "path": "Samples~/TerrainRuleTile"
+          "displayName": "Pipe Rule Tile",
+          "description": "An example implementation of a Rule Tile with rules matching four-way orthogonal neighbors.",
+          "path": "Samples~/PipeRuleTile"
+        },
+        {
+          "displayName": "Dungeon Rule Tile",
+          "description": "An example implementation of a Rule Tile with rules matching eight-way orthogonal and diagonal neighbors.",
+          "path": "Samples~/DungeonRuleTile"
         }
     ]
 }
