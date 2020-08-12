@@ -39,6 +39,8 @@ Editor/Brushes/TintBrush/**
 Editor/Brushes/TintBrush.meta
 Editor/Brushes/TintBrushSmooth/**
 Editor/Brushes/TintBrushSmooth.meta
+Editor/Tiles/Menu/**
+Editor/Tiles/Menu.meta
 Runtime/Brushes/**
 Runtime/Brushes.meta
 Runtime/Tiles/PipelineTile/**
