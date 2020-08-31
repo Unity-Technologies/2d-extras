@@ -14,7 +14,6 @@ namespace UnityEngine.Tilemaps
     /// </summary>
     [Serializable]
     [HelpURL("https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/AnimatedTile.html")]
-    [CreateAssetMenu(fileName = "New Animated Tile", menuName = "2D/Tiles/Animated Tile", order = 82)]
     public class AnimatedTile : TileBase
     {
         /// <summary>

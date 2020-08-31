@@ -22,7 +22,6 @@ namespace UnityEngine
     /// </summary>
     [Serializable]
     [HelpURL("https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/RuleTile.html")]
-    [CreateAssetMenu(fileName = "New Hexagonal Rule Tile", menuName = "2D/Tiles/Hexagonal Rule Tile", order = 83)]
     public class HexagonalRuleTile : RuleTile
     {
         /// <summary>

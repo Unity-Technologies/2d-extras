@@ -6,7 +6,6 @@ namespace UnityEditor.Tilemaps
     /// <summary>
     /// This Brush instances and places a randomly selected Prefabs onto the targeted location and parents the instanced object to the paint target. Use this as an example to quickly place an assorted type of GameObjects onto structured locations.
     /// </summary>
-    [CreateAssetMenu(fileName = "New Prefab Random Brush", menuName = "2D/Brushes/Prefab Random Brush", order = 84)]
     [CustomGridBrush(false, true, false, "Prefab Random Brush")]
     public class PrefabRandomBrush : BasePrefabBrush
     {
