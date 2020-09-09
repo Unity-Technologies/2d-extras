@@ -323,7 +323,7 @@ namespace UnityEditor.Tilemaps
             {
                 Vector3Int brushPosition = new Vector3Int(pos.x - position.x, pos.y - position.y, 0);
                 PickCell(pos, brushPosition, gridLayout, targetTransform);
-                ClearSceneCell(gridLayout, targetTransform, brushPosition);
+                ClearSceneCell(gridLayout, targetTransform, pos);
             }
         }
 
