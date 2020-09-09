@@ -237,11 +237,14 @@ namespace UnityEditor.Tilemaps
         public override void OnPaintSceneGUI(GridLayout grid, GameObject brushTarget, BoundsInt position, GridBrushBase.Tool tool, bool executing)
         {
             base.OnPaintSceneGUI(grid, brushTarget, position, tool, executing);
-            if (lineBrush.lineStartActive)
+            if (lineBrush.lineStartActive && brushTarget != null)
             {
                 Tilemap tilemap = brushTarget.GetComponent<Tilemap>();
                 if (tilemap != null)
+                {
+                    tilemap.ClearAllEditorPreviewTiles();
                     lastTilemap = tilemap;
+                }
 
                 // Draw preview tiles for tilemap
                 Vector2Int startPos = new Vector2Int(lineBrush.lineStart.x, lineBrush.lineStart.y);
