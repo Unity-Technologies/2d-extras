@@ -352,6 +352,7 @@ namespace UnityEditor.Tilemaps
                 {
                     DestroyImmediate(cell.gameObject);
                 }
+                cell.gameObject = null;
             }
             UpdateSizeAndPivot(Vector3Int.one, Vector3Int.zero);
         }
