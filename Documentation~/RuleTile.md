@@ -9,7 +9,7 @@ This is a generic visual Tile that other Tiles such as Terrain Tiles, Pipeline T
 | Property                | Function                                                |
 | ----------------------- | ------------------------------------------------------- |
 | __Default Sprite__      | The default Sprite set when creating a new Rule.        |
-| __Default Game Object__ | The default GameObject set when creating a new Rule.    |
+| __Default GameObject__ | The default GameObject set when creating a new Rule.    |
 | __Default Collider__    | The default Collider Type set when creating a new Rule. |
 
 ### Tiling Rules

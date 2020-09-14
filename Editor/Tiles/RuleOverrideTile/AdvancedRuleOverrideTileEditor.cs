@@ -49,7 +49,7 @@ namespace UnityEditor
 
             EditorGUI.BeginChangeCheck();
             overrideTile.m_DefaultSprite = EditorGUILayout.ObjectField("Default Sprite", overrideTile.m_DefaultSprite, typeof(Sprite), false) as Sprite;
-            overrideTile.m_DefaultGameObject = EditorGUILayout.ObjectField("Default Game Object", overrideTile.m_DefaultGameObject, typeof(GameObject), false) as GameObject;
+            overrideTile.m_DefaultGameObject = EditorGUILayout.ObjectField("Default GameObject", overrideTile.m_DefaultGameObject, typeof(GameObject), false) as GameObject;
             overrideTile.m_DefaultColliderType = (Tile.ColliderType)EditorGUILayout.EnumPopup("Default Collider", overrideTile.m_DefaultColliderType);
             if (EditorGUI.EndChangeCheck())
                 SaveTile();
