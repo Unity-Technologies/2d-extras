@@ -23,5 +23,6 @@ Thank you to all who have contributed to this repository!
 - [trobol](https://github.com/trobol)
 - [HyagoOliveira](https://github.com/HyagoOliveira)
 - [RyotaMurohoshi](https://github.com/RyotaMurohoshi)
+- [ManickYoj](https://github.com/ManickYoj)
 
 If anybody has been missed, please do let us know!
