@@ -28,11 +28,9 @@ namespace UnityEditor.Tilemaps
         private BrushCell[] m_Cells;
 
         [SerializeField]
-        [HideInInspector]
         private Vector3Int m_Size;
 
         [SerializeField]
-        [HideInInspector]
         private Vector3Int m_Pivot;
 
         [SerializeField]
@@ -61,7 +59,12 @@ namespace UnityEditor.Tilemaps
         public BrushCell[] cells { get { return m_Cells; } }
         /// <summary>Number of brush cells in the brush.</summary>
         public int cellCount { get { return m_Cells != null ? m_Cells.Length : 0; } }
-
+        /// <summary>Number of brush cells based on size.</summary>
+        public int sizeCount
+        {
+            get { return m_Size.x * m_Size.y * m_Size.y; }
+        }
+        
         /// <summary>
         /// This Brush instances, places and manipulates GameObjects onto the scene.
         /// </summary>
@@ -323,7 +326,7 @@ namespace UnityEditor.Tilemaps
             {
                 Vector3Int brushPosition = new Vector3Int(pos.x - position.x, pos.y - position.y, 0);
                 PickCell(pos, brushPosition, gridLayout, targetTransform);
-                ClearSceneCell(gridLayout, targetTransform, brushPosition);
+                ClearSceneCell(gridLayout, targetTransform, pos);
             }
         }
 
@@ -349,6 +352,7 @@ namespace UnityEditor.Tilemaps
                 {
                     DestroyImmediate(cell.gameObject);
                 }
+                cell.gameObject = null;
             }
             UpdateSizeAndPivot(Vector3Int.one, Vector3Int.zero);
         }
@@ -504,7 +508,7 @@ namespace UnityEditor.Tilemaps
             var scene = SceneManager.GetActiveScene();
             int childCount = parent != null ? parent.childCount : scene.rootCount;
 
-            for (int i = 0; i < childCount; i++)
+            for (var i = 0; i < childCount; i++)
             {
                 var child = parent != null ? parent.GetChild(i) : scene.GetRootGameObjects()[i].transform;
                 if (position == grid.WorldToCell(child.position))
@@ -524,13 +528,14 @@ namespace UnityEditor.Tilemaps
             return valid;
         }
 
-        private void SizeUpdated()
+        internal void SizeUpdated(bool keepContents = false)
         {
-            m_Cells = new BrushCell[m_Size.x * m_Size.y * m_Size.z];
+            Array.Resize(ref m_Cells, sizeCount);
             BoundsInt bounds = new BoundsInt(Vector3Int.zero, m_Size);
             foreach (Vector3Int pos in bounds.allPositionsWithin)
             {
-                m_Cells[GetCellIndex(pos)] = new BrushCell();
+                if (keepContents || m_Cells[GetCellIndex(pos)] == null)
+                    m_Cells[GetCellIndex(pos)] = new BrushCell();
             }
         }
 
@@ -686,7 +691,12 @@ namespace UnityEditor.Tilemaps
         /// </summary>
         public override void OnPaintInspectorGUI()
         {
+            EditorGUI.BeginChangeCheck();
             base.OnInspectorGUI();
+            if (EditorGUI.EndChangeCheck() && brush.cellCount != brush.sizeCount)
+            {
+                brush.SizeUpdated(true);
+            }
 
             hiddenGridFoldout = EditorGUILayout.Foldout(hiddenGridFoldout, "SceneRoot Grid");
             if (hiddenGridFoldout)
