@@ -26,12 +26,12 @@ Download or clone this repository into your project in the folder `Packages/com.
 The following line needs to be added to your `Packages/manifest.json` file in your Unity Project under the `dependencies` section:
 
 ```json
-"com.unity.2d.tilemap.extras": "https://github.com/Unity-Technologies/2d-extras.git#master"
+"com.unity.2d.tilemap.extras": "https://github.com/Unity-Technologies/2d-extras.git#2019.4"
 ```
 
 ### Tilemap
 
-For use with Unity `2020.1.1f1` onwards. 
+For use with Unity `2019.4.x`. 
 
 Please use the `2019.4` branch or the `1.5.x-preview` tag for Unity 2019.2-2019.4 versions.
 
