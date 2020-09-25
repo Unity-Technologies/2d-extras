@@ -329,7 +329,7 @@ namespace UnityEngine
                     {
                         transform = orientMatrix * transform;
 
-                        // Converts the tile's translation, rotation, & scale matrix to values to be used by the instantiated Game Object
+                        // Converts the tile's translation, rotation, & scale matrix to values to be used by the instantiated GameObject
                         gameObjectTranslation = new Vector3(transform.m03, transform.m13, transform.m23);
                         gameObjectRotation = Quaternion.LookRotation(new Vector3(transform.m02, transform.m12, transform.m22), new Vector3(transform.m01, transform.m11, transform.m21));
                         gameObjectScale = transform.lossyScale;
