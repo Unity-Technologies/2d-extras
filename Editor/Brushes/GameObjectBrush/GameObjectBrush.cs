@@ -123,6 +123,9 @@ namespace UnityEditor.Tilemaps
             
             if (brushTarget == hiddenGrid)
                 brushTarget = null;
+            // Do not allow editing palettes
+            else if (brushTarget.layer == 31)
+                return;
             BoxFill(gridLayout, brushTarget, bounds);
         }
 
@@ -152,6 +155,9 @@ namespace UnityEditor.Tilemaps
             
             if (brushTarget == hiddenGrid)
                 brushTarget = null;
+            // Do not allow editing palettes
+            else if (brushTarget.layer == 31)
+                return;
             BoxErase(gridLayout, brushTarget, bounds);
         }
 
@@ -171,7 +177,10 @@ namespace UnityEditor.Tilemaps
         {
             if (brushTarget == hiddenGrid)
                 brushTarget = null;
-            
+            // Do not allow editing palettes
+            else if (brushTarget.layer == 31)
+                return;
+
             foreach (Vector3Int location in position.allPositionsWithin)
             {
                 Vector3Int local = location - position.min;
@@ -191,7 +200,10 @@ namespace UnityEditor.Tilemaps
         {
             if (brushTarget == hiddenGrid)
                 brushTarget = null;
-            
+            // Do not allow editing palettes
+            else if (brushTarget.layer == 31)
+                return;
+
             foreach (Vector3Int location in position.allPositionsWithin)
             {
                 EraseCell(gridLayout, location, brushTarget != null ? brushTarget.transform : null);
@@ -269,7 +281,10 @@ namespace UnityEditor.Tilemaps
 
             if (brushTarget == hiddenGrid)
                 brushTarget = null;
-            
+            // Do not allow editing palettes
+            else if (brushTarget.layer == 31)
+                return;
+
             foreach (Vector3Int pos in position.allPositionsWithin)
             {
                 Vector3Int brushPosition = new Vector3Int(pos.x - position.x, pos.y - position.y, 0);
@@ -317,6 +332,9 @@ namespace UnityEditor.Tilemaps
 
             if (brushTarget == hiddenGrid)
                 brushTarget = null;
+            // Do not allow editing palettes
+            else if (brushTarget.layer == 31)
+                return;
 
             var targetTransform = brushTarget != null ? brushTarget.transform : null;
             foreach (Vector3Int pos in position.allPositionsWithin)
@@ -336,6 +354,10 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">Position where the move operation has ended.</param>
         public override void MoveEnd(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
         {
+            // Do not allow editing palettes
+            if (brushTarget.layer == 31)
+                return;
+
             Paint(gridLayout, brushTarget, position.min);
             Reset();
         }
