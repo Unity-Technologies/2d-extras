@@ -66,6 +66,12 @@ namespace UnityEditor.Tilemaps
             }
         }
 
+        public override void BoxErase(GridLayout grid, GameObject brushTarget, BoundsInt bounds)
+        {
+            foreach (Vector3Int tilePosition in bounds.allPositionsWithin)
+                Erase(grid, brushTarget, tilePosition);
+        }
+
         /// <summary>
         /// If "Erase Any Objects" is true, erases any GameObjects that are in a given position within the selected layers.
         /// If "Erase Any Objects" is false, erases only GameObjects that are created from owned Prefab in a given position within the selected layers.
