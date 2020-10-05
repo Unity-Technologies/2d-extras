@@ -67,9 +67,14 @@ namespace UnityEditor.Tilemaps
         /// <param name="bounds">The cooridnate boundries to fill.</param>
         public override void BoxFill(GridLayout grid, GameObject brushTarget, BoundsInt bounds)
         {
-            foreach(Vector3Int tilePosition in bounds.allPositionsWithin) {
-                this.Paint(grid, brushTarget, tilePosition);
-            }
+            foreach(Vector3Int tilePosition in bounds.allPositionsWithin)
+                Paint(grid, brushTarget, tilePosition);
+        }
+
+        public override void BoxErase(GridLayout grid, GameObject brushTarget, BoundsInt bounds)
+        {
+            foreach (Vector3Int tilePosition in bounds.allPositionsWithin)
+                Erase(grid, brushTarget, tilePosition);
         }
 
         /// <summary>
