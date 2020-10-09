@@ -3,6 +3,9 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.6.1-preview] - 2020-08-11
+- Update samples
+
 ## [1.6.0-preview] - 2020-05-27
 ### Changed
 - Updated for Unity 2020.1

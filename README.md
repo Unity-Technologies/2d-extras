@@ -33,7 +33,7 @@ The following line needs to be added to your `Packages/manifest.json` file in yo
 
 For use with Unity `2020.1.1f1` onwards. 
 
-Please use the `v1.5.0-preview` tag for Unity 2019.2-2019.4 versions.
+Please use the `1.5.0-preview` tag for Unity 2019.2-2019.4 versions.
 
 Please use the `2019.1` tag for Unity 2019.1 versions. 
 
