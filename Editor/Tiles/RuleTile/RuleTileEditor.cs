@@ -130,7 +130,7 @@ namespace UnityEditor
         /// </summary>
         public virtual void OnEnable()
         {
-            m_ReorderableList = new ReorderableList(tile.m_TilingRules, typeof(RuleTile.TilingRule), true, true, true, true);
+            m_ReorderableList = new ReorderableList(tile != null ? tile.m_TilingRules : null, typeof(RuleTile.TilingRule), true, true, true, true);
             m_ReorderableList.drawHeaderCallback = OnDrawHeader;
             m_ReorderableList.drawElementCallback = OnDrawElement;
             m_ReorderableList.elementHeightCallback = GetElementHeight;
