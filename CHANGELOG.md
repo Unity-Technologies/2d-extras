@@ -3,6 +3,8 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [2.0.0-pre.1] - 2020-10-14
+
 ## [1.6.2-preview] - 2020-09-25
 ### Changed
 - [RuleTile/RuleOverrideTile/AdvancedRuleOverrideTile] Renamed Game Object to GameObject
