@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - [GameObjectBrush] Add Paint on Scene view to GameObjectBrush
 - [PrefabBush] Add BoxFill to PrefabBrush
 - [PrefabBush] Add Rotation to PrefabBrush
+- [PrefabBrush] Fix box erase
 - Consolidated menu items
 
 ## [1.5.0-preview] - 2020-02-14
