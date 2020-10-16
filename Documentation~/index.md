@@ -24,7 +24,8 @@ The following are the [Scriptable Tiles](Tiles.md) included in this package. You
 - [Rule Tile](RuleTile.md): This is a generic visual Tile that accepts rules you create with the __Tiling Rules__ editor to create different Tilesets. Rule Tiles are the basis of the Terrain, Pipeline, Random or Animated Tiles. There are different types of Rule Tiles for each of the [Tilemap grid types](https://docs.unity3d.com/Manual/class-Grid.html). The default Rule Tile is only used with the Rectangle Grid type Tilemap, while the Hexagonal and Isometric Rule Tiles are used with their respective Grid types.
 - __Hexagonal Rule Tile__: A Rule Tile for [Hexagonal Grids](https://docs.unity3d.com/Documentation/Manual/Tilemap-Hexagonal.html). Enable the **Flat Top** property for a Flat Top Hexagonal Grid, or clear it for a Pointed Top Hexagonal Grid.
 - __Isometric Rule Tile__: A Rule Tile for use with [Isometric Grids](https://docs.unity3d.com/Documentation/Manual/Tilemap-Isometric-CreateIso.html).
-- [Rule Override Tile](RuleOverrideTile.md): This Tile can override a subset of Rules for a given [Rule Tile](RuleTile.md) to provide specialized behavior, while keeping the rest of the original Rules intact.
+- [Rule Override Tile](RuleOverrideTile.md): This Tile can override Sprites and GameObjects for a given [Rule Tile](RuleTile.md) to provide different behaviour without changing the original Rules.
+- [Advanced Rule Override Tile](AdvancedRuleOverrideTile.md): This Tile can override a subset of Rules for a given [Rule Tile](RuleTile.md) to provide specialized behavior, while keeping the rest of the original Rules intact.
 
 ## Other
 
