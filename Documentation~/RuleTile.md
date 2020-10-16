@@ -74,7 +74,7 @@ The 3x3 box represents the neighbors a Tile can have, where the center represent
 
 If all of the neighbors of the Rule Tile match the options set for their respective directions, then the Rule is considered matched and the rest of the Rule properties are applied.
 
-When the Rule is set to Fixed, the Rule will only match exactly the conditions set for its neighbors. The example below will only match if there are 
+When the Rule is set to Fixed, the Rule will only match exactly the conditions set for its neighbors. The example below will only match if there are the same Rule Tiles to the left and right of it.
 
 ![Rule Tile with Fixed Rule](images/RuleTileRuleFixed.png)
 
@@ -102,4 +102,4 @@ Paint with the Rule Tile in the same way as other Tiles by using the Tile Palett
 
 ![Scene View with Rule Tile](images/RuleTile.png)
 
-To optimize theFor optimization, please set the most common Rule at the top of the list of Rules and follow with next most common Rule and so on. When matching Rules during the placement of the Tile, the Rule Tile algorithm will check the first Rule first, before proceeding with the next Rules.
+For optimization, please set the most common Rule at the top of the list of Rules and follow with next most common Rule and so on. When matching Rules during the placement of the Tile, the Rule Tile algorithm will check the first Rule first, before proceeding with the next Rules.
