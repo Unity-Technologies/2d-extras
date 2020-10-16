@@ -14,7 +14,7 @@ A Pipeline Tile take into consideration its orthogonal neighboring tiles and dis
 
 ## Usage
 
-In the Pipes editor window, set up the Pipeline Tile by selecting the Sprites that are displayed depending on the number of Tiles bordering the Sprite.
+In the Pipeline Tile editor window, set up the Pipeline Tile by selecting the Sprites that are displayed depending on the number of Tiles bordering the Sprite.
 
 ![Pipeline Tile Editor](images/PipelineTileEditor.png)
 

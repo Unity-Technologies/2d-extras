@@ -17,7 +17,7 @@ This Brush places random Tiles onto a Tilemap by selecting from defined **Tile S
 
 To create a **Tile Set**, first define the size of the Tile Set you want to paint by setting its size values in the **Tile Set Size** property. Then you can add Tile Sets manually with the Brush Editor or select them from an existing Tile Palette.
 
-To select Tile Sets from an existing [Tile Palette](https://docs.unity3d.com/Manual/Tilemap-Palette.html), enable the __Pick Random Tiles__ property and select the Tile Sets using the [Picker Tool](https://docs.unity3d.com/Manual/Tilemap-Painting.html#Picker). This will create a Tile Set, or multiple Sets if the picked size is larger then the size set in the **Tile Set Size** property. Enable the __Add To Random Tiles__ property to add a picked selection of Tiles onto new or existing Tile Sets instead of replacing them.
+To select Tile Sets from an existing [Tile Palette](https://docs.unity3d.com/Manual/Tilemap-Palette.html), enable the __Pick Random Tiles__ property and select the Tile Sets using the [Picker Tool](https://docs.unity3d.com/Manual/Tilemap-Painting.html#Picker). This will create a Tile Set, or multiple Sets if the picked size is larger than the size set in the **Tile Set Size** property. Enable the __Add To Random Tiles__ property to add a picked selection of Tiles onto new or existing Tile Sets instead of replacing them.
 
 ![Brush Editor with Random Brush](images/RandomBrushTileSet.png)</br> In this example, 3 Tile Sets of 1x2 are created.
 
