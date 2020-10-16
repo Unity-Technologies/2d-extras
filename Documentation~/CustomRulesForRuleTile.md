@@ -2,7 +2,7 @@
 
 __Contribution by:__ [johnsoncodehk](https://github.com/johnsoncodehk)
 
-Use this template script to create new custom [Rule Tiles](RuleTile.md) with matching options that differ from the Rule Tile’s [default options](RuleTile.md#Usage) (namely **Don't Care**, **This** and **Not This**). This creates selectable options for each Rule in your custom __Rule Tile__.
+Use this template script to create new custom [Rule Tiles](RuleTile.md) with matching options that differ from the Rule Tile’s [default options](RuleTile.md#Usage) (namely **This** and **Not This**). This creates selectable options for each Rule in your custom __Rule Tile__.
 
 ## Template features
 
