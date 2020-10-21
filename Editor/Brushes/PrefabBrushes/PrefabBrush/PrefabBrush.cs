@@ -125,10 +125,20 @@ namespace UnityEditor.Tilemaps
             /// </summary>
             public override void OnPaintInspectorGUI()
             {
+                const string eraseAnyObjectsTooltip =
+                    "If true, erases any GameObjects that are in a given position " +
+                    "within the selected layers with Erasing. " +
+                    "Otherwise, erases only GameObjects that are created " +
+                    "from owned Prefab in a given position within the selected layers with Erasing.";
+
                 base.OnPaintInspectorGUI();
+
                 m_SerializedObject.UpdateIfRequiredOrScript();
                 EditorGUILayout.PropertyField(m_Prefab, true);
-                prefabBrush.m_EraseAnyObjects = EditorGUILayout.Toggle("Erase Any Objects", prefabBrush.m_EraseAnyObjects);
+                prefabBrush.m_EraseAnyObjects = EditorGUILayout.Toggle(
+                    new GUIContent("Erase Any Objects", eraseAnyObjectsTooltip),
+                    prefabBrush.m_EraseAnyObjects);
+
                 m_SerializedObject.ApplyModifiedPropertiesWithoutUndo();
             }
         }
