@@ -354,8 +354,10 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">Position where the move operation has ended.</param>
         public override void MoveEnd(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
         {
+            if (brushTarget == hiddenGrid)
+                brushTarget = null;
             // Do not allow editing palettes
-            if (brushTarget.layer == 31)
+            else if (brushTarget.layer == 31)
                 return;
 
             Paint(gridLayout, brushTarget, position.min);
