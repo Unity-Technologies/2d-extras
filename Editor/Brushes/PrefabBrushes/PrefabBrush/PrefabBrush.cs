@@ -99,7 +99,7 @@ namespace UnityEditor.Tilemaps
             {
                 return;
             }
-            foreach (var objectInCell in GetObjectsInCell(gridLayout, brushTarget.transform,  position.position))
+            foreach (var objectInCell in GetObjectsInCell(gridLayout, brushTarget.transform, position.position))
             {
                 if (objectInCell)
                 {
