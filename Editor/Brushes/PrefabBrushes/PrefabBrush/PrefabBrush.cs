@@ -6,7 +6,6 @@ namespace UnityEditor.Tilemaps
     /// <summary>
     /// This Brush instances and places a containing prefab onto the targeted location and parents the instanced object to the paint target.
     /// </summary>
-    [CreateAssetMenu(fileName = "New Prefab Brush", menuName = "2D/Brushes/Prefab Brush", order = 84)]
     [CustomGridBrush(false, true, false, "Prefab Brush")]
     public class PrefabBrush : BasePrefabBrush
     {
@@ -62,9 +61,14 @@ namespace UnityEditor.Tilemaps
         /// <param name="bounds">The cooridnate boundries to fill.</param>
         public override void BoxFill(GridLayout grid, GameObject brushTarget, BoundsInt bounds)
         {
-            foreach(Vector3Int tilePosition in bounds.allPositionsWithin) {
-                this.Paint(grid, brushTarget, tilePosition);
-            }
+            foreach(Vector3Int tilePosition in bounds.allPositionsWithin)
+                Paint(grid, brushTarget, tilePosition);
+        }
+
+        public override void BoxErase(GridLayout grid, GameObject brushTarget, BoundsInt bounds)
+        {
+            foreach (Vector3Int tilePosition in bounds.allPositionsWithin)
+                Erase(grid, brushTarget, tilePosition);
         }
 
         /// <summary>
@@ -110,10 +114,20 @@ namespace UnityEditor.Tilemaps
             /// </summary>
             public override void OnPaintInspectorGUI()
             {
+                const string eraseAnyObjectsTooltip =
+                    "If true, erases any GameObjects that are in a given position " +
+                    "within the selected layers with Erasing. " +
+                    "Otherwise, erases only GameObjects that are created " +
+                    "from owned Prefab in a given position within the selected layers with Erasing.";
+
                 base.OnPaintInspectorGUI();
+
                 m_SerializedObject.UpdateIfRequiredOrScript();
                 EditorGUILayout.PropertyField(m_Prefab, true);
-                prefabBrush.m_EraseAnyObjects = EditorGUILayout.Toggle("Erase Any Objects", prefabBrush.m_EraseAnyObjects);
+                prefabBrush.m_EraseAnyObjects = EditorGUILayout.Toggle(
+                    new GUIContent("Erase Any Objects", eraseAnyObjectsTooltip),
+                    prefabBrush.m_EraseAnyObjects);
+
                 m_SerializedObject.ApplyModifiedPropertiesWithoutUndo();
             }
         }
