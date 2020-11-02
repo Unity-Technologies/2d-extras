@@ -91,6 +91,24 @@ namespace UnityEditor.Tilemaps
         }
 
         /// <summary>
+        /// Pick prefab from selected Tilemap, given the coordinates of the cells.
+        /// </summary>
+        public override void Pick(GridLayout gridLayout, GameObject brushTarget, BoundsInt position, Vector3Int pickStart)
+        {
+            if (brushTarget == null)
+            {
+                return;
+            }
+            foreach (var objectInCell in GetObjectsInCell(gridLayout, brushTarget.transform, position.position))
+            {
+                if (objectInCell)
+                {
+                    m_Prefab = PrefabUtility.GetCorrespondingObjectFromSource(objectInCell);
+                }
+            }
+        }
+
+        /// <summary>
         /// The Brush Editor for a Prefab Brush.
         /// </summary>
         [CustomEditor(typeof(PrefabBrush))]
