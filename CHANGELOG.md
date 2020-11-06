@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ## [1.5.1-preview] - 2020-09-25
 ### Changed
 - Update samples
+- [RuleTile/RuleOverrideTile/AdvancedRuleOverrideTile] Renamed Game Object to GameObject
+- [RuleTile] Fix menu order for RuleOverrideTile
+- [RuleOverrideTile] Fix menu order for RuleOverrideTile
+- [AdvancedRuleOverrideTile] Fix Rule toggle for AdvancedRuleOverrideTile
+- [GameObjectBrush] Use correct position when ClearSceneCell 
+- [GameObjectBrush] Update cells when size changes
+- [GameObjectBrush] Clear cell for Prefabs
+- [LineBrush] Clear previews from base.OnPaintSceneGUI
 - [GameObjectBrush] Add Paint on Scene view to GameObjectBrush
 - [PrefabBush] Add BoxFill to PrefabBrush
 - [PrefabBush] Add Rotation to PrefabBrush

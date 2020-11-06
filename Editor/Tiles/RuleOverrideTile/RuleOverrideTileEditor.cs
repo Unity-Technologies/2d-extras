@@ -227,7 +227,7 @@ namespace UnityEditor
             bool isMissing = index >= m_MissingOriginalGameObjectIndex;
             if (isMissing)
             {
-                EditorGUI.HelpBox(new Rect(rect.xMin, rect.yMin, rect.width, 16), "Original Game Object missing", MessageType.Warning);
+                EditorGUI.HelpBox(new Rect(rect.xMin, rect.yMin, rect.width, 16), "Original GameObject missing", MessageType.Warning);
                 rect.yMin += 16;
             }
 
