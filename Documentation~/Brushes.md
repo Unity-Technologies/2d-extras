@@ -4,7 +4,7 @@ You can script Brushes to paint items based on the position and conditions of th
 
 Here are some implementations of __Scriptables Brushes__ which can help save time when designing your Tilemap:
 
-- [Game Object Brush](GameObjectBrush.md)
+- [GameObject Brush](GameObjectBrush.md)
 - [Random Brush](RandomBrush.md)
 - [Line Brush](LineBrush.md)
 - [Group Brush](GroupBrush.md)

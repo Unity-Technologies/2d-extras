@@ -19,6 +19,7 @@ namespace UnityEditor
         List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>> m_Rules = new List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>>();
         private ReorderableList m_RuleList;
         private int m_MissingOriginalRuleIndex;
+        private HashSet<int> m_UniqueIds = new HashSet<int>();
 
         static float k_DefaultElementHeight { get { return RuleTileEditor.k_DefaultElementHeight; } }
         static float k_SingleLineHeight { get { return RuleTileEditor.k_SingleLineHeight; } }
@@ -49,7 +50,7 @@ namespace UnityEditor
 
             EditorGUI.BeginChangeCheck();
             overrideTile.m_DefaultSprite = EditorGUILayout.ObjectField("Default Sprite", overrideTile.m_DefaultSprite, typeof(Sprite), false) as Sprite;
-            overrideTile.m_DefaultGameObject = EditorGUILayout.ObjectField("Default Game Object", overrideTile.m_DefaultGameObject, typeof(GameObject), false) as GameObject;
+            overrideTile.m_DefaultGameObject = EditorGUILayout.ObjectField("Default GameObject", overrideTile.m_DefaultGameObject, typeof(GameObject), false) as GameObject;
             overrideTile.m_DefaultColliderType = (Tile.ColliderType)EditorGUILayout.EnumPopup("Default Collider", overrideTile.m_DefaultColliderType);
             if (EditorGUI.EndChangeCheck())
                 SaveTile();
@@ -57,11 +58,34 @@ namespace UnityEditor
             DrawCustomFields();
 
             if (overrideTile.m_Tile)
+            {
+                ValidateRuleTile(overrideTile.m_Tile);
                 overrideTile.GetOverrides(m_Rules, ref m_MissingOriginalRuleIndex);
+            }
 
             m_RuleList.DoLayoutList();
         }
 
+        private void ValidateRuleTile(RuleTile ruleTile)
+        {
+            // Ensure that each Tiling Rule in the RuleTile has a unique ID
+            m_UniqueIds.Clear();
+            var startId = 0;
+            foreach (var rule in ruleTile.m_TilingRules)
+            {
+                if (m_UniqueIds.Contains(rule.m_Id))
+                {
+                    do
+                    {
+                        rule.m_Id = startId++;
+                    } while (m_UniqueIds.Contains(rule.m_Id));
+                    EditorUtility.SetDirty(ruleTile);
+                }
+                m_UniqueIds.Add(rule.m_Id);
+                startId++;
+            }
+        }
+        
         /// <summary>
         /// Draws the Header for the Rule list
         /// </summary>
