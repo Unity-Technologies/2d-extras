@@ -23,10 +23,11 @@ namespace UnityEditor.Tilemaps
         {
             var results = new List<GameObject>();
             var childCount = parent.childCount;
+            var anchorCellOffset = Vector3Int.FloorToInt(m_Anchor);
             for (var i = 0; i < childCount; i++)
             {
                 var child = parent.GetChild(i);
-                if (position == grid.WorldToCell(child.position))
+                if (position == grid.WorldToCell(child.position) - anchorCellOffset)
                 {
                     results.Add(child.gameObject);
                 }
