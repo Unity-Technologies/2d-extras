@@ -1,6 +1,6 @@
 # Pipeline Tile
 
-A Pipeline Tile take into consideration its orthogonal neighboring tiles and displays a Sprite depending on whether the neighboring Tile is the same Tile as itself, and the number of Tiles bordering it.
+A Pipeline Tile take into consideration its orthogonal neighboring tiles and displays a Sprite depending on whether the neighboring Tile is the same Tile as itself and the number of Tiles bordering it.
 
 ## Properties
 
@@ -14,10 +14,10 @@ A Pipeline Tile take into consideration its orthogonal neighboring tiles and dis
 
 ## Usage
 
-Set up the Pipeline Tile by selecting the Sprites that are displayed depending on the number of Tiles bordering the Sprite.
+In the Pipeline Tile editor window, set up the Pipeline Tile by selecting the Sprites that are displayed depending on the number of Tiles bordering the Sprite.
 
 ![Pipeline Tile Editor](images/PipelineTileEditor.png)
 
-Then paint the Pipeline Tile onto the Tilemap with the [Tile Palette](https://docs.unity3d.com/Manual/Tilemap-Palette.html) tools.
+Then [paint](https://docs.unity3d.com/Manual/Tilemap-Painting.html) the Pipeline Tile onto the Tilemap with the [Tile Palette](https://docs.unity3d.com/Manual/Tilemap-Palette.html) tools.
 
 ![Scene View with Pipeline Tile](images/PipelineTile.png)

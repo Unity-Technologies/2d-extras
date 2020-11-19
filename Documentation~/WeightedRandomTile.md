@@ -6,6 +6,8 @@ Weighted Random Tiles are Tiles which randomly pick a Sprite from a given list o
 
 ## Properties
 
+![Weighted Random Tile Editor](images/WeightedRandomTileEditor.png)
+
 | Property              | Function                                                     |
 | --------------------- | ------------------------------------------------------------ |
 | __Number of Sprites__ | The number of Sprites to randomize from.                     |
@@ -16,10 +18,6 @@ Weighted Random Tiles are Tiles which randomly pick a Sprite from a given list o
 
 ## Usage
 
-Select the Sprites to randomize from in the Weighted Random Tile editor. The Weight of each Sprite determines the probability of the appearance of the Sprite where the higher the weight, the higher the probability of appearance.
-
-![Weighted Random Tile Editor](images/WeightedRandomTileEditor.png)
-
-Paint the Weighted Random Tile onto the Tilemap with the Tile Palette tools.
+Select the Sprites to randomize from in the Weighted Random Tile editor. The Weight of each Sprite determines the probability of the appearance of the Sprite where the higher the weight, the higher the probability of appearance. Paint the Weighted Random Tile onto the Tilemap with the [Tile Palette](https://docs.unity3d.com/Manual/Tilemap-Palette.html) tools.
 
 ![Scene View with Weighted Random Tile](images/WeightedRandomTile.png)
