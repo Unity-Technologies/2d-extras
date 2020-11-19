@@ -1,8 +1,12 @@
 # Terrain Tile
 
-Terrain Tiles are Tiles which take into consideration its orthogonal and diagonal neighbors and displays a Sprite depending on whether the neighboring Tile is the same Tile as itself. This is a similar behavior to [Pipeline Tiles](PipelineTile.md).
+Terrain Tiles take into consideration their orthogonal and diagonal neighbors and displays a Sprite depending on whether the neighboring Tile is the same Tile as itself. This is a similar behavior to [Pipeline Tiles](PipelineTile.md).
 
 ## Properties
+
+![Terrain Tile editor](images/TerrainTileEditor.png)
+
+
 
 The following properties describe the appearance of Sprites representing terrain or walls. Assign a Sprite that matches the description to each of these properties.
 
@@ -26,10 +30,6 @@ The following properties describe the appearance of Sprites representing terrain
 
 ## Usage
 
-Set up a Terrain Tile by select Sprites which fit the characteristics stated on the left of the Terrain Tile editor.
-
-![Terrain Tile Editor](images/TerrainTileEditor.png)
-
-As you paint with the Terrain Tile using the Tile Palette tools, the Tile Sprite automatically adjusts to the appropriate one relative to its position with neighboring Tiles.
+Set up a Terrain Tile by select Sprites which fit the characteristics stated on the left of the Terrain Tile editor. As you paint with the Terrain Tile using the [Tile Palette](https://docs.unity3d.com/Manual/Tilemap-Palette.html) tools, the Tile Sprite automatically adjusts to the appropriate one relative to its position with neighboring Tiles.
 
 ![Scene View with Terrain Tile](images/TerrainTile.png)
