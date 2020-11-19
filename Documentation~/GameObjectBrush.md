@@ -14,8 +14,8 @@ When painting with the GameObject Brush, the Brush will instantiate GameObjects 
 
 The GameObjectBrush inherits from the GridBrush and overrides several methods when implemented. The following methods are overridden:
 
-- It overrides the Paint method to paint a GameObject. 
-- It overrides the Erase method to erase the GameObjects from the Scene. 
-- It overrides the BoxFill method to paint a GameObject in each cell defined by the [Box Tool](https://docs.unity3d.com/Manual/Tilemap-Painting.html#Rec). 
-- It overrides the Move methods to move GameObjects in the Scene. 
-- It overrides the Flip methods to flip GameObjects in the picked selection.
+- It overrides the `Paint` method to paint a GameObject. 
+- It overrides the `Erase` method to erase the GameObjects from the Scene. 
+- It overrides the `BoxFill` method to paint a GameObject in each cell defined by the [Box Tool](https://docs.unity3d.com/Manual/Tilemap-Painting.html#Rec). 
+- It overrides the `Move` methods to move GameObjects in the Scene. 
+- It overrides the `Flip` methods to flip GameObjects in the picked selection.

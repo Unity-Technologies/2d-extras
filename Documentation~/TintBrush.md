@@ -16,7 +16,7 @@ Select the color to tint a Tile with in the Brush properties. Then use the Paint
 
 ## Implementation
 
-The TintBrush inherits from the GridBrush and implements the following overrides:
+The Tint Brush inherits from the Grid Brush and implements the following overrides:
 
-- It overrides the Paint method to set the color of a Tile. 
-- It overrides the Erase method to be able to set the color of a Tile back to the default white color.
+- It overrides the `Paint` method to set the color of a Tile. 
+- It overrides the `Erase` method to be able to set the color of a Tile back to the default white color.
