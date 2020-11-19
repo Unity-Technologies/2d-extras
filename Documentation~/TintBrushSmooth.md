@@ -1,6 +1,6 @@
 # Tint Brush (Smooth)
 
-This advanced Tint Brush interpolates tint color per-cell. This requires the use of a custom shader (see TintedTilemap.shader in the package contents) and the helper component __TileTextureGenerator__.
+This advanced Tint Brush interpolates tint color per-cell. This requires the use of a custom Shader (see TintedTilemap.shader in the package contents) and the helper component **TileTextureGenerator**.
 
 ## Properties
 
@@ -23,6 +23,6 @@ With the Brush selected, paint Tiles with the [Paintbbrush tool](https://docs.un
 
 The TintBrushSmooth inherits from the GridBrushBase and implements the following overrides:
 
-- It overrides the Paint method to set the color of a Tile. 
-- It overrides the Erase method to be able to set the color of a Tile back to the default white color. 
-- It overrides the Pick method to pick the color of a Tile.
+- It overrides the `Paint` method to set the color of a Tile. 
+- It overrides the `Erase` method to be able to set the color of a Tile back to the default white color. 
+- It overrides the `Pick` method to pick the color of a Tile.

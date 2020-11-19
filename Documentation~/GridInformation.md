@@ -1,6 +1,6 @@
 # Grid Information
 
-This is a simple Component that stores and provides information based on Grid positions and keywords.
+This is a simple component that stores and provides information based on Grid positions and keywords.
 
 ## Usage
 
@@ -22,7 +22,7 @@ public bool SetPositionProperty(Vector3Int position, String name, Color position
 
 
 
-To get information from the Grid Information component, use the following APIs:
+To retrieve information from the Grid Information component, use the following APIs:
 
 ```C#
 public T GetPositionProperty<T>(Vector3Int position, String name, T defaultValue) where T : UnityEngine.Object
