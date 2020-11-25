@@ -518,6 +518,10 @@ namespace UnityEditor.Tilemaps
                 childCount = parent.childCount;
             }
             var anchorCellOffset = Vector3Int.FloorToInt(m_Anchor);
+            var cellSize = grid.cellSize;
+            anchorCellOffset.x = cellSize.x == 0 ? 0 : anchorCellOffset.x;
+            anchorCellOffset.y = cellSize.y == 0 ? 0 : anchorCellOffset.y;
+            anchorCellOffset.z = cellSize.z == 0 ? 0 : anchorCellOffset.z;
 
             for (var i = 0; i < childCount; i++)
             {
