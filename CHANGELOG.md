@@ -3,6 +3,16 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [2.0.0-pre.2] - 2020-11-26
+### Changed
+- Update documentation
+- Add contribution notice in README.md
+- Update Third Party Notices.md
+- [PrefabBush] Add pick
+- [PrefabBush] Add tooltip for "Erase Any Objects" field
+- [PrefabBrush][GameObjectBrush] Account for Anchor when using GetObjectsInCell in PrefabBrush and GameObjectBrush
+- [CustomRuleTileScript] Allow Custom Rule Tile template script to be created regardless of where template script is installed (from a package or in the project)
+
 ## [2.0.0-pre.1] - 2020-10-14
 
 ## [1.6.2-preview] - 2020-09-25
