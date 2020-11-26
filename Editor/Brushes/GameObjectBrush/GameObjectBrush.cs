@@ -503,15 +503,30 @@ namespace UnityEditor.Tilemaps
             return (x % m_Size.x) + m_Size.x * (y % m_Size.y) + m_Size.x * m_Size.y * (z % m_Size.z);
         }
 
-        private static GameObject GetObjectInCell(GridLayout grid, Transform parent, Vector3Int position)
+        private GameObject GetObjectInCell(GridLayout grid, Transform parent, Vector3Int position)
         {
-            var scene = SceneManager.GetActiveScene();
-            int childCount = parent != null ? parent.childCount : scene.rootCount;
+            int childCount = 0;
+            GameObject[] sceneChildren = null;
+            if (parent == null)
+            {
+                var scene = SceneManager.GetActiveScene();
+                sceneChildren = scene.GetRootGameObjects();
+                childCount = scene.rootCount;
+            }
+            else
+            {
+                childCount = parent.childCount;
+            }
+            var anchorCellOffset = Vector3Int.FloorToInt(m_Anchor);
+            var cellSize = grid.cellSize;
+            anchorCellOffset.x = cellSize.x == 0 ? 0 : anchorCellOffset.x;
+            anchorCellOffset.y = cellSize.y == 0 ? 0 : anchorCellOffset.y;
+            anchorCellOffset.z = cellSize.z == 0 ? 0 : anchorCellOffset.z;
 
             for (var i = 0; i < childCount; i++)
             {
-                var child = parent != null ? parent.GetChild(i) : scene.GetRootGameObjects()[i].transform;
-                if (position == grid.WorldToCell(child.position))
+                var child = sceneChildren == null ? parent.GetChild(i) : sceneChildren[i].transform;
+                if (position == grid.WorldToCell(child.position) - anchorCellOffset)
                     return child.gameObject;
             }
             return null;
@@ -568,7 +583,7 @@ namespace UnityEditor.Tilemaps
             instance.transform.Translate(offset);
         }
 
-        private static void ClearSceneCell(GridLayout grid, Transform parent, Vector3Int position)
+        private void ClearSceneCell(GridLayout grid, Transform parent, Vector3Int position)
         {
             GameObject erased = GetObjectInCell(grid, parent, new Vector3Int(position.x, position.y, position.z));
             if (erased != null)
