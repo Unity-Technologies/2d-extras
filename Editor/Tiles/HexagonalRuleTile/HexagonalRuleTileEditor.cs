@@ -31,9 +31,9 @@ namespace UnityEditor
             if (position.x == 0)
             {
                 if (position.y > 0)
-                    return hexTile.m_FlatTop ? 3 : 1;
+                    return hexTile.m_FlatTop ? 5 : 1;
                 else
-                    return hexTile.m_FlatTop ? 5 : 7;
+                    return hexTile.m_FlatTop ? 3 : 7;
             }
             else if (position.y == 0)
             {
@@ -45,13 +45,13 @@ namespace UnityEditor
             else
             {
                 if (position.x < 0 && position.y > 0)
-                    return hexTile.m_FlatTop ? 6 : 0;
+                    return hexTile.m_FlatTop ? 8 : 0;
                 else if (position.x > 0 && position.y > 0)
-                    return hexTile.m_FlatTop ? 0 : 2;
+                    return hexTile.m_FlatTop ? 2 : 2;
                 else if (position.x < 0 && position.y < 0)
-                    return hexTile.m_FlatTop ? 8 : 6;
+                    return hexTile.m_FlatTop ? 6 : 6;
                 else if (position.x > 0 && position.y < 0)
-                    return hexTile.m_FlatTop ? 2 : 8;
+                    return hexTile.m_FlatTop ? 0 : 8;
             }
 
             return -1;
@@ -165,7 +165,7 @@ namespace UnityEditor
                 {
                     Vector3Int pos = new Vector3Int(x, y, 0);
                     Vector2 offset = new Vector2(x - bounds.xMin, -y + bounds.yMax - 1);
-                    Rect r = flatTop ? new Rect(rect.xMin + offset.y * w, rect.yMax - offset.x * h - h, w - 1, h - 1)
+                    Rect r = flatTop ? new Rect(rect.xMax - offset.y * w - w, rect.yMax - offset.x * h - h, w - 1, h - 1)
                         : new Rect(rect.xMin + offset.x * w, rect.yMin + offset.y * h, w - 1, h - 1);
 
                     if (y % 2 != 0)
