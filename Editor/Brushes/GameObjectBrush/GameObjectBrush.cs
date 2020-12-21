@@ -181,7 +181,7 @@ namespace UnityEditor.Tilemaps
             if (brushTarget == hiddenGrid)
                 brushTarget = null;
             // Do not allow editing palettes
-            else if (brushTarget.layer == 31)
+            else if (brushTarget != null && brushTarget.layer == 31)
                 return;
 
             foreach (Vector3Int location in position.allPositionsWithin)
@@ -204,7 +204,7 @@ namespace UnityEditor.Tilemaps
             if (brushTarget == hiddenGrid)
                 brushTarget = null;
             // Do not allow editing palettes
-            else if (brushTarget.layer == 31)
+            else if (brushTarget != null && brushTarget.layer == 31)
                 return;
 
             foreach (Vector3Int location in position.allPositionsWithin)
