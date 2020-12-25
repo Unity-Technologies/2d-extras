@@ -76,7 +76,10 @@ namespace UnityEngine
             /// <summary>
             /// The output Animation Speed for this Rule.
             /// </summary>
-            public float m_AnimationSpeed = 1f;
+            public float m_MinAnimationSpeed = 1f;
+            /// The output Animation Speed for this Rule.
+            /// </summary>
+            public float m_MaxAnimationSpeed = 1f;
             /// <summary>
             /// The perlin scale factor for this Rule.
             /// </summary>
@@ -490,7 +493,7 @@ namespace UnityEngine
                     if (RuleMatches(rule, position, tilemap, ref transform))
                     {
                         tileAnimationData.animatedSprites = rule.m_Sprites;
-                        tileAnimationData.animationSpeed = rule.m_AnimationSpeed;
+                        tileAnimationData.animationSpeed = Random.Range( rule.m_MinAnimationSpeed, rule.m_MaxAnimationSpeed);
                         return true;
                     }
                 }
