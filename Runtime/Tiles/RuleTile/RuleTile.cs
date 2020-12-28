@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using UnityEngine.Tilemaps;
+using UnityEngine.Serialization;
 
 namespace UnityEngine
 {
@@ -74,9 +75,15 @@ namespace UnityEngine
             /// </summary>
             public GameObject m_GameObject;
             /// <summary>
-            /// The output Animation Speed for this Rule.
+            /// The output minimum Animation Speed for this Rule.
             /// </summary>
-            public float m_AnimationSpeed = 1f;
+            [FormerlySerializedAs("m_AnimationSpeed")]
+            public float m_MinAnimationSpeed = 1f;
+            /// <summary>
+            /// The output maximum Animation Speed for this Rule.
+            /// </summary>
+            [FormerlySerializedAs("m_AnimationSpeed")]
+            public float m_MaxAnimationSpeed = 1f;
             /// <summary>
             /// The perlin scale factor for this Rule.
             /// </summary>
@@ -490,7 +497,7 @@ namespace UnityEngine
                     if (RuleMatches(rule, position, tilemap, ref transform))
                     {
                         tileAnimationData.animatedSprites = rule.m_Sprites;
-                        tileAnimationData.animationSpeed = rule.m_AnimationSpeed;
+                        tileAnimationData.animationSpeed = Random.Range( rule.m_MinAnimationSpeed, rule.m_MaxAnimationSpeed);
                         return true;
                     }
                 }
