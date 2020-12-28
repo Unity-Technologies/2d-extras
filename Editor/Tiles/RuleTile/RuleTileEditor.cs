@@ -679,8 +679,11 @@ namespace UnityEditor
 
             if (tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Animation)
             {
-                GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Speed");
-                tilingRule.m_AnimationSpeed = EditorGUI.FloatField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_AnimationSpeed);
+                GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Min Speed");
+                tilingRule.m_MinAnimationSpeed = EditorGUI.FloatField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_MinAnimationSpeed);
+                y += k_SingleLineHeight;
+                GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Max Speed");
+                tilingRule.m_MaxAnimationSpeed = EditorGUI.FloatField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_MaxAnimationSpeed);
                 y += k_SingleLineHeight;
             }
             if (tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Random)

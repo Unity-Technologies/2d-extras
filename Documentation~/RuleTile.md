@@ -44,7 +44,8 @@ This is a generic visual Tile that other Tiles such as the [Terrain Tiles](Terra
 
 | Property   | Function                                                     |
 | ---------- | ------------------------------------------------------------ |
-| __Speed__  | The speed at which the animation is played.                  |
+| __MinSpeed__  | The minimum speed at which the animation is played.                  |
+| __MaxSpeed__  | The maximum speed at which the animation is played.                  |
 | __Size__   | The number of Sprites in the animation.                      |
 | __Sprite__ | The Sprite for the Tile which fits this Rule. Sprites will be shown in sequence based on the order of the list. |
 
