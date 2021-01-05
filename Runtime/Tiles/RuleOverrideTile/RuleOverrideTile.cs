@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.Scripting.APIUpdating;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace UnityEngine.Tilemaps
 {
     /// <summary>
@@ -339,6 +343,27 @@ namespace UnityEngine.Tilemaps
             if (!m_InstanceTile)
                 return true;
             return m_InstanceTile.StartUp(position, tilemap, go);
+        }
+
+        public void OnEnable()
+        {
+            if (m_Tile == null)
+                return;
+
+            if (m_InstanceTile == null)
+            {
+                var t = m_Tile.GetType();
+                RuleTile instanceTile = ScriptableObject.CreateInstance(t) as RuleTile;
+                instanceTile.hideFlags = HideFlags.NotEditable;
+                instanceTile.name = m_Tile.name + " (Override)";
+                m_InstanceTile = instanceTile;
+                Override();
+
+#if UNITY_EDITOR
+                AssetDatabase.AddObjectToAsset(instanceTile, this);
+                EditorUtility.SetDirty(this);
+#endif
+            }
         }
     }
 }
