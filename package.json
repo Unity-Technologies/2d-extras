@@ -1,7 +1,7 @@
 {
     "name": "com.unity.2d.tilemap.extras",
     "displayName": "2D Tilemap Extras",
-    "version": "2.0.0-pre.2",
+    "version": "2.0.0-pre.3",
     "unity": "2021.1",
     "description": "2D Tilemap Extras is a package that contains extra scripts for use with 2D Tilemap features in Unity. These include custom Tiles and Brushes for the Tilemap feature.",
     "keywords": ["2d"],
@@ -11,7 +11,7 @@
         "com.unity.2d.tilemap": "1.0.0"
     },
     "relatedPackages": {
-      "com.unity.2d.tilemap.extras.tests": "2.0.0-pre.2"
+      "com.unity.2d.tilemap.extras.tests": "2.0.0-pre.3"
     },
     "samples": [
         {
