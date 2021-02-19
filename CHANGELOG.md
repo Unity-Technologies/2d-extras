@@ -3,6 +3,11 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.5.2-preview] - 2021-02-19
+- [HexagonalRuleTile] Fix issue with mirror rule
+- [RuleTile] Add min and max animation speedup
+- [RuleOverrideTile] Fix import issue when upgrading from a previous version of RuleOverrideTile
+
 ## [1.5.1-preview] - 2020-09-25
 ### Changed
 - Update samples
