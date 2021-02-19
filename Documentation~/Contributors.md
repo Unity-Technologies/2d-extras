@@ -24,5 +24,6 @@ Thank you to all who have contributed to this repository!
 - [HyagoOliveira](https://github.com/HyagoOliveira)
 - [RyotaMurohoshi](https://github.com/RyotaMurohoshi)
 - [ManickYoj](https://github.com/ManickYoj)
+- [n4n0lix](https://githubb.com/n4n0lix)
 
 If anybody has been missed, please do let us know!
