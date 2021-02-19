@@ -268,7 +268,13 @@ namespace UnityEditor
             rule.m_Sprites[0] = tile.m_DefaultSprite;
             rule.m_GameObject = tile.m_DefaultGameObject;
             rule.m_ColliderType = tile.m_DefaultColliderType;
-            tile.m_TilingRules.Add(rule);
+            if (list.index == -1 )
+                tile.m_TilingRules.Add(rule);
+            else
+            {
+                tile.m_TilingRules.Insert(list.index + 1, rule);
+                list.index += 1;
+            }
         }
 
         /// <summary>
