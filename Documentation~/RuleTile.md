@@ -1,6 +1,6 @@
 #  Rule Tile
 
-__Contributions by:__ [johnsoncodehk](https://github.com/johnsoncodehk), [DreadBoy](https://github.com/DreadBoy), [AVChemodanov](https://github.com/AVChemodanov), [DoctorShinobi](https://github.com/DoctorShinobi)
+__Contributions by:__ [johnsoncodehk](https://github.com/johnsoncodehk), [DreadBoy](https://github.com/DreadBoy), [AVChemodanov](https://github.com/AVChemodanov), [DoctorShinobi](https://github.com/DoctorShinobi), [n4n0lix](https://github.com/n4n0lix)
 
 This is a generic visual Tile that other Tiles such as the [Terrain Tiles](TerrainTile.md), [Pipeline Tile](PipelineTile.md), [Random Tile](RandomTile.md) or [Animated Tiles](AnimatedTile.md) are based on. There are specific types of Rule Tiles for each of the [Tilemap grid types](https://docs.unity3d.com/Manual/class-Grid.html). The default Rule Tile is for the default [Rectangle Grid](https://docs.unity3d.com/Manual/Tilemap-CreatingTilemaps.html) type; the Hexagonal Rule Tile is for the [Hexagonal Grid](https://docs.unity3d.com/Manual/Tilemap-Hexagonal.html) type; and the Isometric Rule Tile is for the [Isometric Grid](https://docs.unity3d.com/Manual/Tilemap-Isometric.html) types. The different types of Rule Tiles all possess the same properties.
 
