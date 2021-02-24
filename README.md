@@ -1,3 +1,5 @@
+THIS IS A CLA-ASSISTANT TEST
+
 # Notice
 
 ## No more development on 2d-extras GitHub repository
