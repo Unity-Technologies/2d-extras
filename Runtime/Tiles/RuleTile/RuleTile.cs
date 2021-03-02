@@ -195,6 +195,24 @@ namespace UnityEngine
             /// </summary>
             public Transform m_RuleTransform;
 
+            public TilingRule Clone()
+            {
+                TilingRule rule = new TilingRule();
+                rule.m_Neighbors = new List<int>(m_Neighbors);
+                rule.m_NeighborPositions = new List<Vector3Int>(m_NeighborPositions);
+                rule.m_RuleTransform = m_RuleTransform;
+                rule.m_Sprites = new Sprite[m_Sprites.Length];
+                Array.Copy(m_Sprites, rule.m_Sprites, m_Sprites.Length);
+                rule.m_GameObject = m_GameObject;
+                rule.m_MinAnimationSpeed = m_MinAnimationSpeed;
+                rule.m_MaxAnimationSpeed = m_MaxAnimationSpeed;
+                rule.m_PerlinScale = m_PerlinScale;
+                rule.m_Output = m_Output;
+                rule.m_ColliderType = m_ColliderType;
+                rule.m_RandomTransform = m_RandomTransform;
+                return rule;
+            }
+            
             /// <summary>
             /// Returns all neighbors of this Tile as a dictionary
             /// </summary>
