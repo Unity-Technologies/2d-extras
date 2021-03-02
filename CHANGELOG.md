@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - [HexagonalRuleTile] Fix issue with mirror rule
 - [RuleTile] Add min and max animation speedup
 - [RuleOverrideTile] Fix import issue when upgrading from a previous version of RuleOverrideTile
+- [RuleTileEditor] Add new rule below selected rule in RuleTileEditor
+- [RuleTileEditor] Add dropdown to duplicate Rule
 
 ## [1.6.3-preview] - 2020-11-26
 ### Changed
