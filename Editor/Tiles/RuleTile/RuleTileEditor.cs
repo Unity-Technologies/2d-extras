@@ -135,7 +135,7 @@ namespace UnityEditor
             m_ReorderableList.drawElementCallback = OnDrawElement;
             m_ReorderableList.elementHeightCallback = GetElementHeight;
             m_ReorderableList.onChangedCallback = ListUpdated;
-            m_ReorderableList.onAddCallback = OnAddElement;
+            m_ReorderableList.onAddDropdownCallback = OnAddDropdownElement;
         }
 
         /// <summary>
@@ -261,16 +261,50 @@ namespace UnityEditor
             SpriteOnGUI(spriteRect, rule);
         }
 
-        private void OnAddElement(ReorderableList list)
+        private void OnAddElement(object obj)
         {
+            var list = obj as ReorderableList;
             RuleTile.TilingRule rule = new RuleTile.TilingRule();
             rule.m_Output = RuleTile.TilingRule.OutputSprite.Single;
             rule.m_Sprites[0] = tile.m_DefaultSprite;
             rule.m_GameObject = tile.m_DefaultGameObject;
             rule.m_ColliderType = tile.m_DefaultColliderType;
-            tile.m_TilingRules.Add(rule);
+            if (list.index == -1 )
+                tile.m_TilingRules.Add(rule);
+            else
+            {
+                tile.m_TilingRules.Insert(list.index + 1, rule);
+                list.index += 1;
+            }
         }
 
+        private void OnDuplicateElement(object obj)
+        {
+            var list = obj as ReorderableList;
+            if (list.index < 0 || list.index >= tile.m_TilingRules.Count)
+                return;
+
+            var copyRule = tile.m_TilingRules[list.index];
+            var rule = copyRule.Clone();
+            tile.m_TilingRules.Insert(list.index + 1, rule);
+            list.index += 1;
+        }
+
+        private void OnAddDropdownElement(Rect rect, ReorderableList list)
+        {
+            if (0 <= list.index && list.index < tile.m_TilingRules.Count)
+            {
+                GenericMenu menu = new GenericMenu();
+                menu.AddItem(EditorGUIUtility.TrTextContent("Add"), false, OnAddElement, list);
+                menu.AddItem(EditorGUIUtility.TrTextContent("Duplicate"), false, OnDuplicateElement, list);
+                menu.DropDown(rect);
+            }
+            else
+            {
+                OnAddElement(list);
+            }
+        }
+        
         /// <summary>
         /// Saves any changes to the RuleTile
         /// </summary>
