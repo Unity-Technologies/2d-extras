@@ -57,7 +57,7 @@ This is a generic visual Tile that other Tiles such as the [Terrain Tiles](Terra
 
 ## <a name="Usage"></a>Setting up a Rule Tile
 
-Set up the Rule Tile with the required rules with the __Rule Tile editor__. In the Rule Tile editor, you can change, add or remove Rules in the **Tiling Rules** list. Click on the + or - buttons to add or remove Rules. Select and hold the top left corner of each row to drag them up or down to change the order of the Rules in the list.
+Set up the Rule Tile with the required rules with the __Rule Tile editor__. In the Rule Tile editor, you can change, add, duplicate or remove Rules in the **Tiling Rules** list. Click on the + or - buttons to add or remove Rules. If you have a Rule selected, clicking on the + button will allow you to choose between adding a new Rule or duplicating the selected Rule. The newly created Rule will be placed after the current selected Rule. Select and hold the top left corner of each row to drag them up or down to change the order of the Rules in the list.
 
 ![](images/RuleTileEditor.png)<br/>Rule Tile Editor
 
