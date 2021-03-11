@@ -436,14 +436,13 @@ namespace UnityEngine
         static Dictionary<Tilemap, KeyValuePair<HashSet<TileBase>, HashSet<Vector3Int>>> m_CacheTilemapsNeighborPositions = new Dictionary<Tilemap, KeyValuePair<HashSet<TileBase>, HashSet<Vector3Int>>>();
         static TileBase[] m_AllocatedUsedTileArr = new TileBase[0];
 
-        static bool IsTilemapUsedTilesChange(Tilemap tilemap)
+        static bool IsTilemapUsedTilesChange(Tilemap tilemap, out KeyValuePair<HashSet<TileBase>, HashSet<Vector3Int>> hashSet)
         {
-            if (!m_CacheTilemapsNeighborPositions.ContainsKey(tilemap))
+            if (!m_CacheTilemapsNeighborPositions.TryGetValue(tilemap, out hashSet))
                 return true;
 
-            var oldUsedTiles = m_CacheTilemapsNeighborPositions[tilemap].Key;
+            var oldUsedTiles = hashSet.Key;
             int newUsedTilesCount = tilemap.GetUsedTilesCount();
-
             if (newUsedTilesCount != oldUsedTiles.Count)
                 return true;
 
@@ -451,7 +450,6 @@ namespace UnityEngine
                 Array.Resize(ref m_AllocatedUsedTileArr, newUsedTilesCount);
 
             tilemap.GetUsedTilesNonAlloc(m_AllocatedUsedTileArr);
-
             for (int i = 0; i < newUsedTilesCount; i++)
             {
                 TileBase newUsedTile = m_AllocatedUsedTileArr[i];
@@ -461,7 +459,8 @@ namespace UnityEngine
 
             return false;
         }
-        static void CachingTilemapNeighborPositions(Tilemap tilemap)
+
+        static KeyValuePair<HashSet<TileBase>, HashSet<Vector3Int>> CachingTilemapNeighborPositions(Tilemap tilemap)
         {
             int usedTileCount = tilemap.GetUsedTilesCount();
             HashSet<TileBase> usedTiles = new HashSet<TileBase>();
@@ -488,13 +487,30 @@ namespace UnityEngine
                         neighborPositions.Add(neighborPosition);
             }
 
-            m_CacheTilemapsNeighborPositions[tilemap] = new KeyValuePair<HashSet<TileBase>, HashSet<Vector3Int>>(usedTiles, neighborPositions);
+            var value = new KeyValuePair<HashSet<TileBase>, HashSet<Vector3Int>>(usedTiles, neighborPositions);
+            m_CacheTilemapsNeighborPositions[tilemap] = value;
+            return value;
         }
+
         static void ReleaseDestroyedTilemapCacheData()
         {
-            m_CacheTilemapsNeighborPositions = m_CacheTilemapsNeighborPositions
-                .Where(data => data.Key != null)
-                .ToDictionary(data => data.Key, data => data.Value);
+            bool clear = false;
+            while (!clear)
+            {
+                clear = true;
+                // Clear destroyed Tilemap cache data one by one to avoid list copy
+                foreach (var keypair in m_CacheTilemapsNeighborPositions)
+                {
+                    if (keypair.Key == null)
+                    {
+                        if (m_CacheTilemapsNeighborPositions.Remove(keypair.Key))
+                        {
+                            clear = false;
+                            break;
+                        }
+                    }
+                }    
+            }
         }
 
         /// <summary>
@@ -536,11 +552,12 @@ namespace UnityEngine
 
             ReleaseDestroyedTilemapCacheData(); // Prevent memory leak
 
-            if (IsTilemapUsedTilesChange(baseTilemap))
-                CachingTilemapNeighborPositions(baseTilemap);
+            KeyValuePair<HashSet<TileBase>, HashSet<Vector3Int>> neighborPositionsSet;
+            if (IsTilemapUsedTilesChange(baseTilemap, out neighborPositionsSet))
+                neighborPositionsSet = CachingTilemapNeighborPositions(baseTilemap);
 
-            HashSet<Vector3Int> neighborPositions = m_CacheTilemapsNeighborPositions[baseTilemap].Value;
-            foreach (Vector3Int offset in neighborPositions)
+            var neighborPositionsLocal = neighborPositionsSet.Value;
+            foreach (Vector3Int offset in neighborPositionsLocal)
             {
                 Vector3Int offsetPosition = GetOffsetPositionReverse(position, offset);
                 TileBase tile = tilemap.GetTile(offsetPosition);
@@ -695,7 +712,8 @@ namespace UnityEngine
         /// <returns>True if there is a match, False if not.</returns>
         public bool RuleMatches(TilingRule rule, Vector3Int position, ITilemap tilemap, int angle)
         {
-            for (int i = 0; i < rule.m_Neighbors.Count && i < rule.m_NeighborPositions.Count; i++)
+            var minCount = Math.Min(rule.m_Neighbors.Count, rule.m_NeighborPositions.Count);
+            for (int i = 0; i < minCount ; i++)
             {
                 int neighbor = rule.m_Neighbors[i];
                 Vector3Int positionOffset = GetRotatedPosition(rule.m_NeighborPositions[i], angle);
@@ -719,7 +737,8 @@ namespace UnityEngine
         /// <returns>True if there is a match, False if not.</returns>
         public bool RuleMatches(TilingRule rule, Vector3Int position, ITilemap tilemap, bool mirrorX, bool mirrorY)
         {
-            for (int i = 0; i < rule.m_Neighbors.Count && i < rule.m_NeighborPositions.Count; i++)
+            var minCount = Math.Min(rule.m_Neighbors.Count, rule.m_NeighborPositions.Count);
+            for (int i = 0; i < minCount; i++)
             {
                 int neighbor = rule.m_Neighbors[i];
                 Vector3Int positionOffset = GetMirroredPosition(rule.m_NeighborPositions[i], mirrorX, mirrorY);
