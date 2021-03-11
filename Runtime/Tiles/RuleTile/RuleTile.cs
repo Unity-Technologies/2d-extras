@@ -494,10 +494,11 @@ namespace UnityEngine
 
         static void ReleaseDestroyedTilemapCacheData()
         {
-            bool clear = false;
-            while (!clear)
+            var hasCleared = false;
+            var notClear = true;
+            while (notClear)
             {
-                clear = true;
+                notClear = false;
                 // Clear destroyed Tilemap cache data one by one to avoid list copy
                 foreach (var keypair in m_CacheTilemapsNeighborPositions)
                 {
@@ -505,11 +506,17 @@ namespace UnityEngine
                     {
                         if (m_CacheTilemapsNeighborPositions.Remove(keypair.Key))
                         {
-                            clear = false;
+                            hasCleared = true;
+                            notClear = true;
                             break;
                         }
                     }
                 }    
+            }
+            if (hasCleared)
+            {
+                // TrimExcess
+                m_CacheTilemapsNeighborPositions = new Dictionary<Tilemap, KeyValuePair<HashSet<TileBase>, HashSet<Vector3Int>>>(m_CacheTilemapsNeighborPositions);
             }
         }
 
