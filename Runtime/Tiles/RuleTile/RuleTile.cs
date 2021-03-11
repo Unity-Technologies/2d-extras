@@ -563,8 +563,8 @@ namespace UnityEngine
             if (IsTilemapUsedTilesChange(baseTilemap, out neighborPositionsSet))
                 neighborPositionsSet = CachingTilemapNeighborPositions(baseTilemap);
 
-            var neighborPositionsLocal = neighborPositionsSet.Value;
-            foreach (Vector3Int offset in neighborPositionsLocal)
+            var neighborPositionsRuleTile = neighborPositionsSet.Value;
+            foreach (Vector3Int offset in neighborPositionsRuleTile)
             {
                 Vector3Int offsetPosition = GetOffsetPositionReverse(position, offset);
                 TileBase tile = tilemap.GetTile(offsetPosition);
@@ -576,7 +576,7 @@ namespace UnityEngine
                     ruleTile = (tile as RuleOverrideTile).m_Tile;
 
                 if (ruleTile != null)
-                    if (ruleTile.neighborPositions.Contains(offset))
+                    if (ruleTile == this || ruleTile.neighborPositions.Contains(offset))
                         base.RefreshTile(offsetPosition, tilemap);
             }
         }
