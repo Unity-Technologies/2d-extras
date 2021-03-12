@@ -492,26 +492,29 @@ namespace UnityEngine
             return value;
         }
 
+        static bool NeedRelease()
+        {
+            foreach (var keypair in m_CacheTilemapsNeighborPositions)
+            {
+                if (keypair.Key == null)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
         static void ReleaseDestroyedTilemapCacheData()
         {
+            if (!NeedRelease())
+                return;
+
             var hasCleared = false;
-            var notClear = true;
-            while (notClear)
+            var keys = m_CacheTilemapsNeighborPositions.Keys.ToArray();
+            foreach (var key in keys)
             {
-                notClear = false;
-                // Clear destroyed Tilemap cache data one by one to avoid list copy
-                foreach (var keypair in m_CacheTilemapsNeighborPositions)
-                {
-                    if (keypair.Key == null)
-                    {
-                        if (m_CacheTilemapsNeighborPositions.Remove(keypair.Key))
-                        {
-                            hasCleared = true;
-                            notClear = true;
-                            break;
-                        }
-                    }
-                }    
+                if (key == null && m_CacheTilemapsNeighborPositions.Remove(key))
+                    hasCleared = true;
             }
             if (hasCleared)
             {
