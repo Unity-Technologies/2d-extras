@@ -31,7 +31,9 @@ The following line needs to be added to your `Packages/manifest.json` file in yo
 
 ### Tilemap
 
-For use with Unity `2020.1.1f1` onwards. 
+For use with Unity `2021.1.0f1` onwards. 
+
+Please use the `2020.3` branch for Unity 2020.1-2020.3 versions.
 
 Please use the `1.5.0-preview` tag for Unity 2019.2-2019.4 versions.
 
