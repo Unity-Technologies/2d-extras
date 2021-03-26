@@ -659,8 +659,9 @@ namespace UnityEngine
         /// <returns>Custom fields for this RuleTile</returns>
         public FieldInfo[] GetCustomFields(bool isOverrideInstance)
         {
-            return this.GetType().GetFields()
+            return this.GetType().GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
                 .Where(field => typeof(RuleTile).GetField(field.Name) == null)
+                .Where(field => field.IsPublic || field.IsDefined(typeof(SerializeField)))
                 .Where(field => !field.IsDefined(typeof(HideInInspector)))
                 .Where(field => !isOverrideInstance || !field.IsDefined(typeof(RuleTile.DontOverride)))
                 .ToArray();
