@@ -3,6 +3,15 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [2.1.0] - 2021-05-06
+### Changed
+- [RuleTile] Improve performance of RuleTile caching
+- [RuleTileEditor] Allow non-public fields with the SerializeField attribute as custom fields for RuleTile
+- Make U2DExtrasPlaceholder internal
+
+### Fixed
+- [RuleTileEditor] Fix exception when adding a new Rule when no Rule is selected
+
 ## [2.0.0] - 2021-03-17
 - Update version to 2.0.0
 
