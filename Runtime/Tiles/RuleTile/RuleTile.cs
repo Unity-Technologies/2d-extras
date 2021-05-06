@@ -27,6 +27,14 @@ namespace UnityEngine
     [HelpURL("https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/RuleTile.html")]
     public class RuleTile : TileBase
     {
+        public enum NeighborType
+        {
+            This,
+            All
+        }
+        
+        public NeighborType m_neighborType = NeighborType.This;
+        
         /// <summary>
         /// Returns the default Neighbor Rule Class type.
         /// </summary>
@@ -577,7 +585,7 @@ namespace UnityEngine
                     ruleTile = tile as RuleTile;
                 else if (tile is RuleOverrideTile)
                     ruleTile = (tile as RuleOverrideTile).m_Tile;
-
+                
                 if (ruleTile != null)
                     if (ruleTile == this || ruleTile.neighborPositions.Contains(offset))
                         base.RefreshTile(offsetPosition, tilemap);
@@ -705,10 +713,23 @@ namespace UnityEngine
             if (other is RuleOverrideTile)
                 other = (other as RuleOverrideTile).m_InstanceTile;
 
-            switch (neighbor)
+            switch (m_neighborType)
             {
-                case TilingRule.Neighbor.This: return other == this;
-                case TilingRule.Neighbor.NotThis: return other != this;
+                case NeighborType.This:
+                    switch (neighbor)
+                    {
+                        case TilingRule.Neighbor.This: return other == this;
+                        case TilingRule.Neighbor.NotThis: return other != this;
+                    }
+                    break;
+                case NeighborType.All:
+                    switch (neighbor)
+                    {
+                        case TilingRule.Neighbor.This: return other != null;
+                        case TilingRule.Neighbor.NotThis: return other == null;
+                    }
+                    break;
+                    
             }
             return true;
         }
