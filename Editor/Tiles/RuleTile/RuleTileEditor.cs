@@ -150,11 +150,11 @@ namespace UnityEditor
         /// <summary>
         /// Padding between Rule Elements
         /// </summary>
-        public const float k_PaddingBetweenRules = 26f;
+        public const float k_PaddingBetweenRules = 8f;
         /// <summary>
         /// Single line height
         /// </summary>
-        public const float k_SingleLineHeight = 16f;
+        public const float k_SingleLineHeight = 18f;
         /// <summary>
         /// Width for labels
         /// </summary>
@@ -251,10 +251,8 @@ namespace UnityEditor
             switch (rule.m_Output)
             {
                 case RuleTile.TilingRule.OutputSprite.Random:
-                    inspectorHeight = k_DefaultElementHeight + k_SingleLineHeight * (rule.m_Sprites.Length + 3) + k_PaddingBetweenRules;
-                    break;
                 case RuleTile.TilingRule.OutputSprite.Animation:
-                    inspectorHeight = k_DefaultElementHeight + k_SingleLineHeight * (rule.m_Sprites.Length + 2) + k_PaddingBetweenRules;
+                    inspectorHeight = k_DefaultElementHeight + k_SingleLineHeight * (rule.m_Sprites.Length + 3) + k_PaddingBetweenRules;
                     break;
             }
 
