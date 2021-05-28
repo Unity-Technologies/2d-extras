@@ -11,6 +11,12 @@ namespace UnityEditor
     [CustomEditor(typeof(RuleOverrideTile))]
     public class RuleOverrideTileEditor : Editor
     {
+        private static class Styles
+        {
+            public static readonly GUIContent overrideTile = EditorGUIUtility.TrTextContent("Tile"
+                , "The Rule Tile to override.");
+        }
+
         /// <summary>
         /// The RuleOverrideTile being edited
         /// </summary>
@@ -255,7 +261,7 @@ namespace UnityEditor
         public void DrawTileField()
         {
             EditorGUI.BeginChangeCheck();
-            RuleTile tile = EditorGUILayout.ObjectField("Tile", overrideTile.m_Tile, typeof(RuleTile), false) as RuleTile;
+            RuleTile tile = EditorGUILayout.ObjectField(Styles.overrideTile, overrideTile.m_Tile, typeof(RuleTile), false) as RuleTile;
             if (EditorGUI.EndChangeCheck())
             {
                 if (!LoopCheck(tile))
