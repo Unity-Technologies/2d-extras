@@ -78,6 +78,41 @@ namespace UnityEditor
             }
         }
 
+        private static class Styles
+        {
+            public static readonly GUIContent defaultSprite = EditorGUIUtility.TrTextContent("Default Sprite"
+                , "The default Sprite set when creating a new Rule.");
+            public static readonly GUIContent defaultGameObject = EditorGUIUtility.TrTextContent("Default GameObject"
+                , "The default GameObject set when creating a new Rule.");
+            public static readonly GUIContent defaultCollider = EditorGUIUtility.TrTextContent("Default Collider"
+                , "The default Collider Type set when creating a new Rule.");
+
+            public static readonly GUIContent extendNeighbor = EditorGUIUtility.TrTextContent("Extend Neighbor"
+                , "Enabling this allows you to increase the range of neighbors beyond the 3x3 box.");
+
+            public static readonly GUIContent tilingRules = EditorGUIUtility.TrTextContent("Tiling Rules");
+            public static readonly GUIContent tilingRulesGameObject = EditorGUIUtility.TrTextContent("GameObject"
+                , "The GameObject for the Tile which fits this Rule.");
+            public static readonly GUIContent tilingRulesCollider = EditorGUIUtility.TrTextContent("Collider"
+                , "The Collider Type for the Tile which fits this Rule");
+            public static readonly GUIContent tilingRulesOutput = EditorGUIUtility.TrTextContent("Output"
+                , "The Output for the Tile which fits this Rule. Each Output type has its own properties.");
+
+            public static readonly GUIContent tilingRulesNoise = EditorGUIUtility.TrTextContent("Noise"
+                , "The Perlin noise factor when placing the Tile.");
+            public static readonly GUIContent tilingRulesShuffle = EditorGUIUtility.TrTextContent("Shuffle"
+                , "The randomized transform given to the Tile when placing it.");
+            public static readonly GUIContent tilingRulesRandomSize = EditorGUIUtility.TrTextContent("Size"
+                , "The number of Sprites to randomize from.");
+
+            public static readonly GUIContent tilingRulesMinSpeed = EditorGUIUtility.TrTextContent("Min Speed"
+                , "The minimum speed at which the animation is played.");
+            public static readonly GUIContent tilingRulesMaxSpeed = EditorGUIUtility.TrTextContent("Max Speed"
+                , "The maximum speed at which the animation is played.");
+            public static readonly GUIContent tilingRulesAnimationSize = EditorGUIUtility.TrTextContent("Size"
+                , "The number of Sprites in the animation.");
+        }
+        
         /// <summary>
         /// The RuleTile being edited
         /// </summary>
@@ -115,11 +150,11 @@ namespace UnityEditor
         /// <summary>
         /// Padding between Rule Elements
         /// </summary>
-        public const float k_PaddingBetweenRules = 26f;
+        public const float k_PaddingBetweenRules = 8f;
         /// <summary>
         /// Single line height
         /// </summary>
-        public const float k_SingleLineHeight = 16f;
+        public const float k_SingleLineHeight = 18f;
         /// <summary>
         /// Width for labels
         /// </summary>
@@ -216,10 +251,8 @@ namespace UnityEditor
             switch (rule.m_Output)
             {
                 case RuleTile.TilingRule.OutputSprite.Random:
-                    inspectorHeight = k_DefaultElementHeight + k_SingleLineHeight * (rule.m_Sprites.Length + 3) + k_PaddingBetweenRules;
-                    break;
                 case RuleTile.TilingRule.OutputSprite.Animation:
-                    inspectorHeight = k_DefaultElementHeight + k_SingleLineHeight * (rule.m_Sprites.Length + 2) + k_PaddingBetweenRules;
+                    inspectorHeight = k_DefaultElementHeight + k_SingleLineHeight * (rule.m_Sprites.Length + 3) + k_PaddingBetweenRules;
                     break;
             }
 
@@ -359,14 +392,14 @@ namespace UnityEditor
         /// <param name="rect">GUI Rect to draw the header at</param>
         public void OnDrawHeader(Rect rect)
         {
-            GUI.Label(rect, "Tiling Rules");
+            GUI.Label(rect, Styles.tilingRules);
 
             Rect toggleRect = new Rect(rect.xMax - rect.height, rect.y, rect.height, rect.height);
             Rect toggleLabelRect = new Rect(rect.x, rect.y, rect.width - toggleRect.width - 5f, rect.height);
 
             EditorGUI.BeginChangeCheck();
             extendNeighbor = EditorGUI.Toggle(toggleRect, extendNeighbor);
-            EditorGUI.LabelField(toggleLabelRect, "Extend Neighbor", new GUIStyle()
+            EditorGUI.LabelField(toggleLabelRect, Styles.extendNeighbor, new GUIStyle()
             {
                 alignment = TextAnchor.MiddleRight,
                 fontStyle = FontStyle.Bold,
@@ -392,9 +425,9 @@ namespace UnityEditor
         {
             EditorGUI.BeginChangeCheck();
 
-            tile.m_DefaultSprite = EditorGUILayout.ObjectField("Default Sprite", tile.m_DefaultSprite, typeof(Sprite), false) as Sprite;
-            tile.m_DefaultGameObject = EditorGUILayout.ObjectField("Default GameObject", tile.m_DefaultGameObject, typeof(GameObject), false) as GameObject;
-            tile.m_DefaultColliderType = (Tile.ColliderType)EditorGUILayout.EnumPopup("Default Collider", tile.m_DefaultColliderType);
+            tile.m_DefaultSprite = EditorGUILayout.ObjectField(Styles.defaultSprite, tile.m_DefaultSprite, typeof(Sprite), false) as Sprite;
+            tile.m_DefaultGameObject = EditorGUILayout.ObjectField(Styles.defaultGameObject, tile.m_DefaultGameObject, typeof(GameObject), false) as GameObject;
+            tile.m_DefaultColliderType = (Tile.ColliderType)EditorGUILayout.EnumPopup(Styles.defaultCollider, tile.m_DefaultColliderType);
 
             DrawCustomFields(false);
 
@@ -701,39 +734,40 @@ namespace UnityEditor
         public void RuleInspectorOnGUI(Rect rect, RuleTile.TilingRuleOutput tilingRule)
         {
             float y = rect.yMin;
-            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "GameObject");
+            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), Styles.tilingRulesGameObject);
             tilingRule.m_GameObject = (GameObject)EditorGUI.ObjectField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), "", tilingRule.m_GameObject, typeof(GameObject), false);
             y += k_SingleLineHeight;
-            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Collider");
+            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), Styles.tilingRulesCollider);
             tilingRule.m_ColliderType = (Tile.ColliderType)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_ColliderType);
             y += k_SingleLineHeight;
-            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Output");
+            GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), Styles.tilingRulesOutput);
             tilingRule.m_Output = (RuleTile.TilingRule.OutputSprite)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_Output);
             y += k_SingleLineHeight;
 
             if (tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Animation)
             {
-                GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Min Speed");
+                GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), Styles.tilingRulesMinSpeed);
                 tilingRule.m_MinAnimationSpeed = EditorGUI.FloatField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_MinAnimationSpeed);
                 y += k_SingleLineHeight;
-                GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Max Speed");
+                GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), Styles.tilingRulesMaxSpeed);
                 tilingRule.m_MaxAnimationSpeed = EditorGUI.FloatField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_MaxAnimationSpeed);
                 y += k_SingleLineHeight;
             }
             if (tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Random)
             {
-                GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Noise");
+                GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), Styles.tilingRulesNoise);
                 tilingRule.m_PerlinScale = EditorGUI.Slider(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_PerlinScale, 0.001f, 0.999f);
                 y += k_SingleLineHeight;
 
-                GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Shuffle");
+                GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), Styles.tilingRulesShuffle);
                 tilingRule.m_RandomTransform = (RuleTile.TilingRule.Transform)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_RandomTransform);
                 y += k_SingleLineHeight;
             }
 
             if (tilingRule.m_Output != RuleTile.TilingRule.OutputSprite.Single)
             {
-                GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Size");
+                GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight)
+                    , tilingRule.m_Output == RuleTile.TilingRuleOutput.OutputSprite.Animation ? Styles.tilingRulesAnimationSize : Styles.tilingRulesRandomSize);
                 EditorGUI.BeginChangeCheck();
                 int newLength = EditorGUI.DelayedIntField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_Sprites.Length);
                 if (EditorGUI.EndChangeCheck())
