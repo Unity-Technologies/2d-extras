@@ -11,6 +11,16 @@ namespace UnityEditor
     [CustomEditor(typeof(AdvancedRuleOverrideTile))]
     public class AdvancedRuleOverrideTileEditor : RuleOverrideTileEditor
     {
+        private static class Styles
+        {
+            public static readonly GUIContent defaultSprite = EditorGUIUtility.TrTextContent("Default Sprite"
+                , "Overrides the default Sprite for the original Rule Tile.");
+            public static readonly GUIContent defaultGameObject = EditorGUIUtility.TrTextContent("Default GameObject"
+                , "Overrides the default GameObject for the original Rule Tile.");
+            public static readonly GUIContent defaultCollider = EditorGUIUtility.TrTextContent("Default Collider"
+                , "Overrides the default Collider for the original Rule Tile.");
+        }
+
         /// <summary>
         /// The AdvancedRuleOverrideTile being edited.
         /// </summary>
@@ -23,7 +33,6 @@ namespace UnityEditor
 
         static float k_DefaultElementHeight { get { return RuleTileEditor.k_DefaultElementHeight; } }
         static float k_SingleLineHeight { get { return RuleTileEditor.k_SingleLineHeight; } }
-        static float k_LabelWidth { get { return RuleTileEditor.k_LabelWidth; } }
 
         /// <summary>
         /// OnEnable for the AdvancedRuleOverrideTileEditor
@@ -49,9 +58,9 @@ namespace UnityEditor
             DrawTileField();
 
             EditorGUI.BeginChangeCheck();
-            overrideTile.m_DefaultSprite = EditorGUILayout.ObjectField("Default Sprite", overrideTile.m_DefaultSprite, typeof(Sprite), false) as Sprite;
-            overrideTile.m_DefaultGameObject = EditorGUILayout.ObjectField("Default GameObject", overrideTile.m_DefaultGameObject, typeof(GameObject), false) as GameObject;
-            overrideTile.m_DefaultColliderType = (Tile.ColliderType)EditorGUILayout.EnumPopup("Default Collider", overrideTile.m_DefaultColliderType);
+            overrideTile.m_DefaultSprite = EditorGUILayout.ObjectField(Styles.defaultSprite, overrideTile.m_DefaultSprite, typeof(Sprite), false) as Sprite;
+            overrideTile.m_DefaultGameObject = EditorGUILayout.ObjectField(Styles.defaultGameObject, overrideTile.m_DefaultGameObject, typeof(GameObject), false) as GameObject;
+            overrideTile.m_DefaultColliderType = (Tile.ColliderType)EditorGUILayout.EnumPopup(Styles.defaultCollider, overrideTile.m_DefaultColliderType);
             if (EditorGUI.EndChangeCheck())
                 SaveTile();
 
