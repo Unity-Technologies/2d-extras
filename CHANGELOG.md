@@ -3,6 +3,11 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.8.0-preview] - 2021-06-01
+### Changed
+- [RuleTileEditor] Add tooltips to fields
+- Add required package dependencies
+
 ## [1.7.0-preview] - 2021-05-06
 ### Changed
 - [RuleTile] Improve performance of RuleTile caching
