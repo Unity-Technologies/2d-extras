@@ -440,6 +440,8 @@ namespace UnityEditor
 
             if (EditorGUI.EndChangeCheck())
                 SaveTile();
+            
+            GUILayout.Space(k_DefaultElementHeight);
         }
 
         /// <summary>
