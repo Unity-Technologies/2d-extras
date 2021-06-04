@@ -53,8 +53,9 @@ public class TintTextureGenerator : MonoBehaviour
         {
             for (int x = 0; x < w; x++)
             {
-                Vector3Int world = TextureToWorld(new Vector3Int(x, y, 0));
-                tintTexture.SetPixel(x, y, GetGridInformation(grid).GetPositionProperty(world, "Tint", Color.white));
+                Vector3 worldPos = TextureToWorld(new Vector3Int(x, y, 0));
+                Vector3Int cellPos = grid.WorldToCell(worldPos);
+                tintTexture.SetPixel(x, y, GetGridInformation(grid).GetPositionProperty(cellPos, "Tint", Color.white));
             }
         }
         tintTexture.Apply();
@@ -71,7 +72,8 @@ public class TintTextureGenerator : MonoBehaviour
             return;
 
         RefreshGlobalShaderValues();
-        Vector3Int texPosition = WorldToTexture(position);
+        var worldPosition = grid.CellToWorld(position);
+        Vector3Int texPosition = WorldToTexture(worldPosition);
         tintTexture.SetPixel(texPosition.x, texPosition.y, GetGridInformation(grid).GetPositionProperty(position, "Tint", Color.white));
         tintTexture.Apply();
     }
@@ -105,14 +107,14 @@ public class TintTextureGenerator : MonoBehaviour
         Refresh(grid, position);
     }
     
-    Vector3Int WorldToTexture(Vector3Int world)
+    Vector3Int WorldToTexture(Vector3 worldPos)
     {
-        return new Vector3Int(world.x + tintTexture.width / 2, world.y + tintTexture.height / 2, 0);
+        return new Vector3Int(Mathf.FloorToInt(worldPos.x + tintTexture.width / 2f), Mathf.FloorToInt(worldPos.y + tintTexture.height / 2f), 0);
     }
 
-    Vector3Int TextureToWorld(Vector3Int texpos)
+    Vector3 TextureToWorld(Vector3Int texPos)
     {
-        return new Vector3Int(texpos.x - tintTexture.width / 2, texpos.y - tintTexture.height / 2, 0);
+        return new Vector3(texPos.x - tintTexture.width / 2, texPos.y - tintTexture.height / 2, 0);
     }
 
     GridInformation GetGridInformation(Grid grid)
