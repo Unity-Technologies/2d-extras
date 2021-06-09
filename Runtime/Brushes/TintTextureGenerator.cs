@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -13,26 +14,38 @@ public class TintTextureGenerator : MonoBehaviour
     public int k_TintMapSize = 256;
 
     /// <summary>
+    /// Mapping scale for cells to tint texture
+    /// </summary>
+    public int k_ScaleFactor = 1;
+
+    public int k_TintMapTextureSize => k_TintMapSize * k_ScaleFactor;
+
+    private Grid m_Grid;
+    
+    
+    /// <summary>
     /// Callback when the TintTextureGenerator is loaded.
     /// Refreshes the Grid Component on this GameObject. 
     /// </summary>
     public void Start()
     {
-        Refresh(GetComponent<Grid>());
+        m_Grid = GetComponent<Grid>();
+        Refresh(m_Grid);
     }
 
     private Texture2D m_TintTexture;
-    private Texture2D tintTexture
+    public Texture2D tintTexture
     {
         get
         {
-            if (m_TintTexture == null)
+            if (m_TintTexture == null || m_TintTexture.width != k_TintMapTextureSize)
             {
-                m_TintTexture = new Texture2D(k_TintMapSize, k_TintMapSize, TextureFormat.ARGB32, false);
+                m_TintTexture = new Texture2D(k_TintMapTextureSize, k_TintMapTextureSize, TextureFormat.ARGB32, false);
                 m_TintTexture.hideFlags = HideFlags.HideAndDontSave;
                 m_TintTexture.wrapMode = TextureWrapMode.Clamp;
                 m_TintTexture.filterMode = FilterMode.Bilinear;
                 RefreshGlobalShaderValues();
+                Refresh(m_Grid);
             }
             return m_TintTexture;
         }
@@ -47,6 +60,7 @@ public class TintTextureGenerator : MonoBehaviour
         if (grid == null)
             return;
 
+        var gi = GetGridInformation(grid);
         int w = tintTexture.width;
         int h = tintTexture.height;
         for (int y = 0; y < h; y++)
@@ -55,7 +69,7 @@ public class TintTextureGenerator : MonoBehaviour
             {
                 Vector3 worldPos = TextureToWorld(new Vector3Int(x, y, 0));
                 Vector3Int cellPos = grid.WorldToCell(worldPos);
-                tintTexture.SetPixel(x, y, GetGridInformation(grid).GetPositionProperty(cellPos, "Tint", Color.white));
+                tintTexture.SetPixel(x, y, gi.GetPositionProperty(cellPos, "Tint", Color.white));
             }
         }
         tintTexture.Apply();
@@ -74,7 +88,16 @@ public class TintTextureGenerator : MonoBehaviour
         RefreshGlobalShaderValues();
         var worldPosition = grid.CellToWorld(position);
         Vector3Int texPosition = WorldToTexture(worldPosition);
-        tintTexture.SetPixel(texPosition.x, texPosition.y, GetGridInformation(grid).GetPositionProperty(position, "Tint", Color.white));
+        var color = GetGridInformation(grid).GetPositionProperty(position, "Tint", Color.white);
+        var scale = Math.Max(0, k_ScaleFactor - 2);
+        var radius = new Vector2Int(Mathf.RoundToInt(scale * grid.cellSize.x), Mathf.RoundToInt(scale * grid.cellSize.y));
+        for (int y = -radius.y; y <= radius.y; ++y)
+        {
+            for (int x = -radius.x; x <= radius.x; ++x)
+            {
+                tintTexture.SetPixel(texPosition.x + x, texPosition.y + y, color);
+            }
+        }
         tintTexture.Apply();
     }
 
@@ -109,12 +132,15 @@ public class TintTextureGenerator : MonoBehaviour
     
     Vector3Int WorldToTexture(Vector3 worldPos)
     {
-        return new Vector3Int(Mathf.FloorToInt(worldPos.x + tintTexture.width / 2f), Mathf.FloorToInt(worldPos.y + tintTexture.height / 2f), 0);
+        return new Vector3Int(Mathf.FloorToInt((worldPos.x * k_ScaleFactor) + tintTexture.width / 2f)
+            , Mathf.FloorToInt((worldPos.y * k_ScaleFactor) + tintTexture.height / 2f), 0);
     }
 
     Vector3 TextureToWorld(Vector3Int texPos)
     {
-        return new Vector3(texPos.x - tintTexture.width / 2, texPos.y - tintTexture.height / 2, 0);
+        var inv = 1 / (k_ScaleFactor == 0 ? 1 : k_ScaleFactor);
+        return new Vector3((texPos.x - tintTexture.width / 2) * inv
+            , (texPos.y - tintTexture.height / 2) * inv, 0);
     }
 
     GridInformation GetGridInformation(Grid grid)
