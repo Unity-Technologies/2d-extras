@@ -87,9 +87,18 @@ namespace UnityEditor
             public static readonly GUIContent defaultCollider = EditorGUIUtility.TrTextContent("Default Collider"
                 , "The default Collider Type set when creating a new Rule.");
 
+            public static readonly GUIContent emptyRuleTileInfo =
+                EditorGUIUtility.TrTextContent(
+                    "Drag Sprite or Sprite Texture assets \n" +
+                    " to start creating a Rule Tile.");
+            
             public static readonly GUIContent extendNeighbor = EditorGUIUtility.TrTextContent("Extend Neighbor"
                 , "Enabling this allows you to increase the range of neighbors beyond the 3x3 box.");
 
+            public static readonly GUIContent numberOfTilingRules = EditorGUIUtility.TrTextContent(
+                "Number of Tiling Rules"
+                , "Change this to adjust of the number of tiling rules.");
+            
             public static readonly GUIContent tilingRules = EditorGUIUtility.TrTextContent("Tiling Rules");
             public static readonly GUIContent tilingRulesGameObject = EditorGUIUtility.TrTextContent("GameObject"
                 , "The GameObject for the Tile which fits this Rule.");
@@ -117,6 +126,12 @@ namespace UnityEditor
         /// The RuleTile being edited
         /// </summary>
         public RuleTile tile => target as RuleTile;
+        
+        /// <summary>
+        /// List of Sprites for Drag and Drop
+        /// </summary>
+        private List<Sprite> dragAndDropSprites;
+        
         /// <summary>
         /// Reorderable list for Rules
         /// </summary>
@@ -432,12 +447,45 @@ namespace UnityEditor
             DrawCustomFields(false);
 
             EditorGUILayout.Space();
+            
+            EditorGUI.BeginChangeCheck();
+            int count = EditorGUILayout.DelayedIntField(Styles.numberOfTilingRules, tile.m_TilingRules?.Count ?? 0);
+            if (count < 0)
+                count = 0;
+            if (EditorGUI.EndChangeCheck())
+                ResizeRuleTileList(count);
+
+            if (count == 0)
+            {
+                Rect rect = EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight * 5);
+                HandleDragAndDrop(rect);
+                EditorGUI.DrawRect(rect, dragAndDropActive && rect.Contains(Event.current.mousePosition) ? Color.white : Color.black);
+                var innerRect = new Rect(rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 2);
+                EditorGUI.DrawRect(innerRect, EditorGUIUtility.isProSkin
+                    ? (Color) new Color32 (56, 56, 56, 255)
+                    : (Color) new Color32 (194, 194, 194, 255));
+                DisplayClipboardText(Styles.emptyRuleTileInfo, rect);
+                GUILayout.Space(rect.height);
+                EditorGUILayout.Space();
+            }
 
             if (m_ReorderableList != null)
                 m_ReorderableList.DoLayoutList();
 
             if (EditorGUI.EndChangeCheck())
                 SaveTile();
+            
+            GUILayout.Space(k_DefaultElementHeight);
+        }
+
+        private void ResizeRuleTileList(int count)
+        {
+            if (tile.m_TilingRules == null)
+                tile.m_TilingRules = new List<RuleTile.TilingRule>();
+            while (tile.m_TilingRules.Count > count)
+                tile.m_TilingRules.RemoveAt(tile.m_TilingRules.Count - 1);
+            while (tile.m_TilingRules.Count < count)
+                tile.m_TilingRules.Add(new RuleTile.TilingRule());
         }
 
         /// <summary>
@@ -782,6 +830,121 @@ namespace UnityEditor
             }
         }
 
+        private void DisplayClipboardText(GUIContent clipboardText, Rect position)
+        {
+            Color old = GUI.color;
+            GUI.color = Color.gray;
+            var infoSize = GUI.skin.label.CalcSize(clipboardText);
+            Rect rect = new Rect(position.center.x - infoSize.x * .5f
+                , position.center.y - infoSize.y * .5f
+                , infoSize.x
+                , infoSize.y);
+            GUI.Label(rect, clipboardText);
+            GUI.color = old;
+        }
+
+        private bool dragAndDropActive
+        {
+            get
+            {
+                return dragAndDropSprites != null
+                       && dragAndDropSprites.Count > 0;
+            }
+        }
+        
+        private static List<Sprite> GetSpritesFromTexture(Texture2D texture)
+        {
+            string path = AssetDatabase.GetAssetPath(texture);
+            Object[] assets = AssetDatabase.LoadAllAssetsAtPath(path);
+            List<Sprite> sprites = new List<Sprite>();
+
+            foreach (Object asset in assets)
+            {
+                if (asset is Sprite)
+                {
+                    sprites.Add(asset as Sprite);
+                }
+            }
+
+            return sprites;
+        }
+        
+        private static List<Sprite> GetValidSingleSprites(Object[] objects)
+        {
+            List<Sprite> result = new List<Sprite>();
+            foreach (Object obj in objects)
+            {
+                if (obj is Sprite)
+                {
+                    result.Add(obj as Sprite);
+                }
+                else if (obj is Texture2D)
+                {
+                    Texture2D texture = obj as Texture2D;
+                    List<Sprite> sprites = GetSpritesFromTexture(texture);
+                    if (sprites.Count > 0)
+                    {
+                        result.AddRange(sprites);
+                    }
+                }
+            }
+            return result;
+        }
+        
+        private void HandleDragAndDrop(Rect guiRect)
+        {
+            if (DragAndDrop.objectReferences.Length == 0 || !guiRect.Contains(Event.current.mousePosition))
+                return;
+
+            switch (Event.current.type)
+            {
+                case EventType.DragUpdated:
+                {
+                    dragAndDropSprites = GetValidSingleSprites(DragAndDrop.objectReferences);
+                    if (dragAndDropActive)
+                    {
+                        DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
+                        Event.current.Use();
+                        GUI.changed = true;
+                    }
+                }
+                    break;
+                case EventType.DragPerform:
+                {
+                    if (!dragAndDropActive)
+                        return;
+
+                    Undo.RegisterCompleteObjectUndo(tile, "Drag and Drop to Rule Tile");
+                    ResizeRuleTileList(dragAndDropSprites.Count);
+                    for (int i = 0; i < dragAndDropSprites.Count; ++i)
+                    {
+                        tile.m_TilingRules[i].m_Sprites[0] = dragAndDropSprites[i];
+                    }
+                    DragAndDropClear();
+                    GUI.changed = true;
+                    EditorUtility.SetDirty(tile);
+                    GUIUtility.ExitGUI();
+                }
+                    break;
+                case EventType.Repaint:
+                    // Handled in Render()
+                    break;
+            }
+
+            if (Event.current.type == EventType.DragExited ||
+                Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
+            {
+                DragAndDropClear();
+            }
+        }
+        
+        private void DragAndDropClear()
+        {
+            dragAndDropSprites = null;
+            DragAndDrop.visualMode = DragAndDropVisualMode.None;
+            Event.current.Use();
+        }
+        
         /// <summary>
         /// Whether the RuleTile has a preview GUI
         /// </summary>
