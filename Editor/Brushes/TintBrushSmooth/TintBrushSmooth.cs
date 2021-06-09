@@ -10,24 +10,6 @@ namespace UnityEditor.Tilemaps
     [CustomGridBrush(false, false, false, "Tint Brush (Smooth)")]
     public class TintBrushSmooth : GridBrushBase
     {
-        private TintTextureGenerator generator
-        {
-            get
-            {
-                TintTextureGenerator generator = FindObjectOfType<TintTextureGenerator>();
-                if (generator == null)
-                {
-                    // Note: Code assumes only one grid in scene
-                    Grid grid = FindObjectOfType<Grid>();
-                    if (grid != null)
-                    {
-                        generator = grid.gameObject.AddComponent<TintTextureGenerator>();
-                    }
-                }
-                return generator;
-            }
-        }
-
         /// <summary>
         /// Factor to blend the Color of Tile with its color and this Brush's color
         /// </summary>
