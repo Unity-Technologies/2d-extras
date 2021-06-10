@@ -14,10 +14,16 @@ public class TintTextureGenerator : MonoBehaviour
     public int k_TintMapSize = 256;
 
     /// <summary>
-    /// Mapping scale for cells to tint texture
+    /// Mapping scale for cells to Tint map texture
     /// </summary>
+    /// /// <remarks>
+    /// Adjust to get better definition.
+    /// </remarks>
     public int k_ScaleFactor = 1;
 
+    /// <summary>
+    /// Size of the Tint map texture in pixels
+    /// </summary>
     public int k_TintMapTextureSize => k_TintMapSize * k_ScaleFactor;
 
     private Grid m_Grid;
@@ -34,6 +40,10 @@ public class TintTextureGenerator : MonoBehaviour
     }
 
     private Texture2D m_TintTexture;
+    
+    /// <summary>
+    /// Tint texture generated from Grid values
+    /// </summary>
     public Texture2D tintTexture
     {
         get
