@@ -46,7 +46,8 @@ namespace UnityEditor.Tilemaps
         {
             var objectsInCell = GetObjectsInCell(grid, brushTarget.transform, position);
             var existPrefabObjectInCell = objectsInCell.Any(objectInCell => PrefabUtility.GetCorrespondingObjectFromSource(objectInCell) == m_Prefab);
-
+            m_Rotation = Quaternion.Euler(m_Prefab.transform.eulerAngles);
+            
             if (!existPrefabObjectInCell)
             {
                 base.InstantiatePrefabInCell(grid, brushTarget, position, m_Prefab, m_Rotation);
