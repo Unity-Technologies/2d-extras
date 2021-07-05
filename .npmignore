@@ -9,3 +9,4 @@ QAReport.md.meta
 .gitlab-ci.yml
 build.bat
 build.sh
+//build.sh
