@@ -88,5 +88,6 @@ Please use the `2017` branch or the `2017` tag for earlier versions of Unity (fr
 
 - **GridInformation**: A simple MonoBehaviour that stores and provides information based on Grid positions and keywords.
 - **Custom Rules for RuleTile**: This helps to create new custom Rules for the Rule Tile. Check the [Wiki](https://github.com/Unity-Technologies/2d-extras/wiki) or this great [video](https://youtu.be/FwOxLkJTXag) for more information on how to use this!
+
 [![How to make Custom Rule Tiles in Unity Video](http://img.youtube.com/vi/FwOxLkJTXag/0.jpg)](http://www.youtube.com/watch?v=FwOxLkJTXag "How to make Custom Rule Tiles in Unity")
 
