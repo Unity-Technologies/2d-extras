@@ -64,6 +64,12 @@ namespace UnityEditor.Tilemaps
         {
             get { return m_Size.x * m_Size.y * m_Size.y; }
         }
+        /// <summary>Whether the brush can change Z Position</summary>
+        public bool canChangeZPosition
+        {
+            get { return m_CanChangeZPosition; }
+            set { m_CanChangeZPosition = value; }
+        }
         
         /// <summary>
         /// This Brush instances, places and manipulates GameObjects onto the scene.
@@ -681,6 +687,13 @@ namespace UnityEditor.Tilemaps
         /// </summary>
         public GameObjectBrush brush { get { return target as GameObjectBrush; } }
 
+        /// <summary> Whether the GridBrush can change Z Position. </summary>
+        public override bool canChangeZPosition
+        {
+            get { return brush.canChangeZPosition; }
+            set { brush.canChangeZPosition = value; }
+        }
+        
         /// <summary>
         /// Callback for painting the GUI for the GridBrush in the Scene View.
         /// The GameObjectBrush Editor overrides this to draw the preview of the brush when drawing lines.
