@@ -41,6 +41,15 @@ namespace UnityEditor.Tilemaps
 
             CacheCellsFromRotationStep();
 
+            var setPositions = m_SetPositions;
+            var setTiles = m_SetTiles;
+            var positionSize = position.size.x * position.size.y * position.size.z; 
+            if (positionSize != setPositions.Length)
+            {
+                setPositions = new Vector3Int[positionSize];
+                setTiles = new TileBase[positionSize];
+            }
+            
             int i = 0;
             foreach (Vector3Int location in position.allPositionsWithin)
             {
@@ -49,11 +58,11 @@ namespace UnityEditor.Tilemaps
                 if (cell.tile == null)
                     continue;
 
-                m_SetPositions[i] = location;
-                m_SetTiles[i] = cell.tile;
+                setPositions[i] = location;
+                setTiles[i] = cell.tile;
                 i++;
             }
-            map.SetTiles(m_SetPositions, m_SetTiles);
+            map.SetTiles(setPositions, setTiles);
 
             foreach (Vector3Int location in position.allPositionsWithin)
             {
