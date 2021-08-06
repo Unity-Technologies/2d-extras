@@ -3,6 +3,9 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [3.0.0] - 2021-08-06
+- Update version to 3.0.0 for Unity 2022.1
+
 ## [2.2.0] - 2021-06-01
 - [RuleTileEditor] Add tooltips to fields
 - Add required package dependencies
