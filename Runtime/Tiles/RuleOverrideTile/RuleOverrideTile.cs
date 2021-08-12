@@ -160,7 +160,7 @@ namespace UnityEngine.Tilemaps
         public void ApplyOverrides(IList<KeyValuePair<Sprite, Sprite>> overrides)
         {
             if (overrides == null)
-                throw new System.ArgumentNullException("overrides");
+                throw new ArgumentNullException("overrides");
 
             for (int i = 0; i < overrides.Count; i++)
                 this[overrides[i].Key] = overrides[i].Value;
@@ -174,7 +174,7 @@ namespace UnityEngine.Tilemaps
         public void ApplyOverrides(IList<KeyValuePair<GameObject, GameObject>> overrides)
         {
             if (overrides == null)
-                throw new System.ArgumentNullException("overrides");
+                throw new ArgumentNullException("overrides");
 
             for (int i = 0; i < overrides.Count; i++)
                 this[overrides[i].Key] = overrides[i].Value;
@@ -189,7 +189,7 @@ namespace UnityEngine.Tilemaps
         public void GetOverrides(List<KeyValuePair<Sprite, Sprite>> overrides, ref int validCount)
         {
             if (overrides == null)
-                throw new System.ArgumentNullException("overrides");
+                throw new ArgumentNullException("overrides");
 
             overrides.Clear();
 
@@ -225,7 +225,7 @@ namespace UnityEngine.Tilemaps
         public void GetOverrides(List<KeyValuePair<GameObject, GameObject>> overrides, ref int validCount)
         {
             if (overrides == null)
-                throw new System.ArgumentNullException("overrides");
+                throw new ArgumentNullException("overrides");
 
             overrides.Clear();
 
@@ -345,6 +345,10 @@ namespace UnityEngine.Tilemaps
             return m_InstanceTile.StartUp(position, tilemap, go);
         }
 
+        /// <summary>
+        /// This function is called when the RuleOverrideTile is loaded.
+        /// This handles initialization for the RuleOverrideTile.
+        /// </summary>
         public void OnEnable()
         {
             if (m_Tile == null)
@@ -353,7 +357,7 @@ namespace UnityEngine.Tilemaps
             if (m_InstanceTile == null)
             {
                 var t = m_Tile.GetType();
-                RuleTile instanceTile = ScriptableObject.CreateInstance(t) as RuleTile;
+                RuleTile instanceTile = CreateInstance(t) as RuleTile;
                 instanceTile.hideFlags = HideFlags.NotEditable;
                 instanceTile.name = m_Tile.name + " (Override)";
                 m_InstanceTile = instanceTile;
