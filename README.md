@@ -1,18 +1,3 @@
-# Notice
-
-## No more development on 2d-extras GitHub repository
-
-We are changing how we develop additional 2D Tiles and Brushes for 2D Tilemap. An important part of this change involves ensuring a single point of entry for users to get the latest tiles and brushes for Tilemap. To this end we created the Tilemap Extras package which is accessible from Package Manager. Moving forward, the 2D-extras GitHub repository will be made read-only. You will still be able to clone and pull the contents of the repository as it is right now.
-
-Tilemap Extras already includes Animated Tiles, RuleTile (Rectangular Isometric and Hexagonal), the Rule Override Tiles, Group Brush, Line Brush, Random Brush and GameObject Brush. It also includes 3 samples covering common use-cases of Rule Tiles and Animated Tiles. Read more about Tilemap Extras in the announcement thread.
-
-If there is functionality in 2d-extras that is important to your team and your product please let us know in this thread or start a discussion in the 2D forums and we will consider adding it to the Tilemap Extras package.
-
-For issues with the Tilemap Extras please use the standard Unity channels via the Unity Bug Reporter and/or starting a thread in our forums instead of the GitHub Repository Issues tracker.
-
-Thank you for all your contributions over the years. As always, let us know about your needs and project plans and we will endeavor to make Tilemap Extras an even better tool for developing 2D games in Unity!
-
-
 # 2d-extras
 
 2d-extras is a repository containing helpful reusable scripts which you can use to make your games, with a slant towards 2D. Feel free to customise the behavior of the scripts to create new tools for your use case! 
@@ -91,3 +76,5 @@ Please use the `2017` branch or the `2017` tag for earlier versions of Unity (fr
 
 [![How to make Custom Rule Tiles in Unity Video](http://img.youtube.com/vi/FwOxLkJTXag/0.jpg)](http://www.youtube.com/watch?v=FwOxLkJTXag "How to make Custom Rule Tiles in Unity")
 
+### Contribution Notice
+From 7 January 2019 until 12 February 2020, all contributions are licensed under the Unity Companion License for Unity-dependent projects (see https://unity3d.com/legal/licenses/unity_companion_license).
