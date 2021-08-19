@@ -152,6 +152,21 @@ namespace UnityEngine.Tilemaps
         /// </summary>
         [HideInInspector] public RuleTile m_InstanceTile;
 
+        private void CreateInstanceTile()
+        {
+            var t = m_Tile.GetType();
+            RuleTile instanceTile = CreateInstance(t) as RuleTile;
+            instanceTile.hideFlags = HideFlags.NotEditable;
+            instanceTile.name = m_Tile.name + " (Override)";
+            m_InstanceTile = instanceTile;
+
+#if UNITY_EDITOR
+            if(AssetDatabase.Contains(this))
+                AssetDatabase.AddObjectToAsset(instanceTile, this);
+            EditorUtility.SetDirty(this);
+#endif            
+        }
+        
         /// <summary>
         /// Applies overrides to this
         /// </summary>
@@ -256,9 +271,12 @@ namespace UnityEngine.Tilemaps
         /// </summary>
         public virtual void Override()
         {
-            if (!m_Tile || !m_InstanceTile)
+            if (!m_Tile)
                 return;
 
+            if (!m_InstanceTile)
+                CreateInstanceTile();
+            
             PrepareOverride();
 
             var tile = m_InstanceTile;
@@ -345,29 +363,13 @@ namespace UnityEngine.Tilemaps
             return m_InstanceTile.StartUp(position, tilemap, go);
         }
 
-        /// <summary>
-        /// This function is called when the RuleOverrideTile is loaded.
-        /// This handles initialization for the RuleOverrideTile.
-        /// </summary>
         public void OnEnable()
         {
             if (m_Tile == null)
                 return;
 
             if (m_InstanceTile == null)
-            {
-                var t = m_Tile.GetType();
-                RuleTile instanceTile = CreateInstance(t) as RuleTile;
-                instanceTile.hideFlags = HideFlags.NotEditable;
-                instanceTile.name = m_Tile.name + " (Override)";
-                m_InstanceTile = instanceTile;
                 Override();
-
-#if UNITY_EDITOR
-                AssetDatabase.AddObjectToAsset(instanceTile, this);
-                EditorUtility.SetDirty(this);
-#endif
-            }
         }
     }
 }
