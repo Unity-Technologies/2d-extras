@@ -152,6 +152,21 @@ namespace UnityEngine.Tilemaps
         /// </summary>
         [HideInInspector] public RuleTile m_InstanceTile;
 
+        private void CreateInstanceTile()
+        {
+            var t = m_Tile.GetType();
+            RuleTile instanceTile = CreateInstance(t) as RuleTile;
+            instanceTile.hideFlags = HideFlags.NotEditable;
+            instanceTile.name = m_Tile.name + " (Override)";
+            m_InstanceTile = instanceTile;
+
+#if UNITY_EDITOR
+            if(AssetDatabase.Contains(this))
+                AssetDatabase.AddObjectToAsset(instanceTile, this);
+            EditorUtility.SetDirty(this);
+#endif            
+        }
+        
         /// <summary>
         /// Applies overrides to this
         /// </summary>
@@ -160,7 +175,7 @@ namespace UnityEngine.Tilemaps
         public void ApplyOverrides(IList<KeyValuePair<Sprite, Sprite>> overrides)
         {
             if (overrides == null)
-                throw new System.ArgumentNullException("overrides");
+                throw new ArgumentNullException("overrides");
 
             for (int i = 0; i < overrides.Count; i++)
                 this[overrides[i].Key] = overrides[i].Value;
@@ -174,7 +189,7 @@ namespace UnityEngine.Tilemaps
         public void ApplyOverrides(IList<KeyValuePair<GameObject, GameObject>> overrides)
         {
             if (overrides == null)
-                throw new System.ArgumentNullException("overrides");
+                throw new ArgumentNullException("overrides");
 
             for (int i = 0; i < overrides.Count; i++)
                 this[overrides[i].Key] = overrides[i].Value;
@@ -189,7 +204,7 @@ namespace UnityEngine.Tilemaps
         public void GetOverrides(List<KeyValuePair<Sprite, Sprite>> overrides, ref int validCount)
         {
             if (overrides == null)
-                throw new System.ArgumentNullException("overrides");
+                throw new ArgumentNullException("overrides");
 
             overrides.Clear();
 
@@ -225,7 +240,7 @@ namespace UnityEngine.Tilemaps
         public void GetOverrides(List<KeyValuePair<GameObject, GameObject>> overrides, ref int validCount)
         {
             if (overrides == null)
-                throw new System.ArgumentNullException("overrides");
+                throw new ArgumentNullException("overrides");
 
             overrides.Clear();
 
@@ -256,9 +271,12 @@ namespace UnityEngine.Tilemaps
         /// </summary>
         public virtual void Override()
         {
-            if (!m_Tile || !m_InstanceTile)
+            if (!m_Tile)
                 return;
 
+            if (!m_InstanceTile)
+                CreateInstanceTile();
+            
             PrepareOverride();
 
             var tile = m_InstanceTile;
@@ -351,19 +369,7 @@ namespace UnityEngine.Tilemaps
                 return;
 
             if (m_InstanceTile == null)
-            {
-                var t = m_Tile.GetType();
-                RuleTile instanceTile = ScriptableObject.CreateInstance(t) as RuleTile;
-                instanceTile.hideFlags = HideFlags.NotEditable;
-                instanceTile.name = m_Tile.name + " (Override)";
-                m_InstanceTile = instanceTile;
                 Override();
-
-#if UNITY_EDITOR
-                AssetDatabase.AddObjectToAsset(instanceTile, this);
-                EditorUtility.SetDirty(this);
-#endif
-            }
         }
     }
 }
