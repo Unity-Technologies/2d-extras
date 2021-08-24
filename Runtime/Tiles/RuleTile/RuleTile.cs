@@ -30,7 +30,7 @@ namespace UnityEngine
         /// <summary>
         /// Returns the default Neighbor Rule Class type.
         /// </summary>
-        public virtual Type m_NeighborType => typeof(TilingRule.Neighbor);
+        public virtual Type m_NeighborType => typeof(TilingRuleOutput.Neighbor);
 
         /// <summary>
         /// The Default Sprite set when creating a new Rule.
@@ -195,6 +195,10 @@ namespace UnityEngine
             /// </summary>
             public Transform m_RuleTransform;
 
+            /// <summary>
+            /// This clones a copy of the TilingRule.
+            /// </summary>
+            /// <returns>A copy of the TilingRule.</returns>
             public TilingRule Clone()
             {
                 TilingRule rule = new TilingRule();
@@ -299,7 +303,7 @@ namespace UnityEngine
                     positions.Add(position);
 
                     // Check rule against rotations of 0, 90, 180, 270
-                    if (rule.m_RuleTransform == TilingRule.Transform.Rotated)
+                    if (rule.m_RuleTransform == TilingRuleOutput.Transform.Rotated)
                     {
                         for (int angle = m_RotationAngle; angle < 360; angle += m_RotationAngle)
                         {
@@ -307,19 +311,19 @@ namespace UnityEngine
                         }
                     }
                     // Check rule against x-axis, y-axis mirror
-                    else if (rule.m_RuleTransform == TilingRule.Transform.MirrorXY)
+                    else if (rule.m_RuleTransform == TilingRuleOutput.Transform.MirrorXY)
                     {
                         positions.Add(GetMirroredPosition(position, true, true));
                         positions.Add(GetMirroredPosition(position, true, false));
                         positions.Add(GetMirroredPosition(position, false, true));
                     }
                     // Check rule against x-axis mirror
-                    else if (rule.m_RuleTransform == TilingRule.Transform.MirrorX)
+                    else if (rule.m_RuleTransform == TilingRuleOutput.Transform.MirrorX)
                     {
                         positions.Add(GetMirroredPosition(position, true, false));
                     }
                     // Check rule against y-axis mirror
-                    else if (rule.m_RuleTransform == TilingRule.Transform.MirrorY)
+                    else if (rule.m_RuleTransform == TilingRuleOutput.Transform.MirrorY)
                     {
                         positions.Add(GetMirroredPosition(position, false, true));
                     }
@@ -402,14 +406,14 @@ namespace UnityEngine
                 {
                     switch (rule.m_Output)
                     {
-                        case TilingRule.OutputSprite.Single:
-                        case TilingRule.OutputSprite.Animation:
+                        case TilingRuleOutput.OutputSprite.Single:
+                        case TilingRuleOutput.OutputSprite.Animation:
                             tileData.sprite = rule.m_Sprites[0];
                             break;
-                        case TilingRule.OutputSprite.Random:
+                        case TilingRuleOutput.OutputSprite.Random:
                             int index = Mathf.Clamp(Mathf.FloorToInt(GetPerlinValue(position, rule.m_PerlinScale, 100000f) * rule.m_Sprites.Length), 0, rule.m_Sprites.Length - 1);
                             tileData.sprite = rule.m_Sprites[index];
-                            if (rule.m_RandomTransform != TilingRule.Transform.Fixed)
+                            if (rule.m_RandomTransform != TilingRuleOutput.Transform.Fixed)
                                 transform = ApplyRandomTransform(rule.m_RandomTransform, transform, rule.m_PerlinScale, position);
                             break;
                     }
@@ -535,7 +539,7 @@ namespace UnityEngine
             var iden = Matrix4x4.identity;
             foreach (TilingRule rule in m_TilingRules)
             {
-                if (rule.m_Output == TilingRule.OutputSprite.Animation)
+                if (rule.m_Output == TilingRuleOutput.OutputSprite.Animation)
                 {
                     Matrix4x4 transform = iden;
                     if (RuleMatches(rule, position, tilemap, ref transform))
@@ -601,7 +605,7 @@ namespace UnityEngine
             }
 
             // Check rule against rotations of 0, 90, 180, 270
-            if (rule.m_RuleTransform == TilingRule.Transform.Rotated)
+            if (rule.m_RuleTransform == TilingRuleOutput.Transform.Rotated)
             {
                 for (int angle = m_RotationAngle; angle < 360; angle += m_RotationAngle)
                 {
@@ -613,7 +617,7 @@ namespace UnityEngine
                 }
             }
             // Check rule against x-axis, y-axis mirror
-            else if (rule.m_RuleTransform == TilingRule.Transform.MirrorXY)
+            else if (rule.m_RuleTransform == TilingRuleOutput.Transform.MirrorXY)
             {
                 if (RuleMatches(rule, position, tilemap, true, true))
                 {
@@ -632,7 +636,7 @@ namespace UnityEngine
                 }
             }
             // Check rule against x-axis mirror
-            else if (rule.m_RuleTransform == TilingRule.Transform.MirrorX)
+            else if (rule.m_RuleTransform == TilingRuleOutput.Transform.MirrorX)
             {
                 if (RuleMatches(rule, position, tilemap, true, false))
                 {
@@ -641,7 +645,7 @@ namespace UnityEngine
                 }
             }
             // Check rule against y-axis mirror
-            else if (rule.m_RuleTransform == TilingRule.Transform.MirrorY)
+            else if (rule.m_RuleTransform == TilingRuleOutput.Transform.MirrorY)
             {
                 if (RuleMatches(rule, position, tilemap, false, true))
                 {
@@ -661,18 +665,18 @@ namespace UnityEngine
         /// <param name="perlinScale">The Perlin Scale factor of the Tile.</param>
         /// <param name="position">Position of the Tile on the Tilemap.</param>
         /// <returns>A random transform matrix.</returns>
-        public virtual Matrix4x4 ApplyRandomTransform(TilingRule.Transform type, Matrix4x4 original, float perlinScale, Vector3Int position)
+        public virtual Matrix4x4 ApplyRandomTransform(TilingRuleOutput.Transform type, Matrix4x4 original, float perlinScale, Vector3Int position)
         {
             float perlin = GetPerlinValue(position, perlinScale, 200000f);
             switch (type)
             {
-                case TilingRule.Transform.MirrorXY:
+                case TilingRuleOutput.Transform.MirrorXY:
                     return original * Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(Math.Abs(perlin - 0.5) > 0.25 ? 1f : -1f, perlin < 0.5 ? 1f : -1f, 1f));
-                case TilingRule.Transform.MirrorX:
+                case TilingRuleOutput.Transform.MirrorX:
                     return original * Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(perlin < 0.5 ? 1f : -1f, 1f, 1f));
-                case TilingRule.Transform.MirrorY:
+                case TilingRuleOutput.Transform.MirrorY:
                     return original * Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1f, perlin < 0.5 ? 1f : -1f, 1f));
-                case TilingRule.Transform.Rotated:
+                case TilingRuleOutput.Transform.Rotated:
                     int angle = Mathf.Clamp(Mathf.FloorToInt(perlin * m_RotationCount), 0, m_RotationCount - 1) * m_RotationAngle;
                     return Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), Vector3.one);
             }
@@ -690,7 +694,7 @@ namespace UnityEngine
                 .Where(field => typeof(RuleTile).GetField(field.Name) == null)
                 .Where(field => field.IsPublic || field.IsDefined(typeof(SerializeField)))
                 .Where(field => !field.IsDefined(typeof(HideInInspector)))
-                .Where(field => !isOverrideInstance || !field.IsDefined(typeof(RuleTile.DontOverride)))
+                .Where(field => !isOverrideInstance || !field.IsDefined(typeof(DontOverride)))
                 .ToArray();
         }
 
@@ -707,8 +711,8 @@ namespace UnityEngine
 
             switch (neighbor)
             {
-                case TilingRule.Neighbor.This: return other == this;
-                case TilingRule.Neighbor.NotThis: return other != this;
+                case TilingRuleOutput.Neighbor.This: return other == this;
+                case TilingRuleOutput.Neighbor.NotThis: return other != this;
             }
             return true;
         }
