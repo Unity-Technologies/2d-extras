@@ -3,6 +3,20 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [2.2.1] - 2021-08-24
+### Changed
+- [GameObjectBrush] Add canChangePosition
+- [RuleOverrideTile] Create instance Tile on override
+- [RuleTile] Add scripting documentation
+- [RuleTileEditor] Add drag and drop rect for Sprites to create initial TilingRules
+- [RuleTileEditor] Add field to change number of TilingRules
+- [RuleTileEditor] Add blank space to the end of the Rule list
+- [TintBrush] Convert cell positions to world positions based on the Grid used
+- [TintBrush] Add k_ScaleFactor for better precision when painting on non-rectangular Tilemaps
+
+### Fixed
+- [RuleTile] Fixed error in RuleTileEditor when removing all Rules and adding a new Rule
+
 ## [2.2.0] - 2021-06-01
 - [RuleTileEditor] Add tooltips to fields
 - Add required package dependencies
