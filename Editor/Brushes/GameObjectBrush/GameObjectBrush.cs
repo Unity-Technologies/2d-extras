@@ -62,7 +62,7 @@ namespace UnityEditor.Tilemaps
         /// <summary>Number of brush cells based on size.</summary>
         public int sizeCount
         {
-            get { return m_Size.x * m_Size.y * m_Size.y; }
+            get { return m_Size.x * m_Size.y * m_Size.z; }
         }
         
         /// <summary>
