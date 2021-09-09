@@ -31,6 +31,8 @@ namespace UnityEditor
         private const string s_Rotated = "iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwQAADsEBuJFr7QAAABh0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC41ZYUyZQAAAHdJREFUOE+djssNwCAMQxmIFdgx+2S4Vj4YxWlQgcOT8nuG5u5C732Sd3lfLlmPMR4QhXgrTQaimUlA3EtD+CJlBuQ7aUAUMjEAv9gWCQNEPhHJUkYfZ1kEpcxDzioRzGIlr0Qwi0r+Q5rTgM+AAVcygHgt7+HtBZs/2QVWP8ahAAAAAElFTkSuQmCC";
         private const string s_Fixed = "iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMjHxIGmVAAAA50lEQVQ4T51Ruw6CQBCkwBYKWkIgQAs9gfgCvgb4BML/qWBM9Bdo9QPIuVOQ3JIzosVkc7Mzty9NCPE3lORaKMm1YA/LsnTXdbdhGJ6iKHoVRTEi+r4/OI6zN01Tl/XM7HneLsuyW13XU9u2ous6gYh3kiR327YPsp6ZgyDom6aZYFqiqqqJ8mdZz8xoca64BHjkZT0zY0aVcQbysp6Z4zj+Vvkp65mZttxjOSozdkEzD7KemekcxzRNHxDOHSDiQ/DIy3pmpjtuSJBThStGKMtyRKSOLnSm3DCMz3f+FUpyLZTkOgjtDSWORSDbpbmNAAAAAElFTkSuQmCC";
 
+        private static readonly string k_UndoName = L10n.Tr("Change RuleTile");
+        
         private static Texture2D[] s_Arrows;
 
         /// <summary>
@@ -373,10 +375,14 @@ namespace UnityEditor
         public static void UpdateAffectedOverrideTiles(RuleTile target)
         {
             List<RuleOverrideTile> overrideTiles = FindAffectedOverrideTiles(target);
-            foreach (var overrideTile in overrideTiles)
+            if (overrideTiles != null)
             {
-                overrideTile.Override();
-                UpdateAffectedOverrideTiles(overrideTile.m_InstanceTile);
+                Undo.RecordObjects(overrideTiles.ToArray(), k_UndoName);
+                foreach (var overrideTile in overrideTiles)
+                {
+                    overrideTile.Override();
+                    UpdateAffectedOverrideTiles(overrideTile.m_InstanceTile);
+                }
             }
         }
 
@@ -440,6 +446,8 @@ namespace UnityEditor
         /// </summary>
         public override void OnInspectorGUI()
         {
+            Undo.RecordObject(target, k_UndoName);
+
             EditorGUI.BeginChangeCheck();
 
             tile.m_DefaultSprite = EditorGUILayout.ObjectField(Styles.defaultSprite, tile.m_DefaultSprite, typeof(Sprite), false) as Sprite;
