@@ -349,7 +349,11 @@ namespace UnityEditor.Tilemaps
             if (brushTarget == hiddenGrid)
                 brushTarget = null;
             if (brushTarget != null)
-                gridLayout = brushTarget.GetComponent<GridLayout>();
+            {
+                var targetGridLayout = brushTarget.GetComponent<GridLayout>();
+                if (targetGridLayout != null)
+                    gridLayout = targetGridLayout;
+            }
         }
         
         /// <summary>Clears all data of the brush.</summary>
