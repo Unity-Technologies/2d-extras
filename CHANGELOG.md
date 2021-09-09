@@ -8,11 +8,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Changed
 - [GameObjectBrush] Add canChangePosition
+- [GameObjectBrush] Use GridLayout from BrushTarget if it has one
 - [RuleOverrideTile] Create instance Tile on override
 - [RuleTile] Add scripting documentation
 - [RuleTileEditor] Add drag and drop rect for Sprites to create initial TilingRules
 - [RuleTileEditor] Add field to change number of TilingRules
 - [RuleTileEditor] Add blank space to the end of the Rule list
+- [RuleTileEditor] Add undo for changes
+- [AnimatedTileEditor] Add undo for changes
 - [TintBrush] Convert cell positions to world positions based on the Grid used
 - [TintBrush] Add k_ScaleFactor for better precision when painting on non-rectangular Tilemaps
 
