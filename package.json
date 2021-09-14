@@ -13,7 +13,7 @@
 		"com.unity.modules.jsonserialize": "1.0.0"
     },
     "relatedPackages": {
-      "com.unity.2d.tilemap.extras.tests": "2.2.0"
+      "com.unity.2d.tilemap.extras.tests": "3.0.0"
     },
     "samples": [
         {
