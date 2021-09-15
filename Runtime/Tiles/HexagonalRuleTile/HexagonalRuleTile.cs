@@ -124,12 +124,7 @@ namespace UnityEngine
         /// <returns>The reversed offset position.</returns>
         public override Vector3Int GetOffsetPositionReverse(Vector3Int position, Vector3Int offset)
         {
-            Vector3Int offsetPosition = position - offset;
-
-            if (offset.y % 2 != 0 && position.y % 2 != 0)
-                offsetPosition.x -= 1;
-
-            return offsetPosition;
+            return GetOffsetPosition(position, GetRotatedPosition(offset, 180));
         }
 
         /// <summary>
