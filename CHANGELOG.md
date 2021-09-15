@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Changed
 - [GameObjectBrush] Add canChangePosition
 - [GameObjectBrush] Use GridLayout from BrushTarget if it has one
+- [HexagonalRuleTile] Fix GetOffsetPositionReverse
 - [RuleOverrideTile] Create instance Tile on override
 - [RuleTile] Add scripting documentation
 - [RuleTileEditor] Add drag and drop rect for Sprites to create initial TilingRules
