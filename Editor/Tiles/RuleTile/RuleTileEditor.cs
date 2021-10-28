@@ -177,6 +177,8 @@ namespace UnityEditor
         /// </summary>
         public const float k_LabelWidth = 80f;
 
+        private SerializedProperty m_TilingRules;
+        
         /// <summary>
         /// OnEnable for the RuleTileEditor
         /// </summary>
@@ -188,6 +190,8 @@ namespace UnityEditor
             m_ReorderableList.elementHeightCallback = GetElementHeight;
             m_ReorderableList.onChangedCallback = ListUpdated;
             m_ReorderableList.onAddDropdownCallback = OnAddDropdownElement;
+
+            m_TilingRules = serializedObject.FindProperty("m_TilingRules");
         }
 
         /// <summary>
@@ -362,6 +366,7 @@ namespace UnityEditor
         /// </summary>
         public void SaveTile()
         {
+            serializedObject.ApplyModifiedProperties();
             EditorUtility.SetDirty(target);
             SceneView.RepaintAll();
 
@@ -446,6 +451,7 @@ namespace UnityEditor
         /// </summary>
         public override void OnInspectorGUI()
         {
+            serializedObject.Update();
             Undo.RecordObject(target, k_UndoName);
 
             EditorGUI.BeginChangeCheck();
@@ -484,18 +490,13 @@ namespace UnityEditor
 
             if (EditorGUI.EndChangeCheck())
                 SaveTile();
-            
+
             GUILayout.Space(k_DefaultElementHeight);
         }
 
         private void ResizeRuleTileList(int count)
         {
-            if (tile.m_TilingRules == null)
-                tile.m_TilingRules = new List<RuleTile.TilingRule>();
-            while (tile.m_TilingRules.Count > count)
-                tile.m_TilingRules.RemoveAt(tile.m_TilingRules.Count - 1);
-            while (tile.m_TilingRules.Count < count)
-                tile.m_TilingRules.Add(new RuleTile.TilingRule());
+            m_TilingRules.arraySize = count;
         }
 
         /// <summary>
