@@ -161,14 +161,8 @@ namespace UnityEngine.Tilemaps
 
         private void OnAddElement(ReorderableList list)
         {
-            if (tile.m_AnimatedSprites == null)
-            {
-                tile.m_AnimatedSprites = new Sprite[1];
-            }
-            else
-            {
-                Array.Resize<Sprite>(ref tile.m_AnimatedSprites, tile.m_AnimatedSprites.Length + 1);
-            }
+            var count = tile.m_AnimatedSprites != null ? tile.m_AnimatedSprites.Length + 1 : 1;  
+            ResizeAnimatedSpriteList(count);
         }
 
         private void OnRemoveElement(ReorderableList list)
@@ -279,7 +273,7 @@ namespace UnityEngine.Tilemaps
                         return;
 
                     Undo.RegisterCompleteObjectUndo(tile, "Drag and Drop to Animated Tile");
-                    Array.Resize<Sprite>(ref tile.m_AnimatedSprites, dragAndDropSprites.Count);
+                    ResizeAnimatedSpriteList(dragAndDropSprites.Count);
                     Array.Copy(dragAndDropSprites.ToArray(), tile.m_AnimatedSprites, dragAndDropSprites.Count);
                     DragAndDropClear();
                     GUI.changed = true;
@@ -314,7 +308,7 @@ namespace UnityEngine.Tilemaps
                 count = 0;
 
             if (tile.m_AnimatedSprites == null || tile.m_AnimatedSprites.Length != count)
-                m_AnimatedSprites.arraySize = count;
+                ResizeAnimatedSpriteList(count);
 
             if (count == 0)
             {
@@ -369,6 +363,12 @@ namespace UnityEngine.Tilemaps
                 serializedObject.ApplyModifiedProperties();
                 EditorUtility.SetDirty(tile);
             }
+        }
+        
+        private void ResizeAnimatedSpriteList(int count)
+        {
+            m_AnimatedSprites.arraySize = count;
+            serializedObject.ApplyModifiedProperties();
         }
     }
 #endif

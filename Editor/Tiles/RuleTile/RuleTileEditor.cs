@@ -323,11 +323,16 @@ namespace UnityEditor
             rule.m_Sprites[0] = tile.m_DefaultSprite;
             rule.m_GameObject = tile.m_DefaultGameObject;
             rule.m_ColliderType = tile.m_DefaultColliderType;
+
+            var count = m_TilingRules.arraySize;
+            ResizeRuleTileList(count + 1);
+            
             if (list.index == -1  || list.index >= list.count)
-                tile.m_TilingRules.Add(rule);
+                tile.m_TilingRules[count] = rule;
             else
             {
                 tile.m_TilingRules.Insert(list.index + 1, rule);
+                tile.m_TilingRules.RemoveAt(count + 1);
                 if (list.IsSelected(list.index))
                     list.index += 1;
             }
@@ -341,7 +346,12 @@ namespace UnityEditor
 
             var copyRule = tile.m_TilingRules[list.index];
             var rule = copyRule.Clone();
+            
+            var count = m_TilingRules.arraySize;
+            ResizeRuleTileList(count + 1);
+            
             tile.m_TilingRules.Insert(list.index + 1, rule);
+            tile.m_TilingRules.RemoveAt(count + 1);
             if (list.IsSelected(list.index))
                 list.index += 1;
         }
