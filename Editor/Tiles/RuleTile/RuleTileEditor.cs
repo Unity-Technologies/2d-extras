@@ -496,7 +496,14 @@ namespace UnityEditor
 
         private void ResizeRuleTileList(int count)
         {
+            var isEmpty = m_TilingRules.arraySize == 0;
             m_TilingRules.arraySize = count;
+            serializedObject.ApplyModifiedProperties();
+            if (isEmpty)
+            {
+                for (int i = 0; i < count; ++i)
+                    tile.m_TilingRules[i] = new RuleTile.TilingRule();
+            }
         }
 
         /// <summary>
