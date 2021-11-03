@@ -16,6 +16,7 @@ namespace UnityEditor.Tilemaps
         WeightedRandomTile,
         PipelineTile,
         TerrainTile,
+        WeightedRandomTerrainTile,
     }
     internal enum EBrushMenuItemOrder
     {
