@@ -13,12 +13,17 @@ namespace UnityEngine.Tilemaps
     [Serializable]
     public class WeightedRandomTerrainTile : TileBase
     {
+        [Serializable]
+        public struct WeightedSprites
+        {
+            public List<WeightedSprite> m_Sprites;
+        }
+        
         /// <summary>
         /// The Sprites used for defining the Terrain.
         /// </summary>
-        [SerializeField]
-        public List<WeightedSprite[]> m_Sprites;
-
+        public List<WeightedSprites> m_WeightedList;
+        
         /// <summary>
         /// This method is called when the tile is refreshed.
         /// </summary>
@@ -67,7 +72,7 @@ namespace UnityEngine.Tilemaps
             if ((original | 191) < 255) { mask = mask & 95; }
 
             int index = GetIndex((byte)mask);
-            if (index >= 0 && index < m_Sprites.Count && TileValue(tileMap, location))
+            if (index >= 0 && index < m_WeightedList.Count && TileValue(tileMap, location))
             {
                 tileData.sprite = PickSprite(index, location);
                 tileData.transform = GetTransform((byte)mask);
@@ -79,14 +84,14 @@ namespace UnityEngine.Tilemaps
 
         private Sprite PickSprite(int index, Vector3Int location)
         {
-            if (m_Sprites.Count <= index)
+            if (m_WeightedList.Count <= index)
                 return null;
             
-            var weightedSprite = m_Sprites[index];
-            if (weightedSprite.Length == 0)
+            var weightedSprite = m_WeightedList[index];
+            if (weightedSprite.m_Sprites.Count == 0)
                 return null;
             
-            var sprite = weightedSprite[0].Sprite;
+            var sprite = weightedSprite.m_Sprites[0].Sprite;
             
             var oldState = Random.state;
             long hash = location.x;
@@ -99,11 +104,11 @@ namespace UnityEngine.Tilemaps
 
             // Get the cumulative weight of the sprites
             var cumulativeWeight = 0;
-            foreach (var spriteInfo in weightedSprite) cumulativeWeight += spriteInfo.Weight;
+            foreach (var spriteInfo in weightedSprite.m_Sprites) cumulativeWeight += spriteInfo.Weight;
 
             // Pick a random weight and choose a sprite depending on it
             var randomWeight = Random.Range(0, cumulativeWeight);
-            foreach (var spriteInfo in weightedSprite) 
+            foreach (var spriteInfo in weightedSprite.m_Sprites) 
             {
                 randomWeight -= spriteInfo.Weight;
                 if (randomWeight < 0) 
@@ -247,18 +252,26 @@ namespace UnityEngine.Tilemaps
 
         private WeightedRandomTerrainTile tile { get { return (target as WeightedRandomTerrainTile); } }
 
+        private SerializedProperty m_WeightedList;
+        
         
         /// <summary>
         /// OnEnable for TerrainTile.
         /// </summary>
         public void OnEnable()
         {
-            if (tile.m_Sprites == null || tile.m_Sprites.Count != 15)
+            m_WeightedList = serializedObject.FindProperty("m_WeightedList");
+            if (m_WeightedList.arraySize != 15)
             {
-                tile.m_Sprites = new List<WeightedSprite[]>(15);
+                m_WeightedList.arraySize = 15;
                 for (int i = 0; i < 15; ++i)
-                    tile.m_Sprites.Add(new WeightedSprite[1]);
-                EditorUtility.SetDirty(tile);
+                {
+                    var weightedSprites = m_WeightedList.GetArrayElementAtIndex(i);
+                    var spritesList = weightedSprites.FindPropertyRelative("m_Sprites");
+                    if (spritesList.arraySize == 0)
+                        spritesList.arraySize = 1;
+                }
+                serializedObject.ApplyModifiedPropertiesWithoutUndo();
             }
         }
 
@@ -279,35 +292,28 @@ namespace UnityEngine.Tilemaps
             EditorGUI.BeginChangeCheck();
             for (int idx = 0; idx < 15; ++idx)
             {
-                var weightedSprite = tile.m_Sprites[idx];
-                
-                EditorGUI.BeginChangeCheck();
-                EditorGUILayout.LabelField(fieldNames[idx]);
-                int count = EditorGUILayout.DelayedIntField("Number of Sprites", weightedSprite != null ? weightedSprite.Length : 1);
+                var weightedSprites = m_WeightedList.GetArrayElementAtIndex(idx);
+                var spritesList = weightedSprites.FindPropertyRelative("m_Sprites");
+
+                EditorGUILayout.LabelField(fieldNames[idx], EditorStyles.boldLabel);
+                int count = EditorGUILayout.DelayedIntField("Number of Sprites", spritesList.arraySize);
                 if (count < 1) 
                     count = 1;
 
-                if (weightedSprite == null || weightedSprite.Length != count)
+                if (spritesList.arraySize != count)
                 {
-                    Array.Resize(ref weightedSprite, count);
-                }
-                
-                for (int i = 0; i < count; i++) 
-                {
-                    weightedSprite[i].Sprite = (Sprite) EditorGUILayout.ObjectField("Sprite " + (i + 1), weightedSprite[i].Sprite, typeof(Sprite), false, null);
-                    weightedSprite[i].Weight = EditorGUILayout.IntField("Weight " + (i + 1), weightedSprite[i].Weight);
+                    spritesList.arraySize = count;
                 }
 
-                if (EditorGUI.EndChangeCheck())
-                    tile.m_Sprites[idx] = weightedSprite;
+                spritesList.isExpanded = true;
+                EditorGUILayout.PropertyField(spritesList, true);
             }
 
-            if (EditorGUI.EndChangeCheck())
+            if (serializedObject.hasModifiedProperties)
             {
                 serializedObject.ApplyModifiedProperties();
-                EditorUtility.SetDirty(tile);   
+                EditorUtility.SetDirty(tile);
             }
-
             EditorGUIUtility.labelWidth = oldLabelWidth;
         }
     }
