@@ -231,25 +231,25 @@ namespace UnityEngine.Tilemaps
     [CustomEditor(typeof(WeightedRandomTerrainTile))]
     public class WeightedRandomTerrainTileEditor : Editor
     {
-        private static readonly string[] fieldNames = new[]
+        private static GUIContent[] fieldLabels = new[]
         {
-            "Filled",
-            "Three Sides",
-            "Two Sides and One Corner",
-            "Two Adjacent Sides",
-            "Two Opposite Sides",
-            "One Side and Two Corners",
-            "One Side and One Lower Corner",
-            "One Side and One Upper Corner",
-            "One Side",
-            "Four Corners",
-            "Three Corners",
-            "Two Adjacent Corners",
-            "Two Opposite Corners",
-            "One Corner",
-            "Empty"
+            new GUIContent("Filled"),
+            new GUIContent("Three Sides"),
+            new GUIContent("Two Sides and One Corner"),
+            new GUIContent("Two Adjacent Sides"),
+            new GUIContent("Two Opposite Sides"),
+            new GUIContent("One Side and Two Corners"),
+            new GUIContent("One Side and One Lower Corner"),
+            new GUIContent("One Side and One Upper Corner"),
+            new GUIContent("One Side"),
+            new GUIContent("Four Corners"),
+            new GUIContent("Three Corners"),
+            new GUIContent("Two Adjacent Corners"),
+            new GUIContent("Two Opposite Corners"),
+            new GUIContent("One Corner"),
+            new GUIContent("Empty"),
         };
-
+        
         private WeightedRandomTerrainTile tile { get { return (target as WeightedRandomTerrainTile); } }
 
         private SerializedProperty m_WeightedList;
@@ -294,19 +294,8 @@ namespace UnityEngine.Tilemaps
             {
                 var weightedSprites = m_WeightedList.GetArrayElementAtIndex(idx);
                 var spritesList = weightedSprites.FindPropertyRelative("m_Sprites");
-
-                EditorGUILayout.LabelField(fieldNames[idx], EditorStyles.boldLabel);
-                int count = EditorGUILayout.DelayedIntField("Number of Sprites", spritesList.arraySize);
-                if (count < 1) 
-                    count = 1;
-
-                if (spritesList.arraySize != count)
-                {
-                    spritesList.arraySize = count;
-                }
-
                 spritesList.isExpanded = true;
-                EditorGUILayout.PropertyField(spritesList, true);
+                EditorGUILayout.PropertyField(spritesList, fieldLabels[idx], true);
             }
 
             if (serializedObject.hasModifiedProperties)
