@@ -163,6 +163,18 @@ namespace UnityEngine.Tilemaps
         {
             var count = tile.m_AnimatedSprites != null ? tile.m_AnimatedSprites.Length + 1 : 1;  
             ResizeAnimatedSpriteList(count);
+            
+            if (list.index == 0  || list.index < list.count)
+            {
+                Array.Copy(tile.m_AnimatedSprites, list.index + 1, tile.m_AnimatedSprites, list.index + 2, list.count - list.index - 1);
+                tile.m_AnimatedSprites[list.index + 1] = null;
+                if (list.IsSelected(list.index))
+                    list.index += 1;
+            }
+            else
+            {
+                tile.m_AnimatedSprites[count - 1] = null;
+            }
         }
 
         private void OnRemoveElement(ReorderableList list)
