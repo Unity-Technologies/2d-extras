@@ -263,13 +263,16 @@ namespace UnityEditor
         /// <returns>GUI element height for a TilingRuleOutput </returns>
         public float GetElementHeight(RuleTile.TilingRuleOutput rule)
         {
-            float inspectorHeight = k_DefaultElementHeight + k_PaddingBetweenRules;
+            float inspectorHeight = k_DefaultElementHeight + k_PaddingBetweenRules + k_SingleLineHeight * (rule.m_GameObjects.Length);
 
             switch (rule.m_Output)
             {
                 case RuleTile.TilingRule.OutputSprite.Random:
                 case RuleTile.TilingRule.OutputSprite.Animation:
-                    inspectorHeight = k_DefaultElementHeight + k_SingleLineHeight * (rule.m_Sprites.Length + 3) + k_PaddingBetweenRules;
+                    inspectorHeight = k_DefaultElementHeight 
+                                      + k_SingleLineHeight * (rule.m_Sprites.Length + 3)
+                                      + k_SingleLineHeight * (rule.m_GameObjects.Length)
+                                      + k_PaddingBetweenRules;
                     break;
             }
 
@@ -317,7 +320,7 @@ namespace UnityEditor
             RuleTile.TilingRule rule = new RuleTile.TilingRule();
             rule.m_Output = RuleTile.TilingRule.OutputSprite.Single;
             rule.m_Sprites[0] = tile.m_DefaultSprite;
-            rule.m_GameObject = tile.m_DefaultGameObject;
+            rule.m_GameObjects[0] = tile.m_DefaultGameObject;
             rule.m_ColliderType = tile.m_DefaultColliderType;
             if (list.index == -1  || list.index >= list.count)
                 tile.m_TilingRules.Add(rule);
@@ -793,8 +796,18 @@ namespace UnityEditor
         {
             float y = rect.yMin;
             GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), Styles.tilingRulesGameObject);
-            tilingRule.m_GameObject = (GameObject)EditorGUI.ObjectField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), "", tilingRule.m_GameObject, typeof(GameObject), false);
+            EditorGUI.BeginChangeCheck();
+            int goLength = EditorGUI.DelayedIntField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_GameObjects.Length);
+            if (EditorGUI.EndChangeCheck())
+                Array.Resize(ref tilingRule.m_GameObjects, Math.Max(goLength, 1));
             y += k_SingleLineHeight;
+            
+            for (int i = 0; i < tilingRule.m_GameObjects.Length; i++)
+            {
+                tilingRule.m_GameObjects[i] = EditorGUI.ObjectField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_GameObjects[i], typeof(GameObject), false) as GameObject;
+                y += k_SingleLineHeight;
+            }
+            
             GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), Styles.tilingRulesCollider);
             tilingRule.m_ColliderType = (Tile.ColliderType)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_ColliderType);
             y += k_SingleLineHeight;

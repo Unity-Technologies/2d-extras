@@ -73,7 +73,7 @@ namespace UnityEngine
             /// <summary>
             /// The output GameObject for this Rule.
             /// </summary>
-            public GameObject m_GameObject;
+            public GameObject[] m_GameObjects = new GameObject[1];
             /// <summary>
             /// The output minimum Animation Speed for this Rule.
             /// </summary>
@@ -207,7 +207,8 @@ namespace UnityEngine
                 rule.m_RuleTransform = m_RuleTransform;
                 rule.m_Sprites = new Sprite[m_Sprites.Length];
                 Array.Copy(m_Sprites, rule.m_Sprites, m_Sprites.Length);
-                rule.m_GameObject = m_GameObject;
+                rule.m_GameObjects = new GameObject[m_GameObjects.Length];;
+                Array.Copy(m_GameObjects, rule.m_GameObjects, m_GameObjects.Length);
                 rule.m_MinAnimationSpeed = m_MinAnimationSpeed;
                 rule.m_MaxAnimationSpeed = m_MaxAnimationSpeed;
                 rule.m_PerlinScale = m_PerlinScale;
@@ -404,22 +405,7 @@ namespace UnityEngine
                 Matrix4x4 transform = iden;
                 if (RuleMatches(rule, position, tilemap, ref transform))
                 {
-                    switch (rule.m_Output)
-                    {
-                        case TilingRuleOutput.OutputSprite.Single:
-                        case TilingRuleOutput.OutputSprite.Animation:
-                            tileData.sprite = rule.m_Sprites[0];
-                            break;
-                        case TilingRuleOutput.OutputSprite.Random:
-                            int index = Mathf.Clamp(Mathf.FloorToInt(GetPerlinValue(position, rule.m_PerlinScale, 100000f) * rule.m_Sprites.Length), 0, rule.m_Sprites.Length - 1);
-                            tileData.sprite = rule.m_Sprites[index];
-                            if (rule.m_RandomTransform != TilingRuleOutput.Transform.Fixed)
-                                transform = ApplyRandomTransform(rule.m_RandomTransform, transform, rule.m_PerlinScale, position);
-                            break;
-                    }
-                    tileData.transform = transform;
-                    tileData.gameObject = rule.m_GameObject;
-                    tileData.colliderType = rule.m_ColliderType;
+                    GetOutputFromMatchedRule(ref tileData, rule, position, tilemap, transform);
                     break;
                 }
             }
@@ -588,6 +574,35 @@ namespace UnityEngine
             }
         }
 
+        /// <summary>
+        /// Fills the TileData with the matching rule
+        /// </summary>
+        /// <param name="tileData">TileData to fill</param>
+        /// <param name="rule">The matching Tiling Rule.</param>
+        /// <param name="position">Position of the Tile on the Tilemap.</param>
+        /// <param name="tilemap">The tilemap.</param>
+        /// <param name="transform">A transform matrix for the matched Rule.</param>
+        public virtual void GetOutputFromMatchedRule(ref TileData tileData, TilingRule rule, Vector3Int position, ITilemap tilemap, Matrix4x4 transform)
+        {
+            switch (rule.m_Output)
+            {
+                case TilingRuleOutput.OutputSprite.Single:
+                case TilingRuleOutput.OutputSprite.Animation:
+                    tileData.sprite = rule.m_Sprites[0];
+                    break;
+                case TilingRuleOutput.OutputSprite.Random:
+                    int index = Mathf.Clamp(Mathf.FloorToInt(GetPerlinValue(position, rule.m_PerlinScale, 100000f) * rule.m_Sprites.Length), 0, rule.m_Sprites.Length - 1);
+                    tileData.sprite = rule.m_Sprites[index];
+                    if (rule.m_RandomTransform != TilingRuleOutput.Transform.Fixed)
+                        transform = ApplyRandomTransform(rule.m_RandomTransform, transform, rule.m_PerlinScale, position);
+                    break;
+            }
+            tileData.transform = transform;
+            int goIndex = Mathf.Clamp(Mathf.FloorToInt(GetPerlinValue(position, rule.m_PerlinScale, 100000f) * rule.m_GameObjects.Length), 0, rule.m_GameObjects.Length - 1);
+            tileData.gameObject = rule.m_GameObjects[goIndex];
+            tileData.colliderType = rule.m_ColliderType;
+        }
+        
         /// <summary>
         /// Does a Rule Match given a Tiling Rule and neighboring Tiles.
         /// </summary>
