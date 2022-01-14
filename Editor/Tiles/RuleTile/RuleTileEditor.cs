@@ -177,6 +177,8 @@ namespace UnityEditor
         /// </summary>
         public const float k_LabelWidth = 80f;
 
+        private SerializedProperty m_TilingRules;
+        
         /// <summary>
         /// OnEnable for the RuleTileEditor
         /// </summary>
@@ -188,6 +190,8 @@ namespace UnityEditor
             m_ReorderableList.elementHeightCallback = GetElementHeight;
             m_ReorderableList.onChangedCallback = ListUpdated;
             m_ReorderableList.onAddDropdownCallback = OnAddDropdownElement;
+
+            m_TilingRules = serializedObject.FindProperty("m_TilingRules");
         }
 
         /// <summary>
@@ -196,6 +200,17 @@ namespace UnityEditor
         public virtual void OnDisable()
         {
             DestroyPreview();
+        }
+
+        private void UpdateTilingRuleIds()
+        {
+            HashSet<int> usedIdSet = new HashSet<int>();
+            foreach (var rule in tile.m_TilingRules)
+            {
+                while (usedIdSet.Contains(rule.m_Id))
+                    rule.m_Id++;
+                usedIdSet.Add(rule.m_Id);
+            }
         }
 
         /// <summary>
@@ -226,13 +241,7 @@ namespace UnityEditor
         /// <param name="list">Reorderable list for Rules</param>
         public void ListUpdated(ReorderableList list)
         {
-            HashSet<int> usedIdSet = new HashSet<int>();
-            foreach (var rule in tile.m_TilingRules)
-            {
-                while (usedIdSet.Contains(rule.m_Id))
-                    rule.m_Id++;
-                usedIdSet.Add(rule.m_Id);
-            }
+            UpdateTilingRuleIds();
         }
 
         private float GetElementHeight(int index)
@@ -267,8 +276,8 @@ namespace UnityEditor
 
             switch (rule.m_Output)
             {
-                case RuleTile.TilingRule.OutputSprite.Random:
-                case RuleTile.TilingRule.OutputSprite.Animation:
+                case RuleTile.TilingRuleOutput.OutputSprite.Random:
+                case RuleTile.TilingRuleOutput.OutputSprite.Animation:
                     inspectorHeight = k_DefaultElementHeight + k_SingleLineHeight * (rule.m_Sprites.Length + 3) + k_PaddingBetweenRules;
                     break;
             }
@@ -315,18 +324,24 @@ namespace UnityEditor
         {
             var list = obj as ReorderableList;
             RuleTile.TilingRule rule = new RuleTile.TilingRule();
-            rule.m_Output = RuleTile.TilingRule.OutputSprite.Single;
+            rule.m_Output = RuleTile.TilingRuleOutput.OutputSprite.Single;
             rule.m_Sprites[0] = tile.m_DefaultSprite;
             rule.m_GameObject = tile.m_DefaultGameObject;
             rule.m_ColliderType = tile.m_DefaultColliderType;
+
+            var count = m_TilingRules.arraySize;
+            ResizeRuleTileList(count + 1);
+            
             if (list.index == -1  || list.index >= list.count)
-                tile.m_TilingRules.Add(rule);
+                tile.m_TilingRules[count] = rule;
             else
             {
                 tile.m_TilingRules.Insert(list.index + 1, rule);
+                tile.m_TilingRules.RemoveAt(count + 1);
                 if (list.IsSelected(list.index))
                     list.index += 1;
             }
+            UpdateTilingRuleIds();
         }
 
         private void OnDuplicateElement(object obj)
@@ -337,9 +352,15 @@ namespace UnityEditor
 
             var copyRule = tile.m_TilingRules[list.index];
             var rule = copyRule.Clone();
+            
+            var count = m_TilingRules.arraySize;
+            ResizeRuleTileList(count + 1);
+            
             tile.m_TilingRules.Insert(list.index + 1, rule);
+            tile.m_TilingRules.RemoveAt(count + 1);
             if (list.IsSelected(list.index))
                 list.index += 1;
+            UpdateTilingRuleIds();
         }
 
         private void OnAddDropdownElement(Rect rect, ReorderableList list)
@@ -362,6 +383,7 @@ namespace UnityEditor
         /// </summary>
         public void SaveTile()
         {
+            serializedObject.ApplyModifiedProperties();
             EditorUtility.SetDirty(target);
             SceneView.RepaintAll();
 
@@ -446,6 +468,7 @@ namespace UnityEditor
         /// </summary>
         public override void OnInspectorGUI()
         {
+            serializedObject.Update();
             Undo.RecordObject(target, k_UndoName);
 
             EditorGUI.BeginChangeCheck();
@@ -484,18 +507,24 @@ namespace UnityEditor
 
             if (EditorGUI.EndChangeCheck())
                 SaveTile();
-            
+
             GUILayout.Space(k_DefaultElementHeight);
         }
 
         private void ResizeRuleTileList(int count)
         {
-            if (tile.m_TilingRules == null)
-                tile.m_TilingRules = new List<RuleTile.TilingRule>();
-            while (tile.m_TilingRules.Count > count)
-                tile.m_TilingRules.RemoveAt(tile.m_TilingRules.Count - 1);
-            while (tile.m_TilingRules.Count < count)
-                tile.m_TilingRules.Add(new RuleTile.TilingRule());
+            if (m_TilingRules.arraySize == count)
+                return;
+
+            var isEmpty = m_TilingRules.arraySize == 0;
+            m_TilingRules.arraySize = count;
+            serializedObject.ApplyModifiedProperties();
+            if (isEmpty)
+            {
+                for (int i = 0; i < count; ++i)
+                    tile.m_TilingRules[i] = new RuleTile.TilingRule();
+            }
+            UpdateTilingRuleIds();
         }
 
         /// <summary>
@@ -569,10 +598,10 @@ namespace UnityEditor
         {
             switch (neighbor)
             {
-                case RuleTile.TilingRule.Neighbor.This:
+                case RuleTile.TilingRuleOutput.Neighbor.This:
                     GUI.DrawTexture(rect, arrows[GetArrowIndex(position)]);
                     break;
-                case RuleTile.TilingRule.Neighbor.NotThis:
+                case RuleTile.TilingRuleOutput.Neighbor.NotThis:
                     GUI.DrawTexture(rect, arrows[9]);
                     break;
                 default:
@@ -591,7 +620,7 @@ namespace UnityEditor
         /// <param name="neighbor">The index to the neighbor matching criteria</param>
         public void RuleTooltipOnGUI(Rect rect, int neighbor)
         {
-            var allConsts = tile.m_NeighborType.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.FlattenHierarchy);
+            var allConsts = tile.m_NeighborType.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
             foreach (var c in allConsts)
             {
                 if ((int)c.GetValue(null) == neighbor)
@@ -607,23 +636,23 @@ namespace UnityEditor
         /// </summary>
         /// <param name="rect">Rect to draw on</param>
         /// <param name="ruleTransform">The transform matching criteria</param>
-        public virtual void RuleTransformOnGUI(Rect rect, RuleTile.TilingRule.Transform ruleTransform)
+        public virtual void RuleTransformOnGUI(Rect rect, RuleTile.TilingRuleOutput.Transform ruleTransform)
         {
             switch (ruleTransform)
             {
-                case RuleTile.TilingRule.Transform.Rotated:
+                case RuleTile.TilingRuleOutput.Transform.Rotated:
                     GUI.DrawTexture(rect, autoTransforms[0]);
                     break;
-                case RuleTile.TilingRule.Transform.MirrorX:
+                case RuleTile.TilingRuleOutput.Transform.MirrorX:
                     GUI.DrawTexture(rect, autoTransforms[1]);
                     break;
-                case RuleTile.TilingRule.Transform.MirrorY:
+                case RuleTile.TilingRuleOutput.Transform.MirrorY:
                     GUI.DrawTexture(rect, autoTransforms[2]);
                     break;
-                case RuleTile.TilingRule.Transform.Fixed:
+                case RuleTile.TilingRuleOutput.Transform.Fixed:
                     GUI.DrawTexture(rect, autoTransforms[3]);
                     break;
-                case RuleTile.TilingRule.Transform.MirrorXY:
+                case RuleTile.TilingRuleOutput.Transform.MirrorXY:
                     GUI.DrawTexture(rect, autoTransforms[4]);
                     break;
             }
@@ -679,7 +708,7 @@ namespace UnityEditor
         {
             if (Event.current.type == EventType.MouseDown && ContainsMousePosition(rect))
             {
-                tilingRule.m_RuleTransform = (RuleTile.TilingRule.Transform)(int)Mathf.Repeat((int)tilingRule.m_RuleTransform + GetMouseChange(), Enum.GetValues(typeof(RuleTile.TilingRule.Transform)).Length);
+                tilingRule.m_RuleTransform = (RuleTile.TilingRuleOutput.Transform)(int)Mathf.Repeat((int)tilingRule.m_RuleTransform + GetMouseChange(), Enum.GetValues(typeof(RuleTile.TilingRule.Transform)).Length);
                 GUI.changed = true;
                 Event.current.Use();
             }
@@ -799,10 +828,10 @@ namespace UnityEditor
             tilingRule.m_ColliderType = (Tile.ColliderType)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_ColliderType);
             y += k_SingleLineHeight;
             GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), Styles.tilingRulesOutput);
-            tilingRule.m_Output = (RuleTile.TilingRule.OutputSprite)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_Output);
+            tilingRule.m_Output = (RuleTile.TilingRuleOutput.OutputSprite)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_Output);
             y += k_SingleLineHeight;
 
-            if (tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Animation)
+            if (tilingRule.m_Output == RuleTile.TilingRuleOutput.OutputSprite.Animation)
             {
                 GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), Styles.tilingRulesMinSpeed);
                 tilingRule.m_MinAnimationSpeed = EditorGUI.FloatField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_MinAnimationSpeed);
@@ -811,18 +840,18 @@ namespace UnityEditor
                 tilingRule.m_MaxAnimationSpeed = EditorGUI.FloatField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_MaxAnimationSpeed);
                 y += k_SingleLineHeight;
             }
-            if (tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Random)
+            if (tilingRule.m_Output == RuleTile.TilingRuleOutput.OutputSprite.Random)
             {
                 GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), Styles.tilingRulesNoise);
                 tilingRule.m_PerlinScale = EditorGUI.Slider(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_PerlinScale, 0.001f, 0.999f);
                 y += k_SingleLineHeight;
 
                 GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), Styles.tilingRulesShuffle);
-                tilingRule.m_RandomTransform = (RuleTile.TilingRule.Transform)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_RandomTransform);
+                tilingRule.m_RandomTransform = (RuleTile.TilingRuleOutput.Transform)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_RandomTransform);
                 y += k_SingleLineHeight;
             }
 
-            if (tilingRule.m_Output != RuleTile.TilingRule.OutputSprite.Single)
+            if (tilingRule.m_Output != RuleTile.TilingRuleOutput.OutputSprite.Single)
             {
                 GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight)
                     , tilingRule.m_Output == RuleTile.TilingRuleOutput.OutputSprite.Animation ? Styles.tilingRulesAnimationSize : Styles.tilingRulesRandomSize);
@@ -980,7 +1009,7 @@ namespace UnityEditor
             m_PreviewUtility.BeginPreview(rect, background);
             m_PreviewUtility.camera.orthographicSize = 2;
             if (rect.height > rect.width)
-                m_PreviewUtility.camera.orthographicSize *= (float)rect.height / rect.width;
+                m_PreviewUtility.camera.orthographicSize *= rect.height / rect.width;
             m_PreviewUtility.camera.Render();
             m_PreviewUtility.EndAndDrawPreview(rect);
         }
@@ -1054,7 +1083,7 @@ namespace UnityEditor
                 Type t = GetType("UnityEditor.SpriteUtility");
                 if (t != null)
                 {
-                    MethodInfo method = t.GetMethod("RenderStaticPreview", new Type[] { typeof(Sprite), typeof(Color), typeof(int), typeof(int) });
+                    MethodInfo method = t.GetMethod("RenderStaticPreview", new[] { typeof(Sprite), typeof(Color), typeof(int), typeof(int) });
                     if (method != null)
                     {
                         object ret = method.Invoke("RenderStaticPreview", new object[] { tile.m_DefaultSprite, Color.white, width, height });
@@ -1096,7 +1125,7 @@ namespace UnityEditor
         {
             Texture2D t = new Texture2D(1, 1);
             t.hideFlags = HideFlags.HideAndDontSave;
-            t.LoadImage(System.Convert.FromBase64String(base64));
+            t.LoadImage(Convert.FromBase64String(base64));
             return t;
         }
 
