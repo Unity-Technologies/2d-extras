@@ -301,8 +301,11 @@ namespace UnityEngine.Tilemaps
         /// </summary>
         public void PrepareOverride()
         {
+            // Create clone of instanceTile to keep data from collections being overridden by JsonUtility
+            var tempTile = Instantiate(m_InstanceTile);
+            
             var customData = m_InstanceTile.GetCustomFields(true)
-                .ToDictionary(field => field, field => field.GetValue(m_InstanceTile));
+                .ToDictionary(field => field, field => field.GetValue(tempTile));
 
             JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(m_Tile), m_InstanceTile);
 
