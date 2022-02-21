@@ -122,6 +122,28 @@ namespace UnityEditor
                 , "The maximum speed at which the animation is played.");
             public static readonly GUIContent tilingRulesAnimationSize = EditorGUIUtility.TrTextContent("Size"
                 , "The number of Sprites in the animation.");
+
+            public static readonly GUIStyle extendNeighborsLightStyle = new GUIStyle()
+            {
+                alignment = TextAnchor.MiddleRight,
+                fontStyle = FontStyle.Bold,
+                fontSize = 10,
+                normal = new GUIStyleState()
+                {
+                    textColor = Color.black
+                }
+            };
+            
+            public static readonly GUIStyle extendNeighborsDarkStyle = new GUIStyle()
+            {
+                alignment = TextAnchor.MiddleRight,
+                fontStyle = FontStyle.Bold,
+                fontSize = 10,
+                normal = new GUIStyleState()
+                {
+                    textColor = Color.white
+                }
+            };
         }
         
         /// <summary>
@@ -444,12 +466,7 @@ namespace UnityEditor
 
             EditorGUI.BeginChangeCheck();
             extendNeighbor = EditorGUI.Toggle(toggleRect, extendNeighbor);
-            EditorGUI.LabelField(toggleLabelRect, Styles.extendNeighbor, new GUIStyle()
-            {
-                alignment = TextAnchor.MiddleRight,
-                fontStyle = FontStyle.Bold,
-                fontSize = 10,
-            });
+            EditorGUI.LabelField(toggleLabelRect, Styles.extendNeighbor, EditorGUIUtility.isProSkin ? Styles.extendNeighborsDarkStyle : Styles.extendNeighborsLightStyle);
             if (EditorGUI.EndChangeCheck())
             {
                 // Required to adjust element height changes
