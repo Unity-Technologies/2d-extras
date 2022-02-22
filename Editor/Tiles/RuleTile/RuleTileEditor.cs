@@ -922,14 +922,13 @@ namespace UnityEditor
             List<Sprite> result = new List<Sprite>();
             foreach (Object obj in objects)
             {
-                if (obj is Sprite)
+                if (obj is Sprite sprite)
                 {
-                    result.Add(obj as Sprite);
+                    result.Add(sprite);
                 }
-                else if (obj is Texture2D)
+                else if (obj is Texture2D texture2D)
                 {
-                    Texture2D texture = obj as Texture2D;
-                    List<Sprite> sprites = GetSpritesFromTexture(texture);
+                    List<Sprite> sprites = GetSpritesFromTexture(texture2D);
                     if (sprites.Count > 0)
                     {
                         result.AddRange(sprites);
@@ -1104,9 +1103,9 @@ namespace UnityEditor
             return base.RenderStaticPreview(assetPath, subAssets, width, height);
         }
 
-        private static Type GetType(string TypeName)
+        private static Type GetType(string typeName)
         {
-            var type = Type.GetType(TypeName);
+            var type = Type.GetType(typeName);
             if (type != null)
                 return type;
 
@@ -1117,7 +1116,7 @@ namespace UnityEditor
                 var assembly = Assembly.Load(assemblyName);
                 if (assembly != null)
                 {
-                    type = assembly.GetType(TypeName);
+                    type = assembly.GetType(typeName);
                     if (type != null)
                         return type;
                 }
