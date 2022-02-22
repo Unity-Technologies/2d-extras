@@ -204,11 +204,20 @@ namespace UnityEditor
 
         private void UpdateTilingRuleIds()
         {
-            HashSet<int> usedIdSet = new HashSet<int>();
+            var existingIdSet = new HashSet<int>();
+            var usedIdSet = new HashSet<int>();
             foreach (var rule in tile.m_TilingRules)
             {
-                while (usedIdSet.Contains(rule.m_Id))
-                    rule.m_Id++;
+                existingIdSet.Add(rule.m_Id);
+            }
+            foreach (var rule in tile.m_TilingRules)
+            {
+                if (usedIdSet.Contains(rule.m_Id))
+                {
+                    while (existingIdSet.Contains(rule.m_Id))
+                        rule.m_Id++;
+                    existingIdSet.Add(rule.m_Id);
+                }
                 usedIdSet.Add(rule.m_Id);
             }
         }
