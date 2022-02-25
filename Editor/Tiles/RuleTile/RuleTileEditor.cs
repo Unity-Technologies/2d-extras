@@ -122,6 +122,28 @@ namespace UnityEditor
                 , "The maximum speed at which the animation is played.");
             public static readonly GUIContent tilingRulesAnimationSize = EditorGUIUtility.TrTextContent("Size"
                 , "The number of Sprites in the animation.");
+
+            public static readonly GUIStyle extendNeighborsLightStyle = new GUIStyle()
+            {
+                alignment = TextAnchor.MiddleLeft,
+                fontStyle = FontStyle.Bold,
+                fontSize = 10,
+                normal = new GUIStyleState()
+                {
+                    textColor = Color.black
+                }
+            };
+            
+            public static readonly GUIStyle extendNeighborsDarkStyle = new GUIStyle()
+            {
+                alignment = TextAnchor.MiddleLeft,
+                fontStyle = FontStyle.Bold,
+                fontSize = 10,
+                normal = new GUIStyleState()
+                {
+                    textColor = Color.white
+                }
+            };
         }
         
         /// <summary>
@@ -439,17 +461,16 @@ namespace UnityEditor
         {
             GUI.Label(rect, Styles.tilingRules);
 
-            Rect toggleRect = new Rect(rect.xMax - rect.height, rect.y, rect.height, rect.height);
-            Rect toggleLabelRect = new Rect(rect.x, rect.y, rect.width - toggleRect.width - 5f, rect.height);
+            var toggleRect = new Rect(rect.xMax - rect.height, rect.y, rect.height, rect.height);
+
+            var style = EditorGUIUtility.isProSkin ? Styles.extendNeighborsDarkStyle : Styles.extendNeighborsLightStyle;
+            var extendSize = style.CalcSize(Styles.extendNeighbor);
+            var toggleWidth = toggleRect.width + extendSize.x + 5f;
+            var toggleLabelRect = new Rect(rect.x + rect.width - toggleWidth, rect.y, toggleWidth, rect.height);
 
             EditorGUI.BeginChangeCheck();
             extendNeighbor = EditorGUI.Toggle(toggleRect, extendNeighbor);
-            EditorGUI.LabelField(toggleLabelRect, Styles.extendNeighbor, new GUIStyle()
-            {
-                alignment = TextAnchor.MiddleRight,
-                fontStyle = FontStyle.Bold,
-                fontSize = 10,
-            });
+            EditorGUI.LabelField(toggleLabelRect, Styles.extendNeighbor, style);
             if (EditorGUI.EndChangeCheck())
             {
                 // Required to adjust element height changes
