@@ -201,19 +201,21 @@ namespace UnityEngine
             /// <returns>A copy of the TilingRule.</returns>
             public TilingRule Clone()
             {
-                TilingRule rule = new TilingRule();
-                rule.m_Neighbors = new List<int>(m_Neighbors);
-                rule.m_NeighborPositions = new List<Vector3Int>(m_NeighborPositions);
-                rule.m_RuleTransform = m_RuleTransform;
-                rule.m_Sprites = new Sprite[m_Sprites.Length];
+                TilingRule rule = new TilingRule
+                {
+                    m_Neighbors = new List<int>(m_Neighbors),
+                    m_NeighborPositions = new List<Vector3Int>(m_NeighborPositions),
+                    m_RuleTransform = m_RuleTransform,
+                    m_Sprites = new Sprite[m_Sprites.Length],
+                    m_GameObject = m_GameObject,
+                    m_MinAnimationSpeed = m_MinAnimationSpeed,
+                    m_MaxAnimationSpeed = m_MaxAnimationSpeed,
+                    m_PerlinScale = m_PerlinScale,
+                    m_Output = m_Output,
+                    m_ColliderType = m_ColliderType,
+                    m_RandomTransform = m_RandomTransform,
+                };
                 Array.Copy(m_Sprites, rule.m_Sprites, m_Sprites.Length);
-                rule.m_GameObject = m_GameObject;
-                rule.m_MinAnimationSpeed = m_MinAnimationSpeed;
-                rule.m_MaxAnimationSpeed = m_MaxAnimationSpeed;
-                rule.m_PerlinScale = m_PerlinScale;
-                rule.m_Output = m_Output;
-                rule.m_ColliderType = m_ColliderType;
-                rule.m_RandomTransform = m_RandomTransform;
                 return rule;
             }
             
@@ -351,9 +353,9 @@ namespace UnityEngine
                 Vector3 gameObjectScale = new Vector3();
 
                 bool ruleMatched = false;
+                Matrix4x4 transform = iden;
                 foreach (TilingRule rule in m_TilingRules)
                 {
-                    Matrix4x4 transform = iden;
                     if (RuleMatches(rule, position, tilemap, ref transform))
                     {
                         transform = orientMatrix * transform;
@@ -399,9 +401,9 @@ namespace UnityEngine
             tileData.flags = TileFlags.LockTransform;
             tileData.transform = iden;
 
+            Matrix4x4 transform = iden;
             foreach (TilingRule rule in m_TilingRules)
             {
-                Matrix4x4 transform = iden;
                 if (RuleMatches(rule, position, tilemap, ref transform))
                 {
                     switch (rule.m_Output)
@@ -438,7 +440,7 @@ namespace UnityEngine
         }
 
         static Dictionary<Tilemap, KeyValuePair<HashSet<TileBase>, HashSet<Vector3Int>>> m_CacheTilemapsNeighborPositions = new Dictionary<Tilemap, KeyValuePair<HashSet<TileBase>, HashSet<Vector3Int>>>();
-        static TileBase[] m_AllocatedUsedTileArr = new TileBase[0];
+        static TileBase[] m_AllocatedUsedTileArr = Array.Empty<TileBase>();
 
         static bool IsTilemapUsedTilesChange(Tilemap tilemap, out KeyValuePair<HashSet<TileBase>, HashSet<Vector3Int>> hashSet)
         {
@@ -481,10 +483,10 @@ namespace UnityEngine
                 usedTiles.Add(tile);
                 RuleTile ruleTile = null;
 
-                if (tile is RuleTile)
-                    ruleTile = tile as RuleTile;
-                else if (tile is RuleOverrideTile)
-                    ruleTile = (tile as RuleOverrideTile).m_Tile;
+                if (tile is RuleTile rt)
+                    ruleTile = rt;
+                else if (tile is RuleOverrideTile ot)
+                    ruleTile = ot.m_Tile;
 
                 if (ruleTile)
                     foreach (Vector3Int neighborPosition in ruleTile.neighborPositions)
@@ -536,12 +538,11 @@ namespace UnityEngine
         /// <returns>Whether the call was successful.</returns>
         public override bool GetTileAnimationData(Vector3Int position, ITilemap tilemap, ref TileAnimationData tileAnimationData)
         {
-            var iden = Matrix4x4.identity;
+            Matrix4x4 transform = Matrix4x4.identity;
             foreach (TilingRule rule in m_TilingRules)
             {
                 if (rule.m_Output == TilingRuleOutput.OutputSprite.Animation)
                 {
-                    Matrix4x4 transform = iden;
                     if (RuleMatches(rule, position, tilemap, ref transform))
                     {
                         tileAnimationData.animatedSprites = rule.m_Sprites;
@@ -566,8 +567,7 @@ namespace UnityEngine
 
             ReleaseDestroyedTilemapCacheData(); // Prevent memory leak
 
-            KeyValuePair<HashSet<TileBase>, HashSet<Vector3Int>> neighborPositionsSet;
-            if (IsTilemapUsedTilesChange(baseTilemap, out neighborPositionsSet))
+            if (IsTilemapUsedTilesChange(baseTilemap, out var neighborPositionsSet))
                 neighborPositionsSet = CachingTilemapNeighborPositions(baseTilemap);
 
             var neighborPositionsRuleTile = neighborPositionsSet.Value;
@@ -577,10 +577,10 @@ namespace UnityEngine
                 TileBase tile = tilemap.GetTile(offsetPosition);
                 RuleTile ruleTile = null;
 
-                if (tile is RuleTile)
-                    ruleTile = tile as RuleTile;
-                else if (tile is RuleOverrideTile)
-                    ruleTile = (tile as RuleOverrideTile).m_Tile;
+                if (tile is RuleTile rt)
+                    ruleTile = rt;
+                else if (tile is RuleOverrideTile ot)
+                    ruleTile = ot.m_Tile;
 
                 if (ruleTile != null)
                     if (ruleTile == this || ruleTile.neighborPositions.Contains(offset))
@@ -706,8 +706,8 @@ namespace UnityEngine
         /// <returns>True if there is a match, False if not.</returns>
         public virtual bool RuleMatch(int neighbor, TileBase other)
         {
-            if (other is RuleOverrideTile)
-                other = (other as RuleOverrideTile).m_InstanceTile;
+            if (other is RuleOverrideTile ot)
+                other = ot.m_InstanceTile;
 
             switch (neighbor)
             {
