@@ -114,6 +114,9 @@ namespace UnityEditor
         public void DrawRuleElement(Rect rect, int index, bool active, bool focused)
         {
             RuleTile.TilingRule originalRule = m_Rules[index].Key;
+            if (originalRule == null)
+                return;
+            
             RuleTile.TilingRuleOutput overrideRule = m_Rules[index].Value;
             bool isMissing = index >= m_MissingOriginalRuleIndex;
 
