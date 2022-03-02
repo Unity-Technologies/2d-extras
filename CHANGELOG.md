@@ -3,6 +3,12 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [3.0.1] - 2022-03-03
+- [AnimatedTileEditor] -Fix undo when setting number of Sprites for Animated Tile
+- [RuleTile] -Fix data for custom container fields not being transferred in RuleOverrideTiles overriding a Custom Rule Tile
+- [RuleTileEditor] -Fix undo when setting number of Rules for Rule Tile
+- [RuleTileEditor] -Use different text color for Extend Neighbors with dark and light skin
+
 ## [3.0.0] - 2021-08-06
 - Update version to 3.0.0 for Unity 2022.1
 
