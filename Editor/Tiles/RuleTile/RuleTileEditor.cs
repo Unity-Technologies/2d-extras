@@ -369,8 +369,6 @@ namespace UnityEditor
             {
                 tile.m_TilingRules.Insert(list.index + 1, rule);
                 tile.m_TilingRules.RemoveAt(count + 1);
-                if (list.IsSelected(list.index))
-                    list.index += 1;
             }
             UpdateTilingRuleIds();
         }
@@ -389,8 +387,6 @@ namespace UnityEditor
             
             tile.m_TilingRules.Insert(list.index + 1, rule);
             tile.m_TilingRules.RemoveAt(count + 1);
-            if (list.IsSelected(list.index))
-                list.index += 1;
             UpdateTilingRuleIds();
         }
 
