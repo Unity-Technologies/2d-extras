@@ -3,6 +3,13 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.8.2-preview] - 2022-03-03
+### Fixed
+- [AnimatedTileEditor] -Fix undo when setting number of Sprites for Animated Tile
+- [RuleTile] -Fix data for custom container fields not being transferred in RuleOverrideTiles overriding a Custom Rule Tile
+- [RuleTileEditor] -Fix undo when setting number of Rules for Rule Tile
+- [RuleTileEditor] -Use different text color for Extend Neighbors with dark and light skin
+
 ## [1.8.1-preview] - 2021-08-24
 ### Changed
 - [GameObjectBrush] Add canChangePosition
