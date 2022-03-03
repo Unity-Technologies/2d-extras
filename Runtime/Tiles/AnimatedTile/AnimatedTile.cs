@@ -168,8 +168,6 @@ namespace UnityEngine.Tilemaps
             {
                 Array.Copy(tile.m_AnimatedSprites, list.index + 1, tile.m_AnimatedSprites, list.index + 2, list.count - list.index - 1);
                 tile.m_AnimatedSprites[list.index + 1] = null;
-                if (list.IsSelected(list.index))
-                    list.index += 1;
             }
             else
             {
@@ -341,7 +339,8 @@ namespace UnityEngine.Tilemaps
                 var tileCount = tile.m_AnimatedSprites != null ? tile.m_AnimatedSprites.Length : 0;
                 if (reorderableList.list == null || reorderableList.count != tileCount)
                     reorderableList.list = tile.m_AnimatedSprites;
-                reorderableList.DoLayoutList();
+                if (reorderableList.list != null)
+                    reorderableList.DoLayoutList();
             }
 
             using (new EditorGUI.DisabledScope(tile.m_AnimatedSprites == null || tile.m_AnimatedSprites.Length == 0))
