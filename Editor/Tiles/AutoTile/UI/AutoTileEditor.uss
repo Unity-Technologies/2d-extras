@@ -1,0 +1,29 @@
+﻿.ImageBase
+{
+    border-width: 2px;
+    border-color: lightslategrey;
+}
+
+.ImageBase.IsDuplicate
+{
+    border-width: 3px;
+    border-color: firebrick;
+}
+
+#Region.RegionHover.PointerHover {
+    background-color: rgba(0, 255, 0, 1.0);
+    opacity: 0.6;
+}
+
+#Region.RegionHover.Clicked {
+    background-color: rgba(255, 0, 0, 1.0);
+}
+
+#Region.RegionHover.PointerHover.Clicked {
+    background-color: rgba(0, 0, 255, 1.0);
+    opacity: 0.6;
+}
+
+#Region.RegionHover {
+    opacity: 0.4;
+}
