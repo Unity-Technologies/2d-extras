@@ -48,17 +48,17 @@ namespace UnityEditor.Tilemaps
             Add(defaultProperties);
 
             m_TextureList = new ListView();
-            m_TextureList.bindingPath = "m_TextureList";
             m_TextureList.showAddRemoveFooter = true;
             m_TextureList.headerTitle = "Used Textures";
             m_TextureList.showBorder = true;
             m_TextureList.showFoldoutHeader = true;
             m_TextureList.horizontalScrollingEnabled = false;
-            m_TextureList.itemsSourceChanged += TexturesChanged;
-            //m_TextureList.makeItem = MakeTextureItem;
+            m_TextureList.makeItem = MakeTextureItem;
             m_TextureList.bindItem = BindTextureItem;
-            m_TextureList.itemsAdded += ItemListChanged;
-            m_TextureList.itemsRemoved += ItemListChanged;
+            m_TextureList.unbindItem = UnbindTextureItem;
+            //m_TextureList.itemsAdded += ItemListAdded;
+            m_TextureList.itemsRemoved += ItemListRemoved;
+            m_TextureList.itemsSourceChanged += TexturesChanged;
             Add(m_TextureList);
   
             m_TextureScroller = new ScrollView(ScrollViewMode.Vertical);
@@ -68,27 +68,65 @@ namespace UnityEditor.Tilemaps
             styleSheets.Add(ss);
         }
 
-        private void ItemListChanged(IEnumerable<int> obj)
+        private void LoadAutoTileData()
         {
+            if (autoTile == null)
+                return;
+
+            m_TextureList.itemsSource = m_AutoTile.m_TextureList;
             m_TextureList.Rebuild();
             m_TextureList.RefreshItems();
+            PopulateTextureScrollView();
+        }
+        
+        private void LoadAutoTileMaskData()
+        {
+            if (autoTile == null)
+                return;
+            
+            foreach (var pair in autoTile.m_AutoTileDictionary)
+            {
+                var mask = pair.Key;
+                var autoTileData = pair.Value;
+                foreach (var sprite in autoTileData.spriteList)
+                {
+                    if (textureToElementMap.TryGetValue(sprite.texture, out var at))
+                    {
+                        at.InitialiseSpriteMask(sprite, mask);
+                    }
+                }
+            }
         }
 
         private VisualElement MakeTextureItem()
         {
-            return new PropertyField();
+            var objField = new ObjectField();
+            objField.objectType = typeof(Texture2D);
+            objField.allowSceneObjects = false;
+            return objField;
         }
         
         private void BindTextureItem(VisualElement ve, int index)
         {
-            var pf = ve.Q<PropertyField>();
-            pf.bindingPath = $"m_TextureList.Array.data[{index}]";
-            pf.RegisterValueChangeCallback(TexturePropertyChanged);
-            pf.MarkDirtyRepaint();
+            var of = ve.Q<ObjectField>();
+            of.SetValueWithoutNotify(m_AutoTile.m_TextureList[index]);
+            EventCallback<ChangeEvent<UnityEngine.Object>> callback = evt => TexturePropertyChanged(index, (Texture2D) evt.newValue);
+            of.RegisterValueChangedCallback(callback);
+            of.userData = callback;
         }
 
-        private void TexturePropertyChanged(SerializedPropertyChangeEvent evt)
+        private void UnbindTextureItem(VisualElement ve, int index)
         {
+            var of = ve.Q<ObjectField>();
+            of.UnregisterValueChangedCallback((EventCallback<ChangeEvent<UnityEngine.Object>>) of.userData);
+        }
+
+        private void TexturePropertyChanged(int index, Texture2D texture2D)
+        {
+            if (m_AutoTile.m_TextureList[index] == texture2D) 
+                return;
+
+            m_AutoTile.m_TextureList[index] = texture2D;
             TexturesChanged();
         }
 
@@ -98,11 +136,7 @@ namespace UnityEditor.Tilemaps
             m_TextureScroller.contentContainer.Clear();
             foreach (var item in m_TextureList.itemsSource)
             {
-                var sp = item as SerializedProperty;
-                if (sp == null)
-                    return;
-
-                var texture2D = sp.objectReferenceValue as Texture2D;
+                var texture2D = item as Texture2D;
                 if (texture2D == null)
                     continue;
 
@@ -142,7 +176,7 @@ namespace UnityEditor.Tilemaps
                 
                 m_TextureScroller.contentContainer.Add(ve);
             }
-            LoadAutoTileData();
+            LoadAutoTileMaskData();
         }
 
         private void MaskChanged(Sprite sprite, uint oldMask, uint newMask)
@@ -189,6 +223,20 @@ namespace UnityEditor.Tilemaps
             }
         }
         
+        private void ItemListAdded(IEnumerable<int> insertions)
+        {
+            SaveTile();
+            m_TextureList.Rebuild();
+            TexturesChanged();
+        }
+        
+        private void ItemListRemoved(IEnumerable<int> removals)
+        {
+            SaveTile();
+            m_TextureList.Rebuild();
+            TexturesChanged();
+        }
+        
         private void TexturesChanged()
         {
             if (m_TextureList.itemsSource == null)
@@ -196,25 +244,6 @@ namespace UnityEditor.Tilemaps
             
             autoTile.Validate();
             PopulateTextureScrollView();
-        }
-
-        private void LoadAutoTileData()
-        {
-            if (autoTile == null)
-                return;
-            
-            foreach (var pair in autoTile.m_AutoTileDictionary)
-            {
-                var mask = pair.Key;
-                var autoTileData = pair.Value;
-                foreach (var sprite in autoTileData.spriteList)
-                {
-                    if (textureToElementMap.TryGetValue(sprite.texture, out var at))
-                    {
-                        at.InitialiseSpriteMask(sprite, mask);
-                    }
-                }
-            }
         }
         
         private void SaveTile()
