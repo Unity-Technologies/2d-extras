@@ -15,7 +15,7 @@ namespace UnityEditor.Tilemaps
         private Image m_TextureElement;
         private AutoTileSpriteSource.ClickState m_ClickState;
         
-        public AutoTileTextureSource(Texture2D texture2D, Action<Sprite, uint, uint> maskChanged) : base(ScrollViewMode.VerticalAndHorizontal)
+        public AutoTileTextureSource(Texture2D texture2D, AutoTile.AutoTileMaskType maskType, Action<Sprite, uint, uint> maskChanged) : base(ScrollViewMode.VerticalAndHorizontal)
         {
             m_TextureElement = new Image();
             Add(m_TextureElement);
@@ -32,7 +32,7 @@ namespace UnityEditor.Tilemaps
                 if (spriteAsset == null)
                     continue;
                 
-                var spriteImage = new AutoTileSpriteSource(texture2D, spriteAsset, m_ClickState);
+                var spriteImage = new AutoTileSpriteSource(spriteAsset, m_ClickState, maskType);
                 spriteImage.maskChanged = maskChanged;
                 m_TextureElement.Add(spriteImage);
                 spriteToElementMap.Add(spriteAsset, spriteImage);

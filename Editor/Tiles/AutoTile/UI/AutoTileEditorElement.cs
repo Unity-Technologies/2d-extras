@@ -45,8 +45,15 @@ namespace UnityEditor.Tilemaps
             var tileColliderType = new EnumField("Tile Collider");
             tileColliderType.bindingPath = "m_DefaultColliderType";
             defaultProperties.Add(tileColliderType);
-            Add(defaultProperties);
 
+            var maskType = new EnumField("Mask Type");
+            maskType.bindingPath = "m_MaskType";
+            maskType.RegisterValueChangedCallback(MaskTypeChanged);
+            
+            defaultProperties.Add(maskType);
+            
+            Add(defaultProperties);
+            
             m_TextureList = new ListView();
             m_TextureList.showAddRemoveFooter = true;
             m_TextureList.headerTitle = "Used Textures";
@@ -98,6 +105,17 @@ namespace UnityEditor.Tilemaps
             }
         }
 
+        private void MaskTypeChanged(ChangeEvent<Enum> evt)
+        {
+            if (evt.previousValue == null || evt.newValue == null
+                || ((evt.previousValue.Equals(AutoTile.AutoTileMaskType.Mask_2x2)
+                   || evt.newValue.Equals(AutoTile.AutoTileMaskType.Mask_2x2))
+                && !Equals(evt.previousValue, evt.newValue)))
+            {
+                TexturesChanged();
+            }
+        }
+        
         private VisualElement MakeTextureItem()
         {
             var objField = new ObjectField();
@@ -133,7 +151,11 @@ namespace UnityEditor.Tilemaps
         private void PopulateTextureScrollView()
         {
             textureToElementMap.Clear();
-            m_TextureScroller.contentContainer.Clear();
+            m_TextureScroller.contentContainer.Clear(); 
+            
+            if (m_TextureList.itemsSource == null)
+                return;
+            
             foreach (var item in m_TextureList.itemsSource)
             {
                 var texture2D = item as Texture2D;
@@ -144,7 +166,7 @@ namespace UnityEditor.Tilemaps
                     continue;
 
                 var ve = new VisualElement();
-                var at = new AutoTileTextureSource(texture2D, MaskChanged);
+                var at = new AutoTileTextureSource(texture2D, autoTile.m_MaskType, MaskChanged);
                 textureToElementMap.Add(texture2D, at);
                 
                 var he = new VisualElement();

@@ -40,7 +40,6 @@ namespace UnityEngine.Tilemaps
         [Serializable]
         public class AutoTileData
         {
-            [SerializeField] public int test = 99;
             [SerializeField]
             public List<Sprite> spriteList = new List<Sprite>();
         }
@@ -49,6 +48,13 @@ namespace UnityEngine.Tilemaps
         public class AutoTileDictionary : SerializedDictionary<uint, AutoTileData>
         {
         };
+
+        public enum AutoTileMaskType
+        {
+            Mask_2x2
+            , Mask_3x3
+            , Mask_3x3_Full
+        }
 
         #region Tile Data
         /// <summary>
@@ -63,6 +69,9 @@ namespace UnityEngine.Tilemaps
         /// The Default Collider Type set when creating a new Rule.
         /// </summary>
         public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
+
+        public AutoTileMaskType m_MaskType;
+        
         [SerializeField]
         public AutoTileDictionary m_AutoTileDictionary = new AutoTileDictionary();
         #endregion
@@ -124,6 +133,101 @@ namespace UnityEngine.Tilemaps
                     index++;
                 }   
             }
+
+            mask = m_MaskType switch
+            {
+                AutoTileMaskType.Mask_2x2 => Convert2x2Mask(mask),
+                AutoTileMaskType.Mask_3x3 => Convert3x3Mask(mask),
+                _ => mask
+            };
+
+            if (m_AutoTileDictionary.TryGetValue(mask, out var autoTileData))
+            {
+                tileData.sprite = autoTileData.spriteList.Count > 0 ? autoTileData.spriteList[0] : m_DefaultSprite;
+            }
+        }
+
+        public void AddSprite(Sprite sprite, uint mask)
+        {
+            if ((m_MaskType == AutoTileMaskType.Mask_2x2 && (mask >> 4) > 0)
+                || (mask >> 9) > 0)
+            {
+                throw new ArgumentOutOfRangeException($"Mask {mask} is not valid for {m_MaskType}");
+            }
+            
+            if (!m_AutoTileDictionary.TryGetValue(mask, out var autoTileData))
+            {
+                autoTileData = new AutoTileData();
+                m_AutoTileDictionary.Add(mask, autoTileData);
+            }
+            var isInList = false;
+            foreach (var spriteData in autoTileData.spriteList)
+            {
+                isInList = spriteData == sprite;
+                if (isInList)
+                    break;
+            }
+            if (!isInList)
+                autoTileData.spriteList.Add(sprite);
+        }
+
+        public void RemoveSprite(Sprite sprite, uint mask)
+        {
+            if (!m_AutoTileDictionary.TryGetValue(mask, out var autoTileData))
+                return;
+
+            autoTileData.spriteList.Remove(sprite);
+        }
+
+        public void Validate()
+        {
+            if (m_MaskType == AutoTileMaskType.Mask_2x2)
+            {
+                var keyList = new List<uint>(m_AutoTileDictionary.Keys);
+                foreach (var mask in keyList)
+                {
+                    if ((mask >> 4) > 0)
+                    {
+                        m_AutoTileDictionary.Remove(mask);
+                    }
+                }
+            }
+            foreach (var pair in m_AutoTileDictionary)
+            {
+                var autoTileData = pair.Value;
+                for (var i = 0; i < autoTileData.spriteList.Count;)
+                {
+                    var sprite = autoTileData.spriteList[i];
+                    if (m_TextureList.Contains(sprite.texture))
+                    {
+                        ++i;
+                    }
+                    else
+                    {
+                        autoTileData.spriteList.RemoveAt(i);
+                    }
+                }
+            }
+        }
+
+        private uint Convert2x2Mask(uint mask)
+        {
+            // 4 8
+            // 1 2
+            uint newMask = 0;
+            if ((mask & 1 << 0) > 0 && (mask & 1 << 1) > 0 && (mask & 1 << 3) > 0)
+                newMask |= 1 << 0;
+            if ((mask & 1 << 1) > 0 && (mask & 1 << 2) > 0 && (mask & 1 << 5) > 0)
+                newMask |= 1 << 1;
+            if ((mask & 1 << 3) > 0 && (mask & 1 << 6) > 0 && (mask & 1 << 7) > 0)
+                newMask |= 1 << 2;
+            if ((mask & 1 << 5) > 0 && (mask & 1 << 7) > 0 && (mask & 1 << 8) > 0)
+                newMask |= 1 << 3;
+            return newMask;
+        }
+
+        private uint Convert3x3Mask(uint mask)
+        {
             // 64 128 256
             //  8  16  32
             //  1   2   4
@@ -495,57 +599,8 @@ namespace UnityEngine.Tilemaps
                     break;
                 }
             }
-            
-            if (m_AutoTileDictionary.TryGetValue(mask, out var autoTileData))
-            {
-                tileData.sprite = autoTileData.spriteList.Count > 0 ? autoTileData.spriteList[0] : m_DefaultSprite;
-            }
-        }
 
-        public void AddSprite(Sprite sprite, uint mask)
-        {
-            if (!m_AutoTileDictionary.TryGetValue(mask, out var autoTileData))
-            {
-                autoTileData = new AutoTileData();
-                m_AutoTileDictionary.Add(mask, autoTileData);
-            }
-            var isInList = false;
-            foreach (var spriteData in autoTileData.spriteList)
-            {
-                isInList = spriteData == sprite;
-                if (isInList)
-                    break;
-            }
-            if (!isInList)
-                autoTileData.spriteList.Add(sprite);
-        }
-
-        public void RemoveSprite(Sprite sprite, uint mask)
-        {
-            if (!m_AutoTileDictionary.TryGetValue(mask, out var autoTileData))
-                return;
-
-            autoTileData.spriteList.Remove(sprite);
-        }
-
-        public void Validate()
-        {
-            foreach (var pair in m_AutoTileDictionary)
-            {
-                var autoTileData = pair.Value;
-                for (var i = 0; i < autoTileData.spriteList.Count;)
-                {
-                    var sprite = autoTileData.spriteList[i];
-                    if (m_TextureList.Contains(sprite.texture))
-                    {
-                        ++i;
-                    }
-                    else
-                    {
-                        autoTileData.spriteList.RemoveAt(i);
-                    }
-                }
-            }
+            return mask;
         }
     }
 }

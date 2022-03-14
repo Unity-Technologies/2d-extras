@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using UnityEngine.UIElements;
 
 namespace UnityEditor.Tilemaps
@@ -14,14 +15,25 @@ namespace UnityEditor.Tilemaps
         
         private readonly Sprite m_Sprite;
         private readonly ClickState m_ClickState;
-        
+        private readonly int m_Range;
+
         public uint mask;
         public Action<Sprite, uint, uint> maskChanged;
-
-        public AutoTileSpriteSource(Texture2D texture2D, Sprite spriteAsset, ClickState clickState) : base()
+        
+        public AutoTileSpriteSource(Sprite spriteAsset, ClickState clickState, AutoTile.AutoTileMaskType maskType) : base()
         {
             m_Sprite = spriteAsset;
             m_ClickState = clickState;
+
+            switch (maskType)
+            {
+                case AutoTile.AutoTileMaskType.Mask_2x2:
+                    m_Range = 2;
+                    break;
+                default:
+                    m_Range = 3;
+                    break;
+            }
             AddToClassList("ImageBase");
             
             //this.sprite = sprite; // Debug
@@ -30,12 +42,12 @@ namespace UnityEditor.Tilemaps
             ChangeScale(1.0f);
 
             var index = 0;
-            for (var y = 0; y < 3; y++)
+            for (var y = 0; y < m_Range; y++)
             {
                 var horizontal = new VisualElement();
                 horizontal.style.flexDirection = FlexDirection.Row;
                 horizontal.style.flexGrow = 1;
-                for (var x = 0; x < 3; x++)
+                for (var x = 0; x < m_Range; x++)
                 {
                     var region = new VisualElement();
                     region.name = "Region";
