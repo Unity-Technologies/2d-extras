@@ -435,6 +435,7 @@ namespace UnityEditor
                 {
                     overrideTile.Override();
                     UpdateAffectedOverrideTiles(overrideTile.m_InstanceTile);
+                    EditorUtility.SetDirty(overrideTile.m_InstanceTile);
                 }
             }
         }
