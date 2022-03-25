@@ -430,12 +430,13 @@ namespace UnityEditor
             List<RuleOverrideTile> overrideTiles = FindAffectedOverrideTiles(target);
             if (overrideTiles != null)
             {
-                Undo.RecordObjects(overrideTiles.ToArray(), k_UndoName);
                 foreach (var overrideTile in overrideTiles)
                 {
+                    Undo.RegisterCompleteObjectUndo(overrideTile, k_UndoName);
+                    Undo.RecordObject(overrideTile.m_InstanceTile, k_UndoName);
                     overrideTile.Override();
                     UpdateAffectedOverrideTiles(overrideTile.m_InstanceTile);
-                    EditorUtility.SetDirty(overrideTile.m_InstanceTile);
+                    EditorUtility.SetDirty(overrideTile);
                 }
             }
         }
