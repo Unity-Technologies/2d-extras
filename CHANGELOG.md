@@ -3,6 +3,12 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [2.2.3] - 2022-04-01
+### Fixed
+- [RuleOverrideTile] -Mark RuleOverrideTile InstanceTile as dirty when overriding RuleTile for the RuleOverrideTile changes
+- [RuleOverrideTile] -Fix undo for RuleOverrideTile when overriding RuleTile has changed
+- [RuleTileEditor] -Fix height for ReorderableList when extending the view for marking Rules
+
 ## [2.2.2] - 2022-03-03
 ### Fixed
 - [AnimatedTileEditor] -Fix undo when setting number of Sprites for Animated Tile
