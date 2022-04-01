@@ -200,6 +200,8 @@ namespace UnityEditor
         public const float k_LabelWidth = 80f;
 
         private SerializedProperty m_TilingRules;
+
+        private MethodInfo m_ClearCacheMethod;
         
         /// <summary>
         /// OnEnable for the RuleTileEditor
@@ -213,6 +215,17 @@ namespace UnityEditor
             m_ReorderableList.onChangedCallback = ListUpdated;
             m_ReorderableList.onAddDropdownCallback = OnAddDropdownElement;
 
+            // Required to adjust element height changes
+            var rolType = GetType("UnityEditorInternal.ReorderableList");
+            if (rolType != null)
+            {
+                // ClearCache was changed to InvalidateCache in newer versions of Unity.
+                // To maintain backwards compatibility, we will attempt to retrieve each method in order
+                m_ClearCacheMethod = rolType.GetMethod("InvalidateCache", BindingFlags.Instance | BindingFlags.NonPublic);
+                if (m_ClearCacheMethod == null)
+                    m_ClearCacheMethod = rolType.GetMethod("ClearCache", BindingFlags.Instance | BindingFlags.NonPublic);
+            }
+            
             m_TilingRules = serializedObject.FindProperty("m_TilingRules");
         }
 
@@ -480,14 +493,8 @@ namespace UnityEditor
             EditorGUI.LabelField(toggleLabelRect, Styles.extendNeighbor, style);
             if (EditorGUI.EndChangeCheck())
             {
-                // Required to adjust element height changes
-                var rolType = GetType("UnityEditorInternal.ReorderableList");
-                if (rolType != null)
-                {
-                    var clearCacheMethod = rolType.GetMethod("ClearCache", BindingFlags.Instance | BindingFlags.NonPublic);
-                    if (clearCacheMethod != null)
-                        clearCacheMethod.Invoke(m_ReorderableList, null);
-                }
+                if (m_ClearCacheMethod != null)
+                    m_ClearCacheMethod.Invoke(m_ReorderableList, null);  
             }
         }
 
