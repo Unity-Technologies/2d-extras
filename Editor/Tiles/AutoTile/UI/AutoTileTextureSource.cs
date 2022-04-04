@@ -68,7 +68,7 @@ namespace UnityEditor.Tilemaps
         
         public void ChangeScale(float newScale)
         {
-            m_TextureElement.style.scale = new Vector2(newScale, newScale);
+            m_TextureElement.scaleMode = ScaleMode.StretchToFill;
             m_TextureElement.style.width = m_TextureElement.image.width * newScale;
             m_TextureElement.style.height = m_TextureElement.image.height * newScale;
             foreach (var item in spriteToElementMap)
