@@ -52,7 +52,6 @@ namespace UnityEditor.Tilemaps
                     var region = new VisualElement();
                     region.name = "Region";
                     region.AddToClassList("RegionHover");
-                    region.style.flexGrow = 1;
                     region.userData = index++;
                     region.RegisterCallback<PointerEnterEvent>((evt) => PointerEnterEvent(evt, region) );
                     region.RegisterCallback<PointerLeaveEvent>((evt) => PointerLeaveEvent(region));
