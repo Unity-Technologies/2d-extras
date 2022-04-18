@@ -776,5 +776,43 @@ namespace UnityEditor.Tilemaps
             }
         }
 
+        /// <summary>
+        /// Creates a static preview of the GameObjectBrush with its current selection.
+        /// </summary>
+        /// <param name="assetPath">The asset to operate on.</param>
+        /// <param name="subAssets">An array of all Assets at assetPath.</param>
+        /// <param name="width">Width of the created texture.</param>
+        /// <param name="height">Height of the created texture.</param>
+        /// <returns>Generated texture or null.</returns>
+        public override Texture2D RenderStaticPreview(string assetPath, UnityEngine.Object[] subAssets, int width, int height)
+        {
+            if (brush == null)
+                return null;
+
+            var previewInstance = new GameObject("Brush Preview", typeof(Grid));
+            var previewGrid = previewInstance.GetComponent<Grid>();
+            
+            brush.Paint(previewGrid, previewInstance, Vector3Int.zero);
+
+            var center = ((Vector3) brush.size * 0.5f) - (Vector3) brush.pivot;
+            center.z -= 10f;
+
+            var rect = new Rect(0, 0, width, height);
+            var previewUtility = new PreviewRenderUtility(true, true);
+            previewUtility.camera.orthographic = true;
+            previewUtility.camera.orthographicSize = 1.0f + Math.Max(brush.size.x, brush.size.y);
+            if (rect.height > rect.width)
+                previewUtility.camera.orthographicSize *= rect.height / rect.width;
+            previewUtility.camera.transform.position = center;
+            previewUtility.AddSingleGO(previewInstance);
+            previewUtility.BeginStaticPreview(rect);
+            previewUtility.camera.Render();
+            var tex = previewUtility.EndStaticPreview();
+            previewUtility.Cleanup();
+
+            DestroyImmediate(previewInstance);
+
+            return tex;
+        }
     }
 }
