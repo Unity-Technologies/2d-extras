@@ -123,6 +123,9 @@ namespace UnityEditor.Tilemaps
             template.sprites = new List<AutoTileTextureTemplate.SpriteData>();
             foreach (var item in spriteToElementMap)
             {
+                if (item.Value.mask == 0)
+                    continue;
+
                 template.sprites.Add( new AutoTileTextureTemplate.SpriteData()
                 {
                     x = item.Key.rect.x,
