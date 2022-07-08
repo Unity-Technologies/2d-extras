@@ -39,7 +39,7 @@ namespace UnityEditor.Tilemaps
         public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
             // Do not allow editing palettes
-            if (brushTarget.layer == 31 || brushTarget == null)
+            if (brushTarget == null || brushTarget.layer == 31)
             {
                 return;
             }
