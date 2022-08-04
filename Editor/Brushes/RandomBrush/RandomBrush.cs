@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 namespace UnityEditor.Tilemaps
 {
@@ -182,6 +183,9 @@ namespace UnityEditor.Tilemaps
     [CustomEditor(typeof(RandomBrush))]
     public class RandomBrushEditor : GridBrushEditor
     {
+        private static readonly string iconPath = "Packages/com.unity.2d.tilemap.extras/Editor/Brushes/RandomBrush/RandomBrush.png";
+        
+        private Texture2D m_BrushIcon;
         private RandomBrush randomBrush { get { return target as RandomBrush; } }
         private GameObject lastBrushTarget;
 
@@ -366,6 +370,20 @@ namespace UnityEditor.Tilemaps
             DestroyImmediate(previewInstance);
 
             return tex;
+        }
+        
+        /// <summary> Returns an icon identifying the Random Brush. </summary>
+        public override Texture2D icon
+        {
+            get
+            {
+                if (m_BrushIcon == null)
+                {
+                    var gui = EditorGUIUtility.TrIconContent(iconPath);
+                    m_BrushIcon = gui.image as Texture2D;
+                }
+                return m_BrushIcon;
+            }
         }
     }
 }

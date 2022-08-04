@@ -686,6 +686,10 @@ namespace UnityEditor.Tilemaps
     [CustomEditor(typeof(GameObjectBrush))]
     public class GameObjectBrushEditor : GridBrushEditorBase
     {
+        private static readonly string iconPath = "Packages/com.unity.2d.tilemap.extras/Editor/Brushes/GameObjectBrush/GameObjectBrush.png";
+        
+        private Texture2D m_BrushIcon;
+        
         private bool hiddenGridFoldout;
         private Editor hiddenGridEditor;
 
@@ -813,6 +817,20 @@ namespace UnityEditor.Tilemaps
             DestroyImmediate(previewInstance);
 
             return tex;
+        }
+        
+        /// <summary> Returns an icon identifying the GameObject Brush. </summary>
+        public override Texture2D icon
+        {
+            get
+            {
+                if (m_BrushIcon == null)
+                {
+                    var gui = EditorGUIUtility.TrIconContent(iconPath);
+                    m_BrushIcon = gui.image as Texture2D;
+                }
+                return m_BrushIcon;
+            }
         }
     }
 }

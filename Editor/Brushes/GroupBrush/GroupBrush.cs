@@ -201,5 +201,22 @@ namespace UnityEditor.Tilemaps
     [CustomEditor(typeof(GroupBrush))]
     public class GroupBrushEditor : GridBrushEditor
     {
+        private static readonly string iconPath = "Packages/com.unity.2d.tilemap.extras/Editor/Brushes/GroupBrush/GroupBrush.png";
+        
+        private Texture2D m_BrushIcon;
+        
+        /// <summary> Returns an icon identifying the Group Brush. </summary>
+        public override Texture2D icon
+        {
+            get
+            {
+                if (m_BrushIcon == null)
+                {
+                    var gui = EditorGUIUtility.TrIconContent(iconPath);
+                    m_BrushIcon = gui.image as Texture2D;
+                }
+                return m_BrushIcon;
+            }
+        }
     }
 }

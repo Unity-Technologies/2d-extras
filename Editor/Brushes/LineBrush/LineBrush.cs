@@ -222,6 +222,9 @@ namespace UnityEditor.Tilemaps
     [CustomEditor(typeof(LineBrush))]
     public class LineBrushEditor : GridBrushEditor
     {
+        private static readonly string iconPath = "Packages/com.unity.2d.tilemap.extras/Editor/Brushes/LineBrush/LineBrush.png";
+        
+        private Texture2D m_BrushIcon;
         private LineBrush lineBrush { get { return target as LineBrush; } }
         private Tilemap lastTilemap;
 
@@ -290,6 +293,20 @@ namespace UnityEditor.Tilemaps
             {
                 lastTilemap.ClearAllEditorPreviewTiles();
                 lastTilemap = null;
+            }
+        }
+        
+        /// <summary> Returns an icon identifying the Line Brush. </summary>
+        public override Texture2D icon
+        {
+            get
+            {
+                if (m_BrushIcon == null)
+                {
+                    var gui = EditorGUIUtility.TrIconContent(iconPath);
+                    m_BrushIcon = gui.image as Texture2D;
+                }
+                return m_BrushIcon;
             }
         }
     }
