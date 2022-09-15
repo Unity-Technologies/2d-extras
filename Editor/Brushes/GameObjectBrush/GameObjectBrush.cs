@@ -130,7 +130,6 @@ namespace UnityEditor.Tilemaps
             Vector3Int min = position - pivot;
             BoundsInt bounds = new BoundsInt(min, m_Size);
 
-            GetGrid(ref gridLayout, ref brushTarget);
             BoxFill(gridLayout, brushTarget, bounds);
         }
 
@@ -590,7 +589,18 @@ namespace UnityEditor.Tilemaps
             }
 
             Undo.RegisterCreatedObjectUndo(instance, "Paint GameObject");
-            instance.transform.position = grid.LocalToWorld(grid.CellToLocalInterpolated(new Vector3Int(position.x, position.y, position.z) + anchor));
+
+            var cellSize = grid.cellSize;
+            var cellStride = cellSize + grid.cellGap;
+            cellStride.x = Mathf.Approximately(0f, cellStride.x) ? 1f : cellStride.x;
+            cellStride.y = Mathf.Approximately(0f, cellStride.y) ? 1f : cellStride.y;
+            cellStride.z = Mathf.Approximately(0f, cellStride.z) ? 1f : cellStride.z;
+            var anchorRatio = new Vector3(
+                anchor.x * cellSize.x / cellStride.x,
+                anchor.y * cellSize.y / cellStride.y,
+                anchor.z * cellSize.z / cellStride.z
+            );
+            instance.transform.position = grid.LocalToWorld(grid.CellToLocalInterpolated(position + anchorRatio));
             instance.transform.localRotation = orientation;
             instance.transform.localScale = scale;
             instance.transform.Translate(offset);
