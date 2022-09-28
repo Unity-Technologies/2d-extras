@@ -32,6 +32,11 @@ namespace UnityEditor.Tilemaps
         /// moving something using the "Move selection with active brush" tool.
         /// </summary>
         public bool IsMoving { get; private set; }
+        
+        private void OnEnable()
+        {
+            lineStartActive = false;
+        }
 
         /// <summary>
         /// Paints tiles and GameObjects into a given position within the selected layers.
