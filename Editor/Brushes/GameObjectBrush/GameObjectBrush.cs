@@ -706,6 +706,25 @@ namespace UnityEditor.Tilemaps
         }
         
         /// <summary>
+        /// Whether the Brush is in a state that should be saved for selection.
+        /// </summary>
+        public override bool shouldSaveBrushForSelection
+        {
+            get
+            {
+                if (brush.cells != null)
+                {
+                    foreach (var cell in brush.cells)
+                    {
+                        if (cell != null && cell.gameObject != null)
+                            return true;
+                    }
+                }
+                return false;
+            }
+        }
+        
+        /// <summary>
         /// Callback for painting the GUI for the GridBrush in the Scene View.
         /// The GameObjectBrush Editor overrides this to draw the preview of the brush when drawing lines.
         /// </summary>
