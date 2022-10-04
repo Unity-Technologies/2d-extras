@@ -3,6 +3,9 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [4.0.0] - 2022-10-04
+- Update version to 4.0.0 for Unity 2023.1
+
 ## [3.0.2] - 2022-04-01
 ### Fixed
 - [RuleOverrideTile] -Mark RuleOverrideTile InstanceTile as dirty when overriding RuleTile for the RuleOverrideTile changes
