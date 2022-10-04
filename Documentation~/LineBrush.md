@@ -1,4 +1,4 @@
-# Line Brush
+# Line Brush ![Line Brush Icon](images/LineBrushIcon.png)
 
 __Contribution by :__  [CraigGraff](https://github.com/CraigGraff)
 
