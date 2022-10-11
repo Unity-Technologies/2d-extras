@@ -41,7 +41,9 @@ namespace UnityEngine.Tilemaps
 
             public override int GetHashCode()
             {
-                return HashCode.Combine(position.GetHashCode(), name.GetHashCode());
+                var hashCode = position.GetHashCode();
+                hashCode = hashCode * 317 ^ name.GetHashCode();
+                return hashCode;
             }
         }
 
