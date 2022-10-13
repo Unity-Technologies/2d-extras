@@ -17,6 +17,7 @@ namespace UnityEditor.Tilemaps
         /// <summary>
         /// Whether the Line Brush has started drawing a line.
         /// </summary>
+        [NonSerialized]
         public bool lineStartActive;
         /// <summary>
         /// Ensures that there are orthogonal connections of Tiles from the start of the line to the end.
