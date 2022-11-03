@@ -3,6 +3,12 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [3.0.3] - 2022-11-03
+### Fixed
+- [GridInformation] Implement IEquatable for GridInformationKey 
+- [PrefabRandomBrush] Fix possible NullReferenceException in PrefabRandomBrush
+- [GameObjectBrush] Fix placement of GameObjects when Cell Gap is set
+
 ## [3.0.2] - 2022-04-01
 ### Fixed
 - [RuleOverrideTile] -Mark RuleOverrideTile InstanceTile as dirty when overriding RuleTile for the RuleOverrideTile changes
