@@ -3,8 +3,24 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [4.0.0-pre.2] - 2022-11-03
+### Changed
+- [RandomBrush] Add RenderStaticPreview for RandomBrush
+- [TintBrush] Add RenderStaticPreview for TintBrush
+- [GameObjectBrush] Add RenderStaticPreview for GameObjectBrush
+- [GameObjectBrush] Add shouldSaveBrushForSelection for GameObjectBrush
+- [GridBrush] Add icons for brushes
+
+### Fixed
+- [LineBrush] Do not serialize lineStartActive
+
 ## [4.0.0-pre.1] - 2022-10-04
 - Update version to 4.0.0-pre.1 for Unity 2023.1
+
+### Fixed
+- [GridInformation] Implement IEquatable for GridInformationKey 
+- [PrefabRandomBrush] Fix possible NullReferenceException in PrefabRandomBrush
+- [GameObjectBrush] Fix placement of GameObjects when Cell Gap is set
 
 ## [3.0.2] - 2022-04-01
 ### Fixed
