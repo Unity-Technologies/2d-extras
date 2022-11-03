@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 namespace UnityEditor.Tilemaps
 {
@@ -182,6 +183,9 @@ namespace UnityEditor.Tilemaps
     [CustomEditor(typeof(RandomBrush))]
     public class RandomBrushEditor : GridBrushEditor
     {
+        private static readonly string iconPath = "Packages/com.unity.2d.tilemap.extras/Editor/Brushes/RandomBrush/RandomBrush.png";
+        
+        private Texture2D m_BrushIcon;
         private RandomBrush randomBrush { get { return target as RandomBrush; } }
         private GameObject lastBrushTarget;
 
@@ -301,6 +305,85 @@ namespace UnityEditor.Tilemaps
 
             if (EditorGUI.EndChangeCheck())
                 EditorUtility.SetDirty(randomBrush);
+        }
+        
+        /// <summary>
+        /// Creates a static preview of the RandomBrush with its current selection.
+        /// </summary>
+        /// <param name="assetPath">The asset to operate on.</param>
+        /// <param name="subAssets">An array of all Assets at assetPath.</param>
+        /// <param name="width">Width of the created texture.</param>
+        /// <param name="height">Height of the created texture.</param>
+        /// <returns>Generated texture or null.</returns>
+        public override Texture2D RenderStaticPreview(string assetPath, UnityEngine.Object[] subAssets, int width, int height)
+        {
+            if (brush == null)
+                return null;
+
+            var count = randomBrush.randomTileSets.Length;
+            if (count == 0)
+                return null;
+            
+            var previewInstance = new GameObject("Brush Preview", typeof(Grid), typeof(Tilemap), typeof(TilemapRenderer));
+            var previewGrid = previewInstance.GetComponent<Grid>();
+            previewGrid.cellLayout = brush.lastPickedCellLayout;
+            previewGrid.cellSize = brush.lastPickedCellSize;
+            if (previewGrid.cellLayout != GridLayout.CellLayout.Hexagon)
+                previewGrid.cellGap = brush.lastPickedCellGap;
+            previewGrid.cellSwizzle = brush.lastPickedCellSwizzle;
+            var previewTilemap = previewInstance.GetComponent<Tilemap>();
+
+            var root = Mathf.CeilToInt(Mathf.Sqrt(count));
+            var i = 0;
+            for (var y = 0; y < root; ++y)
+            {
+                for (var x = 0; x < root; ++x)
+                {
+                    if (i >= count)
+                        break;
+                    
+                    var bounds = new BoundsInt(x * (randomBrush.randomTileSetSize.x + 1)
+                        , 1 - (y + 1) * (randomBrush.randomTileSetSize.y + 1), 0
+                        , randomBrush.randomTileSetSize.x, randomBrush.randomTileSetSize.y, 1);
+                    previewTilemap.SetTilesBlock(bounds, randomBrush.randomTileSets[i++].randomTiles);                    
+                }
+            }
+
+            var extents = (randomBrush.randomTileSetSize + new Vector3Int(1, 1, 0)) * root - new Vector3Int(1, 1, 0);
+            var center = (Vector3) extents * 0.5f;
+            center.y = -center.y;
+            center.z -= 10;
+
+            var rect = new Rect(0, 0, width, height);
+            var previewUtility = new PreviewRenderUtility(true, true);
+            previewUtility.camera.orthographic = true;
+            previewUtility.camera.orthographicSize = Math.Max(extents.x, extents.y) * 0.5f;
+            if (rect.height > rect.width)
+                previewUtility.camera.orthographicSize *= rect.height / rect.width;
+            previewUtility.camera.transform.position = center;
+            previewUtility.AddSingleGO(previewInstance);
+            previewUtility.BeginStaticPreview(rect);
+            previewUtility.camera.Render();
+            var tex = previewUtility.EndStaticPreview();
+            previewUtility.Cleanup();
+
+            DestroyImmediate(previewInstance);
+
+            return tex;
+        }
+        
+        /// <summary> Returns an icon identifying the Random Brush. </summary>
+        public override Texture2D icon
+        {
+            get
+            {
+                if (m_BrushIcon == null)
+                {
+                    var gui = EditorGUIUtility.TrIconContent(iconPath);
+                    m_BrushIcon = gui.image as Texture2D;
+                }
+                return m_BrushIcon;
+            }
         }
     }
 }

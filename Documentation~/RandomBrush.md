@@ -1,4 +1,4 @@
-# Random Brush
+# Random Brush ![Random Brush Icon](images/RandomBrushIcon.png)
 
 This Brush places random Tiles onto a Tilemap by selecting from defined **Tile Sets** while painting onto the the Tilemap. Use this as an example to create custom Brushes which store specific data per Brush, and to make Brushes with randomized painting behavior.
 

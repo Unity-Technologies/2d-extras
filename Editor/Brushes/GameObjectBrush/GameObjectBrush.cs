@@ -696,6 +696,10 @@ namespace UnityEditor.Tilemaps
     [CustomEditor(typeof(GameObjectBrush))]
     public class GameObjectBrushEditor : GridBrushEditorBase
     {
+        private static readonly string iconPath = "Packages/com.unity.2d.tilemap.extras/Editor/Brushes/GameObjectBrush/GameObjectBrush.png";
+        
+        private Texture2D m_BrushIcon;
+        
         private bool hiddenGridFoldout;
         private Editor hiddenGridEditor;
 
@@ -709,6 +713,25 @@ namespace UnityEditor.Tilemaps
         {
             get { return brush.canChangeZPosition; }
             set { brush.canChangeZPosition = value; }
+        }
+        
+        /// <summary>
+        /// Whether the Brush is in a state that should be saved for selection.
+        /// </summary>
+        public override bool shouldSaveBrushForSelection
+        {
+            get
+            {
+                if (brush.cells != null)
+                {
+                    foreach (var cell in brush.cells)
+                    {
+                        if (cell != null && cell.gameObject != null)
+                            return true;
+                    }
+                }
+                return false;
+            }
         }
         
         /// <summary>
@@ -786,5 +809,57 @@ namespace UnityEditor.Tilemaps
             }
         }
 
+        /// <summary>
+        /// Creates a static preview of the GameObjectBrush with its current selection.
+        /// </summary>
+        /// <param name="assetPath">The asset to operate on.</param>
+        /// <param name="subAssets">An array of all Assets at assetPath.</param>
+        /// <param name="width">Width of the created texture.</param>
+        /// <param name="height">Height of the created texture.</param>
+        /// <returns>Generated texture or null.</returns>
+        public override Texture2D RenderStaticPreview(string assetPath, UnityEngine.Object[] subAssets, int width, int height)
+        {
+            if (brush == null)
+                return null;
+
+            var previewInstance = new GameObject("Brush Preview", typeof(Grid));
+            var previewGrid = previewInstance.GetComponent<Grid>();
+            
+            brush.Paint(previewGrid, previewInstance, Vector3Int.zero);
+
+            var center = ((Vector3) brush.size * 0.5f) - (Vector3) brush.pivot;
+            center.z -= 10f;
+
+            var rect = new Rect(0, 0, width, height);
+            var previewUtility = new PreviewRenderUtility(true, true);
+            previewUtility.camera.orthographic = true;
+            previewUtility.camera.orthographicSize = 1.0f + Math.Max(brush.size.x, brush.size.y);
+            if (rect.height > rect.width)
+                previewUtility.camera.orthographicSize *= rect.height / rect.width;
+            previewUtility.camera.transform.position = center;
+            previewUtility.AddSingleGO(previewInstance);
+            previewUtility.BeginStaticPreview(rect);
+            previewUtility.camera.Render();
+            var tex = previewUtility.EndStaticPreview();
+            previewUtility.Cleanup();
+
+            DestroyImmediate(previewInstance);
+
+            return tex;
+        }
+        
+        /// <summary> Returns an icon identifying the GameObject Brush. </summary>
+        public override Texture2D icon
+        {
+            get
+            {
+                if (m_BrushIcon == null)
+                {
+                    var gui = EditorGUIUtility.TrIconContent(iconPath);
+                    m_BrushIcon = gui.image as Texture2D;
+                }
+                return m_BrushIcon;
+            }
+        }
     }
 }

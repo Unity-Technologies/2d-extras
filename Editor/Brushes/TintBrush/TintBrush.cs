@@ -1,4 +1,5 @@
 using System.Linq;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -75,6 +76,8 @@ namespace UnityEditor.Tilemaps
     [CustomEditor(typeof(TintBrush))]
     public class TintBrushEditor : GridBrushEditorBase
     {
+        internal TintBrush brush => target as TintBrush;
+        
         /// <summary>Returns all valid targets that the brush can edit.</summary>
         /// <remarks>Valid targets for the TintBrush are any GameObjects with a Tilemap component.</remarks>
         public override GameObject[] validTargets
@@ -83,6 +86,33 @@ namespace UnityEditor.Tilemaps
             {
                 return GameObject.FindObjectsOfType<Tilemap>().Select(x => x.gameObject).ToArray();
             }
+        }
+        
+        /// <summary>
+        /// Creates a static preview of the RandomBrush with its current selection.
+        /// </summary>
+        /// <param name="assetPath">The asset to operate on.</param>
+        /// <param name="subAssets">An array of all Assets at assetPath.</param>
+        /// <param name="width">Width of the created texture.</param>
+        /// <param name="height">Height of the created texture.</param>
+        /// <returns>Generated texture or null.</returns>
+        public override Texture2D RenderStaticPreview(string assetPath, UnityEngine.Object[] subAssets, int width, int height)
+        {
+            if (brush == null)
+                return null;
+            
+            var tex = new Texture2D(width, height);
+            var data = tex.GetRawTextureData<Color32>();
+            var index = 0;
+            for (var y = 0; y < tex.height; y++)
+            {
+                for (var x = 0; x < tex.width; x++)
+                {
+                    data[index++] = brush.m_Color;
+                }
+            }
+            tex.Apply();
+            return tex;
         }
     }
 }

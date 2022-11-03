@@ -1,4 +1,4 @@
-# Group Brush
+# Group Brush ![Group Brush Icon](images/GroupBrushIcon.png)
 
 This Brush picks Tiles which are grouped together according to their position and its set properties. Set the __Gap__ value to identify which Tiles belong to the group, and set the __Limit__ value to ensure that the picked group remains within the desired size. Use this Brush as an example to create your own Brushes that can choose and pick specific Tiles 
 

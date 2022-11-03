@@ -1,4 +1,4 @@
-# GameObject Brush
+# GameObject Brush ![GameObject Brush Icon](images/GameObjectBrushIcon.png)
 
 This Brush instances, places and manipulates GameObjects onto the Scene. Use this Brush as an example for creating custom Brushes which can target and manipulate other GameObjects beside Tiles.
 

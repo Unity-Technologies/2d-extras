@@ -17,6 +17,7 @@ namespace UnityEditor.Tilemaps
         /// <summary>
         /// Whether the Line Brush has started drawing a line.
         /// </summary>
+        [NonSerialized]
         public bool lineStartActive;
         /// <summary>
         /// Ensures that there are orthogonal connections of Tiles from the start of the line to the end.
@@ -32,6 +33,11 @@ namespace UnityEditor.Tilemaps
         /// moving something using the "Move selection with active brush" tool.
         /// </summary>
         public bool IsMoving { get; private set; }
+        
+        private void OnEnable()
+        {
+            lineStartActive = false;
+        }
 
         /// <summary>
         /// Paints tiles and GameObjects into a given position within the selected layers.
@@ -222,6 +228,9 @@ namespace UnityEditor.Tilemaps
     [CustomEditor(typeof(LineBrush))]
     public class LineBrushEditor : GridBrushEditor
     {
+        private static readonly string iconPath = "Packages/com.unity.2d.tilemap.extras/Editor/Brushes/LineBrush/LineBrush.png";
+        
+        private Texture2D m_BrushIcon;
         private LineBrush lineBrush { get { return target as LineBrush; } }
         private Tilemap lastTilemap;
 
@@ -290,6 +299,20 @@ namespace UnityEditor.Tilemaps
             {
                 lastTilemap.ClearAllEditorPreviewTiles();
                 lastTilemap = null;
+            }
+        }
+        
+        /// <summary> Returns an icon identifying the Line Brush. </summary>
+        public override Texture2D icon
+        {
+            get
+            {
+                if (m_BrushIcon == null)
+                {
+                    var gui = EditorGUIUtility.TrIconContent(iconPath);
+                    m_BrushIcon = gui.image as Texture2D;
+                }
+                return m_BrushIcon;
             }
         }
     }
