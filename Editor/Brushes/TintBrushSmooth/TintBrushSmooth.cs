@@ -72,7 +72,7 @@ namespace UnityEditor.Tilemaps
 
         private TintTextureGenerator GetGenerator(GridLayout grid)
         {
-            TintTextureGenerator generator = FindObjectOfType<TintTextureGenerator>();
+            TintTextureGenerator generator = FindFirstObjectByType<TintTextureGenerator>();
             if (generator == null)
             {
                 if (grid != null)
@@ -101,7 +101,7 @@ namespace UnityEditor.Tilemaps
         {
             get
             {
-                return GameObject.FindObjectsOfType<Tilemap>().Select(x => x.gameObject).ToArray();
+                return GameObject.FindObjectsByType<Tilemap>(FindObjectsSortMode.None).Select(x => x.gameObject).ToArray();
             }
         }
 
