@@ -3,6 +3,11 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [4.0.0-pre.3] - 2022-11-23
+### Fixed
+- [TintBrush] Replace obsolete method calls.
+- [TintBrushSmooth] Replace obsolete method calls.
+
 ## [4.0.0-pre.2] - 2022-11-03
 ### Changed
 - [RandomBrush] Add RenderStaticPreview for RandomBrush
