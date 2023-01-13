@@ -115,7 +115,9 @@ namespace UnityEditor.Tilemaps
         private void OnEnable()
         {
             // Update brush from original randomTileSet
-            if (randomTileSets == null || randomTileChangeDataSets != null)
+            if (randomTileSets == null 
+                || (randomTileChangeDataSets != null
+                && randomTileChangeDataSets.Length == randomTileSets.Length))
                 return;
             
             randomTileChangeDataSets = new RandomTileChangeDataSet[randomTileSets.Length];
@@ -360,9 +362,10 @@ namespace UnityEditor.Tilemaps
                     {
                         randomBrush.randomTileSets[i].randomTiles[j] = (TileBase) EditorGUILayout.ObjectField("Tile " + (j+1), randomBrush.randomTileSets[i].randomTiles[j], typeof(TileBase), false, null);
                         if (randomBrush.randomTileChangeDataSets != null
-                            && randomBrush.randomTileChangeDataSets.Length > i
-                            && randomBrush.randomTileChangeDataSets[i].randomTileChangeData.Length > j)
+                            && randomBrush.randomTileChangeDataSets.Length > i)
                         {
+                            randomBrush.randomTileChangeDataSets[i].randomTileChangeData ??=
+                                new TileChangeData[randomBrush.randomTileSets[i].randomTiles.Length];
                             randomBrush.randomTileChangeDataSets[i].randomTileChangeData[j].tile = randomBrush.randomTileSets[i].randomTiles[j];
                         }
                     }
