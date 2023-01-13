@@ -669,16 +669,16 @@ namespace UnityEngine
             // Check rule against x-axis mirror with rotations of 0, 90, 180, 270
             else if (rule.m_RuleTransform == TilingRuleOutput.Transform.RotatedMirror)
             {
-                for (int angle = m_RotationAngle; angle < 360; angle += m_RotationAngle)
+                for (int angle = 0; angle < 360; angle += m_RotationAngle)
                 {
-                    if (RuleMatches(rule, position, tilemap, angle))
+                    if (angle != 0 && RuleMatches(rule, position, tilemap, angle))
                     {
                         transform = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), Vector3.one);
                         return true;
                     }
                     if (RuleMatches(rule, position, tilemap, angle, true))
                     {
-                        transform = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), new Vector3(-1f, -1f, 1f));
+                        transform = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), new Vector3(-1f, 1f, 1f));
                         return true;
                     }
                 }
