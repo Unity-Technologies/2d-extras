@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - [TintBrush] Replace obsolete method calls.
 - [TintBrushSmooth] Replace obsolete method calls.
+- [GameObjectBrush] Fix placement of GameObjects for Hexagon Layouts with Anchor
 
 ## [4.0.0-pre.2] - 2022-11-03
 ### Changed
