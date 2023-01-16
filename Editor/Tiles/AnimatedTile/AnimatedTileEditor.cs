@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEditorInternal;
+using UnityEngine.Scripting.APIUpdating;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,6 +10,7 @@ using Object = UnityEngine.Object;
 namespace UnityEditor.Tilemaps
 {
     [CustomEditor(typeof(AnimatedTile))]
+    [MovedFrom(true, "UnityEngine.Tilemaps", "Unity.2D.Tilemap.Extras")]
     public class AnimatedTileEditor : Editor
     {
         private static class Styles
