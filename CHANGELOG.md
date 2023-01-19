@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ## [3.1.0] - 2023-01-16
 ### Added
 - [AnimatedTileEditor] -Add field to change TileAnimationFlags (For 2022.2.x)
+- [RandomBrush] -Use default color and transform when painting over with RandomBrush
 
 ### Changed
 - [AnimatedTileEditor] -Moved to Unity.2d.Tilemap.Extras.Editor
