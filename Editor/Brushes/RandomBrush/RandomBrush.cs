@@ -79,6 +79,15 @@ namespace UnityEditor.Tilemaps
             public TileBase[] randomTiles;
         }
 
+        [Serializable]
+        public struct RandomTileChangeDataSet
+        {
+            /// <summary>
+            /// A set of tiles to be painted as a set with transform and color data
+            /// </summary>
+            public TileChangeData[] randomTileChangeData;
+        }
+
         /// <summary>
         /// The size of a RandomTileSet
         /// </summary>
@@ -90,6 +99,11 @@ namespace UnityEditor.Tilemaps
         public RandomTileSet[] randomTileSets;
 
         /// <summary>
+        /// An array of RandomTileSets to choose from when randomizing 
+        /// </summary>
+        public RandomTileChangeDataSet[] randomTileChangeDataSets;
+        
+        /// <summary>
         /// A flag to determine if picking will add new RandomTileSets 
         /// </summary>
         public bool pickRandomTiles;
@@ -98,7 +112,29 @@ namespace UnityEditor.Tilemaps
         /// A flag to determine if picking will add to existing RandomTileSets 
         /// </summary>
         public bool addToRandomTiles;
-
+        
+        private void OnEnable()
+        {
+            // Update brush from original randomTileSet
+            if (randomTileSets == null 
+                || (randomTileChangeDataSets != null
+                && randomTileChangeDataSets.Length == randomTileSets.Length))
+                return;
+            
+            randomTileChangeDataSets = new RandomTileChangeDataSet[randomTileSets.Length];
+            for (var i = 0; i < randomTileSets.Length; ++i)
+            {
+                var sizeCount = randomTileSetSize.x * randomTileSetSize.y * randomTileSetSize.z;
+                randomTileChangeDataSets[i].randomTileChangeData = new TileChangeData[sizeCount];
+                for (var j = 0; j < sizeCount; ++j)
+                {
+                    randomTileChangeDataSets[i].randomTileChangeData[j].tile = randomTileSets[i].randomTiles[j];
+                    randomTileChangeDataSets[i].randomTileChangeData[j].transform = Matrix4x4.identity;
+                    randomTileChangeDataSets[i].randomTileChangeData[j].color = Color.white;
+                }
+            }
+        }
+        
         /// <summary>
         /// Paints RandomTileSets into a given position within the selected layers.
         /// The RandomBrush overrides this to provide randomized painting functionality.
@@ -108,7 +144,7 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The coordinates of the cell to paint data to.</param>
         public override void Paint(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
-            if (randomTileSets != null && randomTileSets.Length > 0)
+            if (randomTileChangeDataSets != null && randomTileChangeDataSets.Length > 0)
             {
                 if (brushTarget == null)
                     return;
@@ -117,12 +153,17 @@ namespace UnityEditor.Tilemaps
                 if (tilemap == null)
                     return;
                 
-                Vector3Int min = position - pivot;
+                var min = position - pivot;
                 foreach (var startLocation in new SizeEnumerator(min, min + size, randomTileSetSize))
                 {
-                    var randomTileSet = randomTileSets[(int) (randomTileSets.Length * UnityEngine.Random.value)];
+                    var randomTileChangeDataSet = randomTileChangeDataSets[(int) (randomTileChangeDataSets.Length * UnityEngine.Random.value)];
                     var randomBounds = new BoundsInt(startLocation, randomTileSetSize);
-                    tilemap.SetTilesBlock(randomBounds, randomTileSet.randomTiles);
+                    var i = 0;
+                    foreach (var pos in randomBounds.allPositionsWithin)
+                    {
+                        randomTileChangeDataSet.randomTileChangeData[i++].position = pos;
+                    }
+                    tilemap.SetTiles(randomTileChangeDataSet.randomTileChangeData, false);
                 }
             }
             else
@@ -145,12 +186,12 @@ namespace UnityEditor.Tilemaps
             if (!pickRandomTiles)
                 return;
 
-            Tilemap tilemap = brushTarget.GetComponent<Tilemap>();
+            var tilemap = brushTarget.GetComponent<Tilemap>();
             if (tilemap == null)
                 return;
 
-            int i = 0;
-            int count = ((bounds.size.x + randomTileSetSize.x - 1) / randomTileSetSize.x)
+            var i = 0;
+            var count = ((bounds.size.x + randomTileSetSize.x - 1) / randomTileSetSize.x)
                         * ((bounds.size.y + randomTileSetSize.y - 1) / randomTileSetSize.y)
                         * ((bounds.size.z + randomTileSetSize.z - 1) / randomTileSetSize.z);
             if (addToRandomTiles)
@@ -159,18 +200,23 @@ namespace UnityEditor.Tilemaps
                 count += i;
             }
             Array.Resize(ref randomTileSets, count);
+            Array.Resize(ref randomTileChangeDataSets, count);
 
             foreach (var startLocation in new SizeEnumerator(bounds.min, bounds.max, randomTileSetSize))
             {
                 randomTileSets[i].randomTiles = new TileBase[randomTileSetSize.x * randomTileSetSize.y * randomTileSetSize.z];
+                randomTileChangeDataSets[i].randomTileChangeData = new TileChangeData[randomTileSetSize.x * randomTileSetSize.y * randomTileSetSize.z];
                 var randomBounds = new BoundsInt(startLocation, randomTileSetSize);
-                int j = 0;
-                foreach (Vector3Int pos in randomBounds.allPositionsWithin)
+                var j = 0;
+                foreach (var pos in randomBounds.allPositionsWithin)
                 {
-                    var tile = (pos.x < bounds.max.x && pos.y < bounds.max.y && pos.z < bounds.max.z)
-                        ? tilemap.GetTile(pos)
-                        : null;
-                    randomTileSets[i].randomTiles[j++] = tile;
+                    var inBounds = pos.x < bounds.max.x && pos.y < bounds.max.y && pos.z < bounds.max.z;
+                    var tile = inBounds ? tilemap.GetTile(pos) : null;
+                    randomTileSets[i].randomTiles[j] = tile;
+                    randomTileChangeDataSets[i].randomTileChangeData[j].tile = tile;
+                    randomTileChangeDataSets[i].randomTileChangeData[j].transform = inBounds ? tilemap.GetTransformMatrix(pos) : Matrix4x4.identity;
+                    randomTileChangeDataSets[i].randomTileChangeData[j].color = inBounds ? tilemap.GetColor(pos) : Color.white;
+                    j++;
                 }
                 i++;
             }
@@ -198,7 +244,7 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The coordinates of the cell to paint data to.</param>
         public override void PaintPreview(GridLayout grid, GameObject brushTarget, Vector3Int position)
         {
-            if (randomBrush.randomTileSets != null && randomBrush.randomTileSets.Length > 0)
+            if (randomBrush.randomTileChangeDataSets != null && randomBrush.randomTileChangeDataSets.Length > 0)
             {
                 base.PaintPreview(grid, null, position);
                 if (brushTarget == null)
@@ -208,15 +254,18 @@ namespace UnityEditor.Tilemaps
                 if (tilemap == null)
                     return;
 
-                Vector3Int min = position - randomBrush.pivot;
+                var min = position - randomBrush.pivot;
                 foreach (var startLocation in new RandomBrush.SizeEnumerator(min, min + randomBrush.size, randomBrush.randomTileSetSize))
                 {
-                    var randomTileSet = randomBrush.randomTileSets[(int) (randomBrush.randomTileSets.Length * UnityEngine.Random.value)];
+                    var randomTileChangeDataSet = randomBrush.randomTileChangeDataSets[(int) (randomBrush.randomTileChangeDataSets.Length * UnityEngine.Random.value)];
                     var randomBounds = new BoundsInt(startLocation, randomBrush.randomTileSetSize);
-                    int j = 0;
+                    var j = 0;
                     foreach (Vector3Int pos in randomBounds.allPositionsWithin)
                     {
-                        tilemap.SetEditorPreviewTile(pos, randomTileSet.randomTiles[j++]);
+                        tilemap.SetEditorPreviewTile(pos, randomTileChangeDataSet.randomTileChangeData[j].tile);
+                        tilemap.SetEditorPreviewTransformMatrix(pos, randomTileChangeDataSet.randomTileChangeData[j].transform);
+                        tilemap.SetEditorPreviewColor(pos, randomTileChangeDataSet.randomTileChangeData[j].color);
+                        j++;
                     }
                 }
                 lastBrushTarget = brushTarget;
@@ -265,11 +314,18 @@ namespace UnityEditor.Tilemaps
             randomBrush.randomTileSetSize = EditorGUILayout.Vector3IntField("Tile Set Size", randomBrush.randomTileSetSize);
             if (EditorGUI.EndChangeCheck())
             {
-                for (int i = 0; i < randomBrush.randomTileSets.Length; ++i)
+                for (var i = 0; i < randomBrush.randomTileSets.Length; ++i)
                 {
-                    int sizeCount = randomBrush.randomTileSetSize.x * randomBrush.randomTileSetSize.y *
+                    var sizeCount = randomBrush.randomTileSetSize.x * randomBrush.randomTileSetSize.y *
                                     randomBrush.randomTileSetSize.z;
                     randomBrush.randomTileSets[i].randomTiles = new TileBase[sizeCount];
+                    randomBrush.randomTileChangeDataSets[i].randomTileChangeData = new TileChangeData[sizeCount];
+                    for (var j = 0; j < sizeCount; ++j)
+                    {
+                        randomBrush.randomTileChangeDataSets[i].randomTileChangeData[j].tile = randomBrush.randomTileSets[i].randomTiles[j];
+                        randomBrush.randomTileChangeDataSets[i].randomTileChangeData[j].transform = Matrix4x4.identity;
+                        randomBrush.randomTileChangeDataSets[i].randomTileChangeData[j].color = Color.white;
+                    }
                 }
             }
             int randomTileSetCount = EditorGUILayout.DelayedIntField("Number of Tiles", randomBrush.randomTileSets != null ? randomBrush.randomTileSets.Length : 0);
@@ -278,13 +334,23 @@ namespace UnityEditor.Tilemaps
             if (randomBrush.randomTileSets == null || randomBrush.randomTileSets.Length != randomTileSetCount)
             {
                 Array.Resize(ref randomBrush.randomTileSets, randomTileSetCount);
-                for (int i = 0; i < randomBrush.randomTileSets.Length; ++i)
+                Array.Resize(ref randomBrush.randomTileChangeDataSets, randomTileSetCount);
+                for (var i = 0; i < randomBrush.randomTileSets.Length; ++i)
                 {
-                    int sizeCount = randomBrush.randomTileSetSize.x * randomBrush.randomTileSetSize.y *
+                    var sizeCount = randomBrush.randomTileSetSize.x * randomBrush.randomTileSetSize.y *
                                     randomBrush.randomTileSetSize.z;
                     if (randomBrush.randomTileSets[i].randomTiles == null
                         || randomBrush.randomTileSets[i].randomTiles.Length != sizeCount)
+                    {
                         randomBrush.randomTileSets[i].randomTiles = new TileBase[sizeCount];
+                        randomBrush.randomTileChangeDataSets[i].randomTileChangeData = new TileChangeData[sizeCount];
+                        for (var j = 0; j < sizeCount; ++j)
+                        {
+                            randomBrush.randomTileChangeDataSets[i].randomTileChangeData[j].tile = randomBrush.randomTileSets[i].randomTiles[j];
+                            randomBrush.randomTileChangeDataSets[i].randomTileChangeData[j].transform = Matrix4x4.identity;
+                            randomBrush.randomTileChangeDataSets[i].randomTileChangeData[j].color = Color.white;
+                        }
+                    }
                 }
             }
 
@@ -293,18 +359,27 @@ namespace UnityEditor.Tilemaps
                 EditorGUILayout.Space();
                 EditorGUILayout.LabelField("Place random tiles.");
 
-                for (int i = 0; i < randomTileSetCount; i++)
+                for (var i = 0; i < randomTileSetCount; i++)
                 {
                     EditorGUILayout.LabelField("Tile Set " + (i+1));
-                    for (int j = 0; j < randomBrush.randomTileSets[i].randomTiles.Length; ++j)
+                    for (var j = 0; j < randomBrush.randomTileSets[i].randomTiles.Length; ++j)
                     {
-                        randomBrush.randomTileSets[i].randomTiles[j] = (TileBase) EditorGUILayout.ObjectField("Tile " + (j+1), randomBrush.randomTileSets[i].randomTiles[j], typeof(TileBase), false, null);                        
+                        randomBrush.randomTileSets[i].randomTiles[j] = (TileBase) EditorGUILayout.ObjectField("Tile " + (j+1), randomBrush.randomTileSets[i].randomTiles[j], typeof(TileBase), false, null);
+                        if (randomBrush.randomTileChangeDataSets != null
+                            && randomBrush.randomTileChangeDataSets.Length > i)
+                        {
+                            randomBrush.randomTileChangeDataSets[i].randomTileChangeData ??=
+                                new TileChangeData[randomBrush.randomTileSets[i].randomTiles.Length];
+                            randomBrush.randomTileChangeDataSets[i].randomTileChangeData[j].tile = randomBrush.randomTileSets[i].randomTiles[j];
+                        }
                     }
                 }
             }
 
             if (EditorGUI.EndChangeCheck())
+            {
                 EditorUtility.SetDirty(randomBrush);
+            }
         }
         
         /// <summary>
