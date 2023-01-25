@@ -3,6 +3,10 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [2.2.5] - 2023-02-03
+### Fixed
+- [RandomBrush] Use default color and transform when painting over with RandomBrush
+
 ## [2.2.4] - 2022-11-03
 ### Fixed
 - [GridInformation] Implement IEquatable for GridInformationKey 
