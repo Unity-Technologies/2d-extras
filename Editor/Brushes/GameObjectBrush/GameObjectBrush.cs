@@ -238,13 +238,9 @@ namespace UnityEditor.Tilemaps
             int newPivotY = direction == RotationDirection.Clockwise ? pivot.x : oldSize.x - pivot.x - 1;
             pivot = new Vector3Int(newPivotX, newPivotY, pivot.z);
 
-            Matrix4x4 rotation = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, direction == RotationDirection.Clockwise ? 90f : -90f), Vector3.one);
-            Quaternion orientation = Quaternion.Euler(0f, 0f, direction == RotationDirection.Clockwise ? 90f : -90f);
+            Quaternion orientation = Quaternion.Euler(0f, 0f, direction != RotationDirection.Clockwise ? 90f : -90f);
             foreach (BrushCell cell in m_Cells)
-            {
-                cell.offset = rotation * cell.offset;
                 cell.orientation = cell.orientation * orientation;
-            }
         }
 
         /// <summary>Flips the brush in the given axis.</summary>
