@@ -377,23 +377,16 @@ namespace UnityEditor.Tilemaps
 
             foreach (Vector3Int oldPos in oldBounds.allPositionsWithin)
             {
-                int newX = m_Size.x - oldPos.x - 1;
-                int toIndex = GetCellIndex(newX, oldPos.y, oldPos.z);
-                int fromIndex = GetCellIndex(oldPos);
+                var newX = m_Size.x - oldPos.x - 1;
+                var toIndex = GetCellIndex(newX, oldPos.y, oldPos.z);
+                var fromIndex = GetCellIndex(oldPos);
                 m_Cells[toIndex] = oldCells[fromIndex];
             }
 
-            int newPivotX = m_Size.x - pivot.x - 1;
+            var newPivotX = m_Size.x - pivot.x - 1;
             pivot = new Vector3Int(newPivotX, pivot.y, pivot.z);
-            Matrix4x4 flip = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(-1f, 1f, 1f));
-            Quaternion orientation = Quaternion.Euler(0f, 0f, -180f);
             
-            foreach (BrushCell cell in m_Cells)
-            {
-                Vector3 oldOffset = cell.offset;
-                cell.offset = flip * oldOffset;
-                cell.orientation = cell.orientation*orientation;
-            }
+            FlipCells(ref m_Cells, new Vector3(-1f, 1f, 1f));
         }
 
         private void FlipY()
@@ -403,21 +396,23 @@ namespace UnityEditor.Tilemaps
 
             foreach (Vector3Int oldPos in oldBounds.allPositionsWithin)
             {
-                int newY = m_Size.y - oldPos.y - 1;
-                int toIndex = GetCellIndex(oldPos.x, newY, oldPos.z);
-                int fromIndex = GetCellIndex(oldPos);
+                var newY = m_Size.y - oldPos.y - 1;
+                var toIndex = GetCellIndex(oldPos.x, newY, oldPos.z);
+                var fromIndex = GetCellIndex(oldPos);
                 m_Cells[toIndex] = oldCells[fromIndex];
             }
 
-            int newPivotY = m_Size.y - pivot.y - 1;
+            var newPivotY = m_Size.y - pivot.y - 1;
             pivot = new Vector3Int(pivot.x, newPivotY, pivot.z);
-            Matrix4x4 flip = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1f, -1f, 1f));
-            Quaternion orientation = Quaternion.Euler(0f, 0f, -180f);
-            foreach (BrushCell cell in m_Cells)
+
+            FlipCells(ref m_Cells, new Vector3(1f, -1f, 1f));
+        }
+        
+        private static void FlipCells(ref BrushCell[] cells, Vector3 scale)
+        {
+            foreach (BrushCell cell in cells)
             {
-                Vector3 oldOffset = cell.offset;
-                cell.offset = flip * oldOffset;
-                cell.orientation = cell.orientation * orientation;
+                cell.scale = Vector3.Scale(cell.scale, scale);
             }
         }
 
