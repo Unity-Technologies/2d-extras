@@ -50,7 +50,7 @@ namespace UnityEditor.Tilemaps
         /// <summary>
         /// Anchor Point of the Instantiated GameObject in the cell when painting
         /// </summary>
-        public Vector3 m_Anchor = new Vector3(0.5f, 0.5f, 0.5f);
+        public Vector3 m_Anchor = new Vector3(0.5f, 0.5f, 0.0f);
         /// <summary>Size of the brush in cells. </summary>
         public Vector3Int size { get { return m_Size; } set { m_Size = value; SizeUpdated(); } }
         /// <summary>Pivot of the brush. </summary>
