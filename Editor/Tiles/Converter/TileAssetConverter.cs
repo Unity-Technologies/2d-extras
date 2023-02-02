@@ -70,7 +70,7 @@ namespace UnityEditor
 
     public class TileAssetConverterEditor : EditorWindow
     {
-        private TypeCache.TypeCollection tileTypes;
+        private List<Type> tileTypes;
         private List<String> tileTypeNames;
 
         private ListView convertingObjects;
@@ -94,7 +94,13 @@ namespace UnityEditor
 
         public void OnEnable()
         {
-            tileTypes = TypeCache.GetTypesDerivedFrom<TileBase>();
+            var tileTypeCollection = TypeCache.GetTypesDerivedFrom<TileBase>();
+            tileTypes = new List<Type>();
+            foreach (var tileType in tileTypeCollection)
+            {
+                if (!tileType.IsGenericTypeDefinition)
+                    tileTypes.Add(tileType);
+            }
             tileTypeNames = new List<string>(tileTypes.Count);
             foreach (var tileType in tileTypes)
             {
