@@ -50,7 +50,7 @@ namespace UnityEditor.Tilemaps
         /// <summary>
         /// Anchor Point of the Instantiated GameObject in the cell when painting
         /// </summary>
-        public Vector3 m_Anchor = new Vector3(0.5f, 0.5f, 0.5f);
+        public Vector3 m_Anchor = new Vector3(0.5f, 0.5f, 0.0f);
         /// <summary>Size of the brush in cells. </summary>
         public Vector3Int size { get { return m_Size; } set { m_Size = value; SizeUpdated(); } }
         /// <summary>Pivot of the brush. </summary>
@@ -238,13 +238,9 @@ namespace UnityEditor.Tilemaps
             int newPivotY = direction == RotationDirection.Clockwise ? pivot.x : oldSize.x - pivot.x - 1;
             pivot = new Vector3Int(newPivotX, newPivotY, pivot.z);
 
-            Matrix4x4 rotation = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, direction == RotationDirection.Clockwise ? 90f : -90f), Vector3.one);
-            Quaternion orientation = Quaternion.Euler(0f, 0f, direction == RotationDirection.Clockwise ? 90f : -90f);
+            Quaternion orientation = Quaternion.Euler(0f, 0f, direction != RotationDirection.Clockwise ? 90f : -90f);
             foreach (BrushCell cell in m_Cells)
-            {
-                cell.offset = rotation * cell.offset;
                 cell.orientation = cell.orientation * orientation;
-            }
         }
 
         /// <summary>Flips the brush in the given axis.</summary>
@@ -381,23 +377,16 @@ namespace UnityEditor.Tilemaps
 
             foreach (Vector3Int oldPos in oldBounds.allPositionsWithin)
             {
-                int newX = m_Size.x - oldPos.x - 1;
-                int toIndex = GetCellIndex(newX, oldPos.y, oldPos.z);
-                int fromIndex = GetCellIndex(oldPos);
+                var newX = m_Size.x - oldPos.x - 1;
+                var toIndex = GetCellIndex(newX, oldPos.y, oldPos.z);
+                var fromIndex = GetCellIndex(oldPos);
                 m_Cells[toIndex] = oldCells[fromIndex];
             }
 
-            int newPivotX = m_Size.x - pivot.x - 1;
+            var newPivotX = m_Size.x - pivot.x - 1;
             pivot = new Vector3Int(newPivotX, pivot.y, pivot.z);
-            Matrix4x4 flip = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(-1f, 1f, 1f));
-            Quaternion orientation = Quaternion.Euler(0f, 0f, -180f);
             
-            foreach (BrushCell cell in m_Cells)
-            {
-                Vector3 oldOffset = cell.offset;
-                cell.offset = flip * oldOffset;
-                cell.orientation = cell.orientation*orientation;
-            }
+            FlipCells(ref m_Cells, new Vector3(-1f, 1f, 1f));
         }
 
         private void FlipY()
@@ -407,21 +396,23 @@ namespace UnityEditor.Tilemaps
 
             foreach (Vector3Int oldPos in oldBounds.allPositionsWithin)
             {
-                int newY = m_Size.y - oldPos.y - 1;
-                int toIndex = GetCellIndex(oldPos.x, newY, oldPos.z);
-                int fromIndex = GetCellIndex(oldPos);
+                var newY = m_Size.y - oldPos.y - 1;
+                var toIndex = GetCellIndex(oldPos.x, newY, oldPos.z);
+                var fromIndex = GetCellIndex(oldPos);
                 m_Cells[toIndex] = oldCells[fromIndex];
             }
 
-            int newPivotY = m_Size.y - pivot.y - 1;
+            var newPivotY = m_Size.y - pivot.y - 1;
             pivot = new Vector3Int(pivot.x, newPivotY, pivot.z);
-            Matrix4x4 flip = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1f, -1f, 1f));
-            Quaternion orientation = Quaternion.Euler(0f, 0f, -180f);
-            foreach (BrushCell cell in m_Cells)
+
+            FlipCells(ref m_Cells, new Vector3(1f, -1f, 1f));
+        }
+        
+        private static void FlipCells(ref BrushCell[] cells, Vector3 scale)
+        {
+            foreach (BrushCell cell in cells)
             {
-                Vector3 oldOffset = cell.offset;
-                cell.offset = flip * oldOffset;
-                cell.orientation = cell.orientation * orientation;
+                cell.scale = Vector3.Scale(cell.scale, scale);
             }
         }
 
