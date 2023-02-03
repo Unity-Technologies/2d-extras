@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ## [2.2.5] - 2023-02-03
 ### Fixed
+- [GameObjectBrush] Fix placement of GameObjects for Hexagon Layouts with Anchor
+- [GameObjectBrush] Align rotation and flip to 2D View in Editor
 - [RandomBrush] Use default color and transform when painting over with RandomBrush
 
 ## [2.2.4] - 2022-11-03
