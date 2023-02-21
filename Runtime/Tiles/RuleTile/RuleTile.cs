@@ -142,7 +142,11 @@ namespace UnityEngine
                 /// <summary>
                 /// The Rule Tile will mirror in the X or Y axis and match its neighbors.
                 /// </summary>
-                MirrorXY
+                MirrorXY,
+                /// <summary>
+                /// The Rule Tile will rotate and mirror in the X and match its neighbors.
+                /// </summary>
+                RotatedMirror
             }
 
             /// <summary>
@@ -328,6 +332,15 @@ namespace UnityEngine
                     else if (rule.m_RuleTransform == TilingRuleOutput.Transform.MirrorY)
                     {
                         positions.Add(GetMirroredPosition(position, false, true));
+                    }
+                    else if (rule.m_RuleTransform == TilingRuleOutput.Transform.RotatedMirror)
+                    {
+                        var mirroredPosition = GetMirroredPosition(position, true, false);
+                        for (int angle = m_RotationAngle; angle < 360; angle += m_RotationAngle)
+                        {
+                            positions.Add(GetRotatedPosition(position, angle));
+                            positions.Add(GetRotatedPosition(mirroredPosition, angle));
+                        }
                     }
                 }
             }
@@ -653,7 +666,23 @@ namespace UnityEngine
                     return true;
                 }
             }
-
+            // Check rule against x-axis mirror with rotations of 0, 90, 180, 270
+            else if (rule.m_RuleTransform == TilingRuleOutput.Transform.RotatedMirror)
+            {
+                for (int angle = 0; angle < 360; angle += m_RotationAngle)
+                {
+                    if (angle != 0 && RuleMatches(rule, position, tilemap, angle))
+                    {
+                        transform = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), Vector3.one);
+                        return true;
+                    }
+                    if (RuleMatches(rule, position, tilemap, angle, true))
+                    {
+                        transform = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), new Vector3(-1f, 1f, 1f));
+                        return true;
+                    }
+                }
+            }
             return false;
         }
 
@@ -677,8 +706,15 @@ namespace UnityEngine
                 case TilingRuleOutput.Transform.MirrorY:
                     return original * Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1f, perlin < 0.5 ? 1f : -1f, 1f));
                 case TilingRuleOutput.Transform.Rotated:
-                    int angle = Mathf.Clamp(Mathf.FloorToInt(perlin * m_RotationCount), 0, m_RotationCount - 1) * m_RotationAngle;
+                {
+                    var angle = Mathf.Clamp(Mathf.FloorToInt(perlin * m_RotationCount), 0, m_RotationCount - 1) * m_RotationAngle;
                     return Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), Vector3.one);
+                }
+                case TilingRuleOutput.Transform.RotatedMirror:
+                {
+                    var angle = Mathf.Clamp(Mathf.FloorToInt(perlin * m_RotationCount), 0, m_RotationCount - 1) * m_RotationAngle;
+                    return Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), new Vector3(perlin < 0.5 ? 1f : -1f, 1f, 1f));
+                }
             }
             return original;
         }
@@ -725,14 +761,17 @@ namespace UnityEngine
         /// <param name="tilemap">Tilemap to match.</param>
         /// <param name="angle">Rotation angle for matching.</param>
         /// <returns>True if there is a match, False if not.</returns>
-        public bool RuleMatches(TilingRule rule, Vector3Int position, ITilemap tilemap, int angle)
+        public bool RuleMatches(TilingRule rule, Vector3Int position, ITilemap tilemap, int angle, bool mirrorX = false)
         {
             var minCount = Math.Min(rule.m_Neighbors.Count, rule.m_NeighborPositions.Count);
             for (int i = 0; i < minCount ; i++)
             {
-                int neighbor = rule.m_Neighbors[i];
-                Vector3Int positionOffset = GetRotatedPosition(rule.m_NeighborPositions[i], angle);
-                TileBase other = tilemap.GetTile(GetOffsetPosition(position, positionOffset));
+                var neighbor = rule.m_Neighbors[i];
+                var neighborPosition = rule.m_NeighborPositions[i];
+                if (mirrorX)
+                    neighborPosition = GetMirroredPosition(neighborPosition, true, false);
+                var positionOffset = GetRotatedPosition(neighborPosition, angle);
+                var other = tilemap.GetTile(GetOffsetPosition(position, positionOffset));
                 if (!RuleMatch(neighbor, other))
                 {
                     return false;
