@@ -98,6 +98,16 @@ namespace UnityEditor.Tilemaps
             DestroyImmediate(hiddenGrid);
         }
 
+        private void OnValidate()
+        {
+            if (m_Size.x < 0)
+                m_Size.x = 0;
+            if (m_Size.y < 0)
+                m_Size.y = 0;
+            if (m_Size.z < 0)
+                m_Size.z = 0;
+        }
+
         /// <summary>
         /// Initializes the content of the GameObjectBrush.
         /// </summary>
@@ -551,8 +561,9 @@ namespace UnityEditor.Tilemaps
 
         internal void SizeUpdated(bool keepContents = false)
         {
+            OnValidate();
             Array.Resize(ref m_Cells, sizeCount);
-            BoundsInt bounds = new BoundsInt(Vector3Int.zero, m_Size);
+            var bounds = new BoundsInt(Vector3Int.zero, m_Size);
             foreach (Vector3Int pos in bounds.allPositionsWithin)
             {
                 if (keepContents || m_Cells[GetCellIndex(pos)] == null)
