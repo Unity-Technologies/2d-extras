@@ -5,7 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ## [4.0.0] - 2023-03-07
 ### Added
-- [RuleTile] -Add RotatedMirror rule which checks neighbors using both the mirror and rotation Rule in addition to the standard rotation Rule
+- [RuleTile] Add RotatedMirror rule which checks neighbors using both the mirror and rotation Rule in addition to the standard rotation Rule
+
+### Fixed
+- [GameObjectBrush] Validate size of GameObjectBrush when it changes
 
 ## [4.0.0-pre.3] - 2022-11-23
 ### Fixed
