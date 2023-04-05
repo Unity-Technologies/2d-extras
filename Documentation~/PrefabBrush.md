@@ -1,6 +1,6 @@
 # Prefab Brush
 
-__Contributions by:__  [Pepperized](https://github.com/Pepperized), [superkerokero](https://github.com/superkerokero), [vladderb](https://github.com/vladderb), [RyotaMurohoshi](https://github.com/RyotaMurohoshi), [ManickYoj](https://github.com/ManickYoj), [Quickz](https://github.com/Quickz), [basile](https://github.com/bazile)
+__Contributions by:__  [Pepperized](https://github.com/Pepperized), [superkerokero](https://github.com/superkerokero), [vladderb](https://github.com/vladderb), [RyotaMurohoshi](https://github.com/RyotaMurohoshi), [ManickYoj](https://github.com/ManickYoj), [Quickz](https://github.com/Quickz), [basile](https://github.com/bazile), [MaciekOaky](https://github.com/MaciekOaky)
 
 This Brush instances and places randomly selected Prefabs onto the target location and parents the instanced object to the [paint target](https://docs.unity3d.com/Manual/Tilemap-Painting.htm). Use this Brush as an example to create custom Brushes which can quickly place an assortment of GameObjects onto structured locations.
 
