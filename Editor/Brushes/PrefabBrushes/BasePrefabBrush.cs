@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace UnityEditor.Tilemaps
-{ 
+{
     /// <summary>
     /// This base class for PrefabBrushes that contains common functionality
     /// </summary>
@@ -53,17 +53,18 @@ namespace UnityEditor.Tilemaps
             {
                 Undo.MoveGameObjectToScene(instance, brushTarget.scene, "Paint Prefabs");
                 Undo.RegisterCreatedObjectUndo((Object)instance, "Paint Prefabs");
-                instance.transform.SetParent(brushTarget.transform);
+
+                Undo.SetTransformParent(instance.transform, brushTarget.transform, "Paint Prefabs: Modify parent");
                 instance.transform.position = grid.LocalToWorld(grid.CellToLocalInterpolated(position + m_Anchor));
                 instance.transform.rotation = rotation;
             }
         }
     }
-    
+
     /// <summary>
     /// The Base Brush Editor for a Prefab Brush.
     /// </summary>
-    public class BasePrefabBrushEditor :  GridBrushEditor
+    public class BasePrefabBrushEditor : GridBrushEditor
     {
         private SerializedProperty m_Anchor;
 
