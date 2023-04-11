@@ -592,10 +592,10 @@ namespace UnityEditor.Tilemaps
                     renderer.enabled = true;
                 }
             }
-
+            instance.hideFlags = HideFlags.None;
             Undo.RegisterCreatedObjectUndo(instance, "Paint GameObject");
+
             var anchorRatio = GetAnchorRatio(grid, anchor);
-            
             instance.transform.position = grid.LocalToWorld(grid.CellToLocalInterpolated(position) + grid.CellToLocalInterpolated(anchorRatio));
             instance.transform.localRotation = orientation;
             instance.transform.localScale = scale;
