@@ -23,12 +23,14 @@ namespace UnityEngine.Tilemaps
     [AddComponentMenu("Tilemap/Grid Information")]
     public class GridInformation : MonoBehaviour, ISerializationCallbackReceiver
     {
+        [Serializable]
         internal struct GridInformationValue
         {
             public GridInformationType type;
             public object data;
         }
 
+        [Serializable]
         internal struct GridInformationKey : IEquatable<GridInformationKey>
         {
             public Vector3Int position;
