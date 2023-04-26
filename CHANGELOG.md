@@ -3,6 +3,11 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [4.0.1] - 2023-04-26
+### Fixed
+- [GameObjectBrush] Set HideFlags of instantiated GameObject to HideFlags.None when painting
+- [GridInformation] Fix serialization of GridInformationKey/Value
+
 ## [4.0.0] - 2023-03-07
 ### Added
 - [RuleTile] Add RotatedMirror rule which checks neighbors using both the mirror and rotation Rule in addition to the standard rotation Rule
