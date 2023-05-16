@@ -3,6 +3,12 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [2.2.6] - 2023-05-16
+### Fixed
+- [GameObjectBrush] Set HideFlags of instantiated GameObject to HideFlags.None when painting
+- [GridInformation] Fix serialization of GridInformationKey/Value
+- [PrefabBrush] Fix crash when performing undo operation with PrefabBrush
+
 ## [2.2.5] - 2023-02-03
 ### Fixed
 - [GameObjectBrush] Fix placement of GameObjects for Hexagon Layouts with Anchor
