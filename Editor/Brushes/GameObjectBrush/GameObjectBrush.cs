@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -137,8 +137,8 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The coordinates of the cell to paint data to.</param>
         public override void Paint(GridLayout gridLayout, GameObject brushTarget, Vector3Int position)
         {
-            Vector3Int min = position - pivot;
-            BoundsInt bounds = new BoundsInt(min, m_Size);
+            var min = position - pivot;
+            var bounds = new BoundsInt(min, m_Size);
 
             BoxFill(gridLayout, brushTarget, bounds);
         }
@@ -148,7 +148,7 @@ namespace UnityEditor.Tilemaps
             if (cell.gameObject == null)
                 return;
 
-            var existingGO = GetObjectInCell(grid, parent, position, m_Anchor);
+            var existingGO = GetObjectInCell(grid, parent, position, m_Anchor, cell.offset);
             if (existingGO == null)
             {
                 SetSceneCell(grid, parent, position, cell.gameObject, cell.offset, cell.scale, cell.orientation, m_Anchor);
@@ -164,16 +164,16 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The coordinates of the cell to erase data from.</param>
         public override void Erase(GridLayout gridLayout, GameObject brushTarget, Vector3Int position)
         {
-            Vector3Int min = position - pivot;
-            BoundsInt bounds = new BoundsInt(min, m_Size);
+            var min = position - pivot;
+            var bounds = new BoundsInt(min, m_Size);
 
             GetGrid(ref gridLayout, ref brushTarget);
             BoxErase(gridLayout, brushTarget, bounds);
         }
 
-        private void EraseCell(GridLayout grid, Vector3Int position, Transform parent)
+        private void EraseCell(GridLayout grid, Vector3Int position, Transform parent, BrushCell cell)
         {
-            ClearSceneCell(grid, parent, position);
+            ClearSceneCell(grid, parent, position, cell);
         }
 
         /// <summary>
@@ -187,10 +187,10 @@ namespace UnityEditor.Tilemaps
         {
             GetGrid(ref gridLayout, ref brushTarget);
             
-            foreach (Vector3Int location in position.allPositionsWithin)
+            foreach (var location in position.allPositionsWithin)
             {
-                Vector3Int local = location - position.min;
-                BrushCell cell = m_Cells[GetCellIndexWrapAround(local.x, local.y, local.z)];
+                var local = location - position.min;
+                var cell = m_Cells[GetCellIndexWrapAround(local.x, local.y, local.z)];
                 PaintCell(gridLayout, location, brushTarget != null ? brushTarget.transform : null, cell);
             }
         }
@@ -206,14 +206,16 @@ namespace UnityEditor.Tilemaps
         {
             GetGrid(ref gridLayout, ref brushTarget);
             
-            foreach (Vector3Int location in position.allPositionsWithin)
+            foreach (var location in position.allPositionsWithin)
             {
-                EraseCell(gridLayout, location, brushTarget != null ? brushTarget.transform : null);
+                var local = location - position.min;
+                var cell = m_Cells[GetCellIndexWrapAround(local.x, local.y, local.z)];
+                EraseCell(gridLayout, location, brushTarget != null ? brushTarget.transform : null, cell);
             }
         }
 
         /// <summary>
-        /// This is not supported but it should floodfill GameObjects starting from a given position within the selected layers.
+        /// This is not supported but it should flood-fill GameObjects starting from a given position within the selected layers.
         /// </summary>
         /// <param name="gridLayout">Grid used for layout.</param>
         /// <param name="brushTarget">Target of the flood fill operation. By default the currently selected GameObject.</param>
@@ -230,22 +232,22 @@ namespace UnityEditor.Tilemaps
         /// <param name="layout">Cell Layout for rotating.</param>
         public override void Rotate(RotationDirection direction, GridLayout.CellLayout layout)
         {
-            Vector3Int oldSize = m_Size;
-            BrushCell[] oldCells = m_Cells.Clone() as BrushCell[];
+            var oldSize = m_Size;
+            var oldCells = m_Cells.Clone() as BrushCell[];
             size = new Vector3Int(oldSize.y, oldSize.x, oldSize.z);
-            BoundsInt oldBounds = new BoundsInt(Vector3Int.zero, oldSize);
+            var oldBounds = new BoundsInt(Vector3Int.zero, oldSize);
 
             foreach (Vector3Int oldPos in oldBounds.allPositionsWithin)
             {
-                int newX = direction == RotationDirection.Clockwise ? oldSize.y - oldPos.y - 1 : oldPos.y;
-                int newY = direction == RotationDirection.Clockwise ? oldPos.x : oldSize.x - oldPos.x - 1;
-                int toIndex = GetCellIndex(newX, newY, oldPos.z);
-                int fromIndex = GetCellIndex(oldPos.x, oldPos.y, oldPos.z, oldSize.x, oldSize.y, oldSize.z);
+                var newX = direction == RotationDirection.Clockwise ? oldSize.y - oldPos.y - 1 : oldPos.y;
+                var newY = direction == RotationDirection.Clockwise ? oldPos.x : oldSize.x - oldPos.x - 1;
+                var toIndex = GetCellIndex(newX, newY, oldPos.z);
+                var fromIndex = GetCellIndex(oldPos.x, oldPos.y, oldPos.z, oldSize.x, oldSize.y, oldSize.z);
                 m_Cells[toIndex] = oldCells[fromIndex];
             }
 
-            int newPivotX = direction == RotationDirection.Clockwise ? oldSize.y - pivot.y - 1 : pivot.y;
-            int newPivotY = direction == RotationDirection.Clockwise ? pivot.x : oldSize.x - pivot.x - 1;
+            var newPivotX = direction == RotationDirection.Clockwise ? oldSize.y - pivot.y - 1 : pivot.y;
+            var newPivotY = direction == RotationDirection.Clockwise ? pivot.x : oldSize.x - pivot.x - 1;
             pivot = new Vector3Int(newPivotX, newPivotY, pivot.z);
 
             Quaternion orientation = Quaternion.Euler(0f, 0f, direction != RotationDirection.Clockwise ? 90f : -90f);
@@ -288,13 +290,17 @@ namespace UnityEditor.Tilemaps
 
         private void PickCell(Vector3Int position, Vector3Int brushPosition, GridLayout grid, Transform parent, bool withoutAnchor = false)
         {
-            var go = GetObjectInCell(grid, parent, position, m_Anchor);
+            GameObject go = null;
+            if (!withoutAnchor)
+                go = GetObjectInCell(grid, parent, position, m_Anchor, Vector3.zero);
             if (go == null)
-            {
-                go = GetObjectInCell(grid, parent, position, Vector3.zero);
-            }
+                go = GetObjectInCell(grid, parent, position, Vector3.zero, Vector3.zero);
+
             var anchorRatio = GetAnchorRatio(grid, m_Anchor);
-            var cellCenter = grid.LocalToWorld(grid.CellToLocalInterpolated(position) + grid.CellToLocalInterpolated(anchorRatio));
+
+            var cellLocalPosition = grid.CellToLocalInterpolated(position);
+            var anchorLocalPosition = grid.CellToLocalInterpolated(anchorRatio);
+            var cellCenter = grid.LocalToWorld(cellLocalPosition + anchorLocalPosition);
 
             if (go != null)
             {
@@ -332,11 +338,12 @@ namespace UnityEditor.Tilemaps
             GetGrid(ref gridLayout, ref brushTarget);
 
             var targetTransform = brushTarget != null ? brushTarget.transform : null;
-            foreach (Vector3Int pos in position.allPositionsWithin)
+            foreach (var pos in position.allPositionsWithin)
             {
-                Vector3Int brushPosition = new Vector3Int(pos.x - position.x, pos.y - position.y, 0);
+                var brushPosition = new Vector3Int(pos.x - position.x, pos.y - position.y, 0);
                 PickCell(pos, brushPosition, gridLayout, targetTransform);
-                ClearSceneCell(gridLayout, targetTransform, pos);
+                var cell = m_Cells[GetCellIndex(brushPosition)];
+                ClearSceneCell(gridLayout, targetTransform, pos, cell);
             }
         }
 
@@ -382,10 +389,10 @@ namespace UnityEditor.Tilemaps
 
         private void FlipX()
         {
-            BrushCell[] oldCells = m_Cells.Clone() as BrushCell[];
-            BoundsInt oldBounds = new BoundsInt(Vector3Int.zero, m_Size);
+            var oldCells = m_Cells.Clone() as BrushCell[];
+            var oldBounds = new BoundsInt(Vector3Int.zero, m_Size);
 
-            foreach (Vector3Int oldPos in oldBounds.allPositionsWithin)
+            foreach (var oldPos in oldBounds.allPositionsWithin)
             {
                 var newX = m_Size.x - oldPos.x - 1;
                 var toIndex = GetCellIndex(newX, oldPos.y, oldPos.z);
@@ -401,10 +408,10 @@ namespace UnityEditor.Tilemaps
 
         private void FlipY()
         {
-            BrushCell[] oldCells = m_Cells.Clone() as BrushCell[];
-            BoundsInt oldBounds = new BoundsInt(Vector3Int.zero, m_Size);
+            var oldCells = m_Cells.Clone() as BrushCell[];
+            var oldBounds = new BoundsInt(Vector3Int.zero, m_Size);
 
-            foreach (Vector3Int oldPos in oldBounds.allPositionsWithin)
+            foreach (var oldPos in oldBounds.allPositionsWithin)
             {
                 var newY = m_Size.y - oldPos.y - 1;
                 var toIndex = GetCellIndex(oldPos.x, newY, oldPos.z);
@@ -521,7 +528,7 @@ namespace UnityEditor.Tilemaps
             return (x % m_Size.x) + m_Size.x * (y % m_Size.y) + m_Size.x * m_Size.y * (z % m_Size.z);
         }
 
-        private GameObject GetObjectInCell(GridLayout grid, Transform parent, Vector3Int position, Vector3 anchor)
+        private GameObject GetObjectInCell(GridLayout grid, Transform parent, Vector3Int position, Vector3 anchor, Vector3 offset)
         {
             int childCount;
             GameObject[] sceneChildren = null;
@@ -537,11 +544,11 @@ namespace UnityEditor.Tilemaps
             }
 
             var anchorRatio = GetAnchorRatio(grid, anchor);
-            var anchorWorld = grid.CellToLocalInterpolated(anchorRatio);
+            var anchorLocal = grid.CellToLocalInterpolated(anchorRatio);
             for (var i = 0; i < childCount; i++)
             {
                 var child = sceneChildren == null ? parent.GetChild(i) : sceneChildren[i].transform;
-                var childCell = grid.LocalToCell(grid.WorldToLocal(child.position) - anchorWorld);
+                var childCell = grid.LocalToCell(grid.WorldToLocal(child.position) - anchorLocal - offset);
                 if (position == childCell)
                     return child.gameObject;
             }
@@ -564,7 +571,7 @@ namespace UnityEditor.Tilemaps
             OnValidate();
             Array.Resize(ref m_Cells, sizeCount);
             var bounds = new BoundsInt(Vector3Int.zero, m_Size);
-            foreach (Vector3Int pos in bounds.allPositionsWithin)
+            foreach (var pos in bounds.allPositionsWithin)
             {
                 if (keepContents || m_Cells[GetCellIndex(pos)] == null)
                     m_Cells[GetCellIndex(pos)] = new BrushCell();
@@ -617,9 +624,9 @@ namespace UnityEditor.Tilemaps
             return anchorRatio;
         }
         
-        private void ClearSceneCell(GridLayout grid, Transform parent, Vector3Int position)
+        private void ClearSceneCell(GridLayout grid, Transform parent, Vector3Int position, BrushCell cell)
         {
-            var erased = GetObjectInCell(grid, parent, position, m_Anchor);
+            var erased = GetObjectInCell(grid, parent, position, m_Anchor, cell.offset);
             if (erased != null)
                 Undo.DestroyObjectImmediate(erased);
         }
@@ -659,19 +666,36 @@ namespace UnityEditor.Tilemaps
             /// <summary>
             /// GameObject to be placed when painting.
             /// </summary>
-            public GameObject gameObject { get { return m_GameObject; } set { m_GameObject = value; } }
+            public GameObject gameObject
+            {
+                get => m_GameObject;
+                set => m_GameObject = value;
+            }
+
             /// <summary>
             /// Position offset of the GameObject when painted.
             /// </summary>
-            public Vector3 offset { get { return m_Offset; } set { m_Offset = value; } }
+            public Vector3 offset
+            {
+                get => m_Offset;
+                set => m_Offset = value;
+            }
             /// <summary>
             /// Scale of the GameObject when painted.
             /// </summary>
-            public Vector3 scale { get { return m_Scale; } set { m_Scale = value; } }
+            public Vector3 scale 
+            { 
+                get => m_Scale;
+                set => m_Scale = value;
+            }
             /// <summary>
-            /// Orientatio of the GameObject when painted.
+            /// Orientation of the GameObject when painted.
             /// </summary>
-            public Quaternion orientation { get { return m_Orientation; } set { m_Orientation = value; } }
+            public Quaternion orientation 
+            {
+                get => m_Orientation;
+                set => m_Orientation = value;
+            }
             
             [SerializeField]
             private GameObject m_GameObject;
@@ -718,8 +742,8 @@ namespace UnityEditor.Tilemaps
         /// <summary> Whether the GridBrush can change Z Position. </summary>
         public override bool canChangeZPosition
         {
-            get { return brush.canChangeZPosition; }
-            set { brush.canChangeZPosition = value; }
+            get => brush.canChangeZPosition;
+            set => brush.canChangeZPosition = value;
         }
         
         /// <summary>
@@ -733,7 +757,7 @@ namespace UnityEditor.Tilemaps
         /// <param name="executing">Whether brush is being used.</param>
         public override void OnPaintSceneGUI(GridLayout gridLayout, GameObject brushTarget, BoundsInt position, GridBrushBase.Tool tool, bool executing)
         {
-            BoundsInt gizmoRect = position;
+            var gizmoRect = position;
 
             if (tool == GridBrushBase.Tool.Paint || tool == GridBrushBase.Tool.Erase)
                 gizmoRect = new BoundsInt(position.min - brush.pivot, brush.size);
@@ -786,16 +810,16 @@ namespace UnityEditor.Tilemaps
         {
             get
             {
-                StageHandle currentStageHandle = StageUtility.GetCurrentStageHandle();
-                var results = currentStageHandle.FindComponentsOfType<GridLayout>().Where(x =>
+                var currentStageHandle = StageUtility.GetCurrentStageHandle();
+                var results = currentStageHandle.FindComponentsOfType<GridLayout>();
+                var validGridLayouts = new List<GameObject>(results.Length + 1) { brush.hiddenGrid };
+                foreach (var result in results)
                 {
-                    GameObject gameObject;
-                    return (gameObject = x.gameObject).scene.isLoaded
-                           && gameObject.activeInHierarchy;
-                }).Select(x => x.gameObject);
-                return results.Prepend(brush.hiddenGrid).ToArray();
+                    if (result.gameObject.scene.isLoaded && result.gameObject.activeInHierarchy)
+                        validGridLayouts.Add(result.gameObject);
+                }
+                return validGridLayouts.ToArray();
             }
         }
-
     }
 }
