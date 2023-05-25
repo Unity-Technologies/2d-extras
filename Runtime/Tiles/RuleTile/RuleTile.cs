@@ -385,9 +385,8 @@ namespace UnityEngine
                 else if (tile is RuleOverrideTile ot)
                     ruleTile = ot.m_Tile;
 
-                if (ruleTile != null)
-                    if (ruleTile == this || ruleTile.neighborPositions.Contains(offset))
-                        base.RefreshTile(offsetPosition, tilemap);
+                if (ruleTile == this || (ruleTile != null && ruleTile.neighborPositions.Contains(offset))) 
+                    base.RefreshTile(offsetPosition, tilemap);
             }
         }
 
