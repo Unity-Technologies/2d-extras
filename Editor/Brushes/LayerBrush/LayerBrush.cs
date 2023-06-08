@@ -14,6 +14,8 @@ namespace UnityEditor.Tilemaps
         internal GameObject[] brushTargets;
         private GridLayout cachedGridLayout;
 
+        public Tilemap[] restrictToTheseTilemapsOnly;
+
         internal bool ValidateAndCacheBrushTargetsFromGridLayout(GridLayout gridLayout)
         {
             if (cachedGridLayout == gridLayout)
@@ -67,39 +69,58 @@ namespace UnityEditor.Tilemaps
             CacheBrushTargets(tilemaps);
         }
 
+        private bool SelectedTarget(int i)
+        {
+            if (restrictToTheseTilemapsOnly.Length == 0)
+                return true;
+
+            foreach(Tilemap tilemap in restrictToTheseTilemapsOnly)
+            {
+                if (brushTargets[i] == tilemap.gameObject)
+                    return true;
+            }
+
+            return false;
+        }
+
         public override void Select(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
         {
             CacheGridLayout(gridLayout);
             for (int i = 0; i < gridBrushes.Length; ++i)
-                gridBrushes[i].Select(gridLayout, brushTargets[i], position);
+                if(SelectedTarget(i))
+                    gridBrushes[i].Select(gridLayout, brushTargets[i], position);
         }
 
         public override void Move(GridLayout gridLayout, GameObject brushTarget, BoundsInt from, BoundsInt to)
         {
             CacheGridLayout(gridLayout);
             for (int i = 0; i < gridBrushes.Length; ++i)
-                gridBrushes[i].Move(gridLayout, brushTargets[i], from, to);
+                if (SelectedTarget(i))
+                    gridBrushes[i].Move(gridLayout, brushTargets[i], from, to);
         }
 
         public override void MoveStart(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
         {
             CacheGridLayout(gridLayout);
             for (int i = 0; i < gridBrushes.Length; ++i)
-                gridBrushes[i].MoveStart(gridLayout, brushTargets[i], position);
+                if (SelectedTarget(i))
+                    gridBrushes[i].MoveStart(gridLayout, brushTargets[i], position);
         }
 
         public override void MoveEnd(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
         {
             CacheGridLayout(gridLayout);
             for (int i = 0; i < gridBrushes.Length; ++i)
-                gridBrushes[i].MoveEnd(gridLayout, brushTargets[i], position);
+                if (SelectedTarget(i))
+                    gridBrushes[i].MoveEnd(gridLayout, brushTargets[i], position);
         }
 
         public override void Paint(GridLayout gridLayout, GameObject brushTarget, Vector3Int position)
         {
             CacheGridLayout(gridLayout);
             for (int i = 0; i < gridBrushes.Length; ++i)
-                gridBrushes[i].Paint(gridLayout, brushTargets[i], position);
+                if (SelectedTarget(i))
+                    gridBrushes[i].Paint(gridLayout, brushTargets[i], position);
         }
 
         public override void Erase(GridLayout gridLayout, GameObject brushTarget, Vector3Int position)
@@ -108,14 +129,16 @@ namespace UnityEditor.Tilemaps
                 return;
 
             for (int i = 0; i < gridBrushes.Length; ++i)
-                gridBrushes[i].Erase(gridLayout, brushTargets[i], position);
+                if (SelectedTarget(i))
+                    gridBrushes[i].Erase(gridLayout, brushTargets[i], position);
         }
 
         public override void Pick(GridLayout gridLayout, GameObject brushTarget, BoundsInt position, Vector3Int pickStart)
         {
             CacheGridLayout(gridLayout);
             for (int i = 0; i < gridBrushes.Length; ++i)
-                gridBrushes[i].Pick(gridLayout, brushTargets[i], position, pickStart);
+                if (SelectedTarget(i))
+                    gridBrushes[i].Pick(gridLayout, brushTargets[i], position, pickStart);
             base.Pick(gridLayout, brushTarget, position, pickStart);
         }
 
@@ -125,7 +148,8 @@ namespace UnityEditor.Tilemaps
                 return;
 
             for (int i = 0; i < gridBrushes.Length; ++i)
-                gridBrushes[i].FloodFill(gridLayout, brushTargets[i], position);
+                if (SelectedTarget(i))
+                    gridBrushes[i].FloodFill(gridLayout, brushTargets[i], position);
         }
 
         public override void BoxFill(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
@@ -134,7 +158,8 @@ namespace UnityEditor.Tilemaps
                 return;
 
             for (int i = 0; i < gridBrushes.Length; ++i)
-                gridBrushes[i].BoxFill(gridLayout, brushTargets[i], position);
+                if (SelectedTarget(i))
+                    gridBrushes[i].BoxFill(gridLayout, brushTargets[i], position);
         }
 
         public override void Flip(FlipAxis flip, GridLayout.CellLayout layout)
