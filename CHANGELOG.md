@@ -3,6 +3,10 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [4.0.2] - 2023-08-21
+### Fixed
+- [GameObjectBrush] Use cell offset to determine location of GameObject when painting and erasing
+
 ## [4.0.1] - 2023-04-26
 ### Fixed
 - [GameObjectBrush] Set HideFlags of instantiated GameObject to HideFlags.None when painting
