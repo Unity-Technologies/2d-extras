@@ -778,7 +778,7 @@ namespace UnityEditor.Tilemaps
                 brush.SizeUpdated(true);
             }
 
-            hiddenGridFoldout = EditorGUILayout.Foldout(hiddenGridFoldout, "SceneRoot Grid");
+            hiddenGridFoldout = EditorGUILayout.Foldout(hiddenGridFoldout, "SceneRoot Grid", true);
             if (hiddenGridFoldout)
             {
                 EditorGUI.indentLevel++;
