@@ -2,18 +2,19 @@
 using UnityEngine;
 
 namespace UnityEditor.Tilemaps
-{ 
+{
     /// <summary>
-    /// This base class for PrefabBrushes that contains common functionality
+    ///     This base class for PrefabBrushes that contains common functionality
     /// </summary>
     public class BasePrefabBrush : GridBrush
-    {   /// <summary>
-        /// Anchor Point of the Instantiated Prefab in the cell when painting
+    {
+        /// <summary>
+        ///     Anchor Point of the Instantiated Prefab in the cell when painting
         /// </summary>
-        public Vector3 m_Anchor = new Vector3(0.5f, 0.5f, 0.5f);
+        public Vector3 m_Anchor = new(0.5f, 0.5f, 0.5f);
 
         /// <summary>
-        /// Gets all children of the parent Transform which are within the given Grid's cell position.
+        ///     Gets all children of the parent Transform which are within the given Grid's cell position.
         /// </summary>
         /// <param name="grid">Grid to determine cell position.</param>
         /// <param name="parent">Parent transform to get child Objects from.</param>
@@ -31,49 +32,48 @@ namespace UnityEditor.Tilemaps
             for (var i = 0; i < childCount; i++)
             {
                 var child = parent.GetChild(i);
-                if (position == grid.WorldToCell(child.position) - anchorCellOffset)
-                {
-                    results.Add(child.gameObject);
-                }
+                if (position == grid.WorldToCell(child.position) - anchorCellOffset) results.Add(child.gameObject);
             }
+
             return results;
         }
 
         /// <summary>
-        /// Instantiates a Prefab into the given Grid's cell position parented to the brush target.
+        ///     Instantiates a Prefab into the given Grid's cell position parented to the brush target.
         /// </summary>
         /// <param name="grid">Grid to determine cell position.</param>
         /// <param name="brushTarget">Target to instantiate child to.</param>
         /// <param name="position">Cell position to instantiate to.</param>
         /// <param name="prefab">Prefab to instantiate.</param>
-        protected void InstantiatePrefabInCell(GridLayout grid, GameObject brushTarget, Vector3Int position, GameObject prefab, Quaternion rotation = default)
+        protected void InstantiatePrefabInCell(GridLayout grid, GameObject brushTarget, Vector3Int position,
+            GameObject prefab, Quaternion rotation = default)
         {
             var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
             if (instance != null)
             {
                 Undo.MoveGameObjectToScene(instance, brushTarget.scene, "Paint Prefabs");
-                Undo.RegisterCreatedObjectUndo((Object)instance, "Paint Prefabs");
+                Undo.RegisterCreatedObjectUndo(instance, "Paint Prefabs");
                 instance.transform.SetParent(brushTarget.transform);
                 instance.transform.position = grid.LocalToWorld(grid.CellToLocalInterpolated(position + m_Anchor));
                 instance.transform.rotation = rotation;
             }
         }
     }
-    
+
     /// <summary>
-    /// The Base Brush Editor for a Prefab Brush.
+    ///     The Base Brush Editor for a Prefab Brush.
     /// </summary>
-    public class BasePrefabBrushEditor :  GridBrushEditor
+    public class BasePrefabBrushEditor : GridBrushEditor
     {
         private SerializedProperty m_Anchor;
 
         /// <summary>
-        /// SerializedObject representation of the target Prefab Brush
+        ///     SerializedObject representation of the target Prefab Brush
         /// </summary>
         protected SerializedObject m_SerializedObject;
 
         /// <summary>
-        /// OnEnable for the BasePrefabBrushEditor
+        ///     OnEnable for the BasePrefabBrushEditor
         /// </summary>
         protected override void OnEnable()
         {
@@ -83,8 +83,8 @@ namespace UnityEditor.Tilemaps
         }
 
         /// <summary>
-        /// Callback for painting the inspector GUI for the PrefabBrush in the Tile Palette.
-        /// The PrefabBrush Editor overrides this to have a custom inspector for this Brush.
+        ///     Callback for painting the inspector GUI for the PrefabBrush in the Tile Palette.
+        ///     The PrefabBrush Editor overrides this to have a custom inspector for this Brush.
         /// </summary>
         public override void OnPaintInspectorGUI()
         {

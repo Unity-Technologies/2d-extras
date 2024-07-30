@@ -1,5 +1,0 @@
-{
-    "displayName": "Dungeon Rule Tile",
-    "interactiveImport": "false",
-    "description": "An example implementation of a Rule Tile with rules matching eight-way orthogonal and diagonal neighbors.",
-}

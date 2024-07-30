@@ -3,46 +3,36 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 /// <summary>
-/// A helper class for tinting a Grid component
+///     A helper class for tinting a Grid component
 /// </summary>
 [ExecuteInEditMode]
 public class TintTextureGenerator : MonoBehaviour
 {
     /// <summary>
-    /// Size of the Tint map in cells
+    ///     Size of the Tint map in cells
     /// </summary>
     public int k_TintMapSize = 256;
 
     /// <summary>
-    /// Mapping scale for cells to Tint map texture
+    ///     Mapping scale for cells to Tint map texture
     /// </summary>
-    /// /// <remarks>
-    /// Adjust to get better definition.
+    /// ///
+    /// <remarks>
+    ///     Adjust to get better definition.
     /// </remarks>
     public int k_ScaleFactor = 1;
 
+    private Grid m_Grid;
+
+    private Texture2D m_TintTexture;
+
     /// <summary>
-    /// Size of the Tint map texture in pixels
+    ///     Size of the Tint map texture in pixels
     /// </summary>
     public int k_TintMapTextureSize => k_TintMapSize * k_ScaleFactor;
 
-    private Grid m_Grid;
-    
-    
     /// <summary>
-    /// Callback when the TintTextureGenerator is loaded.
-    /// Refreshes the Grid Component on this GameObject. 
-    /// </summary>
-    public void Start()
-    {
-        m_Grid = GetComponent<Grid>();
-        Refresh(m_Grid);
-    }
-
-    private Texture2D m_TintTexture;
-    
-    /// <summary>
-    /// Tint texture generated from Grid values
+    ///     Tint texture generated from Grid values
     /// </summary>
     public Texture2D tintTexture
     {
@@ -57,12 +47,24 @@ public class TintTextureGenerator : MonoBehaviour
                 RefreshGlobalShaderValues();
                 Refresh(m_Grid);
             }
+
             return m_TintTexture;
         }
     }
 
+
     /// <summary>
-    /// Refreshes the tint color of the Grid
+    ///     Callback when the TintTextureGenerator is loaded.
+    ///     Refreshes the Grid Component on this GameObject.
+    /// </summary>
+    public void Start()
+    {
+        m_Grid = GetComponent<Grid>();
+        Refresh(m_Grid);
+    }
+
+    /// <summary>
+    ///     Refreshes the tint color of the Grid
     /// </summary>
     /// <param name="grid">Grid to refresh color</param>
     public void Refresh(Grid grid)
@@ -71,22 +73,21 @@ public class TintTextureGenerator : MonoBehaviour
             return;
 
         var gi = GetGridInformation(grid);
-        int w = tintTexture.width;
-        int h = tintTexture.height;
-        for (int y = 0; y < h; y++)
+        var w = tintTexture.width;
+        var h = tintTexture.height;
+        for (var y = 0; y < h; y++)
+        for (var x = 0; x < w; x++)
         {
-            for (int x = 0; x < w; x++)
-            {
-                Vector3 worldPos = TextureToWorld(new Vector3Int(x, y, 0));
-                Vector3Int cellPos = grid.WorldToCell(worldPos);
-                tintTexture.SetPixel(x, y, gi.GetPositionProperty(cellPos, "Tint", Color.white));
-            }
+            var worldPos = TextureToWorld(new Vector3Int(x, y, 0));
+            var cellPos = grid.WorldToCell(worldPos);
+            tintTexture.SetPixel(x, y, gi.GetPositionProperty(cellPos, "Tint", Color.white));
         }
+
         tintTexture.Apply();
     }
 
     /// <summary>
-    /// Refreshes the color of a position on a Grid
+    ///     Refreshes the color of a position on a Grid
     /// </summary>
     /// <param name="grid">Grid to refresh color</param>
     /// <param name="position">Position of the Grid to refresh color</param>
@@ -97,22 +98,19 @@ public class TintTextureGenerator : MonoBehaviour
 
         RefreshGlobalShaderValues();
         var worldPosition = grid.CellToWorld(position);
-        Vector3Int texPosition = WorldToTexture(worldPosition);
+        var texPosition = WorldToTexture(worldPosition);
         var color = GetGridInformation(grid).GetPositionProperty(position, "Tint", Color.white);
         var scale = Math.Max(0, k_ScaleFactor - 2);
-        var radius = new Vector2Int(Mathf.RoundToInt(scale * grid.cellSize.x), Mathf.RoundToInt(scale * grid.cellSize.y));
-        for (int y = -radius.y; y <= radius.y; ++y)
-        {
-            for (int x = -radius.x; x <= radius.x; ++x)
-            {
-                tintTexture.SetPixel(texPosition.x + x, texPosition.y + y, color);
-            }
-        }
+        var radius = new Vector2Int(Mathf.RoundToInt(scale * grid.cellSize.x),
+            Mathf.RoundToInt(scale * grid.cellSize.y));
+        for (var y = -radius.y; y <= radius.y; ++y)
+        for (var x = -radius.x; x <= radius.x; ++x)
+            tintTexture.SetPixel(texPosition.x + x, texPosition.y + y, color);
         tintTexture.Apply();
     }
 
     /// <summary>
-    /// Get the color of a position on a Grid
+    ///     Get the color of a position on a Grid
     /// </summary>
     /// <param name="grid">Grid to get color from</param>
     /// <param name="position">Position of the Grid to get color from</param>
@@ -126,7 +124,7 @@ public class TintTextureGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// Set the color of a position on a Grid
+    ///     Set the color of a position on a Grid
     /// </summary>
     /// <param name="grid">Grid to set color to</param>
     /// <param name="position">Position of the Grid to set color to</param>
@@ -139,23 +137,23 @@ public class TintTextureGenerator : MonoBehaviour
         GetGridInformation(grid).SetPositionProperty(position, "Tint", color);
         Refresh(grid, position);
     }
-    
-    Vector3Int WorldToTexture(Vector3 worldPos)
+
+    private Vector3Int WorldToTexture(Vector3 worldPos)
     {
-        return new Vector3Int(Mathf.FloorToInt((worldPos.x * k_ScaleFactor) + tintTexture.width / 2f)
-            , Mathf.FloorToInt((worldPos.y * k_ScaleFactor) + tintTexture.height / 2f), 0);
+        return new Vector3Int(Mathf.FloorToInt(worldPos.x * k_ScaleFactor + tintTexture.width / 2f)
+            , Mathf.FloorToInt(worldPos.y * k_ScaleFactor + tintTexture.height / 2f), 0);
     }
 
-    Vector3 TextureToWorld(Vector3Int texPos)
+    private Vector3 TextureToWorld(Vector3Int texPos)
     {
         var inv = 1 / (k_ScaleFactor == 0 ? 1 : k_ScaleFactor);
         return new Vector3((texPos.x - tintTexture.width / 2) * inv
             , (texPos.y - tintTexture.height / 2) * inv, 0);
     }
 
-    GridInformation GetGridInformation(Grid grid)
+    private GridInformation GetGridInformation(Grid grid)
     {
-        GridInformation gridInformation = grid.GetComponent<GridInformation>();
+        var gridInformation = grid.GetComponent<GridInformation>();
 
         if (gridInformation == null)
             gridInformation = grid.gameObject.AddComponent<GridInformation>();
@@ -163,7 +161,7 @@ public class TintTextureGenerator : MonoBehaviour
         return gridInformation;
     }
 
-    void RefreshGlobalShaderValues()
+    private void RefreshGlobalShaderValues()
     {
         Shader.SetGlobalTexture("_TintMap", m_TintTexture);
         Shader.SetGlobalFloat("_TintMapSize", k_TintMapSize);

@@ -1,8 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.Scripting.APIUpdating;
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -10,61 +9,47 @@ using UnityEditor;
 namespace UnityEngine.Tilemaps
 {
     /// <summary>
-    /// Rule Override Tiles are Tiles which can override a subset of Rules for a given Rule Tile to provide specialised behaviour while keeping most of the Rules originally set in the Rule Tile.
+    ///     Rule Override Tiles are Tiles which can override a subset of Rules for a given Rule Tile to provide specialised
+    ///     behaviour while keeping most of the Rules originally set in the Rule Tile.
     /// </summary>
     [MovedFrom(true, "UnityEngine")]
     [Serializable]
-    [HelpURL("https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/RuleOverrideTile.html")]
+    [HelpURL(
+        "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/RuleOverrideTile.html")]
     public class RuleOverrideTile : TileBase
     {
-
         /// <summary>
-        /// A data structure storing the Sprite overriding the original RuleTile Sprite
+        ///     The RuleTile to override
         /// </summary>
-        [Serializable]
-        public class TileSpritePair
-        {
-            /// <summary>
-            /// Original Sprite from the original RuleTile.
-            /// </summary>
-            public Sprite m_OriginalSprite;
-            /// <summary>
-            /// Overriding Sprite for the Original Sprite.
-            /// </summary>
-            public Sprite m_OverrideSprite;
-        }
+        public RuleTile m_Tile;
 
         /// <summary>
-        /// A data structure storing the GameObject overriding the original RuleTile GameObject
+        ///     A list of Sprite Overrides
         /// </summary>
-        [Serializable]
-        public class TileGameObjectPair
-        {
-            /// <summary>
-            /// Original GameObject from the original RuleTile.
-            /// </summary>
-            public GameObject m_OriginalGameObject;
-            /// <summary>
-            /// Overriding GameObject for the Original Sprite.
-            /// </summary>
-            public GameObject m_OverrideGameObject;
-        }
+        public List<TileSpritePair> m_Sprites = new();
 
         /// <summary>
-        /// Gets the overriding Sprite of a given Sprite. 
+        ///     A list of GameObject Overrides
+        /// </summary>
+        public List<TileGameObjectPair> m_GameObjects = new();
+
+        /// <summary>
+        ///     Returns the Rule Tile for retrieving TileData
+        /// </summary>
+        [HideInInspector] public RuleTile m_InstanceTile;
+
+        /// <summary>
+        ///     Gets the overriding Sprite of a given Sprite.
         /// </summary>
         /// <param name="originalSprite">The original Sprite that is overridden</param>
         public Sprite this[Sprite originalSprite]
         {
             get
             {
-                foreach (TileSpritePair spritePair in m_Sprites)
-                {
+                foreach (var spritePair in m_Sprites)
                     if (spritePair.m_OriginalSprite == originalSprite)
-                    {
                         return spritePair.m_OverrideSprite;
-                    }
-                }
+
                 return null;
             }
             set
@@ -75,100 +60,90 @@ namespace UnityEngine.Tilemaps
                 }
                 else
                 {
-                    foreach (TileSpritePair spritePair in m_Sprites)
-                    {
+                    foreach (var spritePair in m_Sprites)
                         if (spritePair.m_OriginalSprite == originalSprite)
                         {
                             spritePair.m_OverrideSprite = value;
                             return;
                         }
-                    }
-                    m_Sprites.Add(new TileSpritePair()
+
+                    m_Sprites.Add(new TileSpritePair
                     {
                         m_OriginalSprite = originalSprite,
-                        m_OverrideSprite = value,
+                        m_OverrideSprite = value
                     });
                 }
             }
         }
 
         /// <summary>
-        /// Gets the overriding GameObject of a given GameObject. 
+        ///     Gets the overriding GameObject of a given GameObject.
         /// </summary>
         /// <param name="originalGameObject">The original GameObject that is overridden</param>
         public GameObject this[GameObject originalGameObject]
         {
             get
             {
-                foreach (TileGameObjectPair gameObjectPair in m_GameObjects)
-                {
+                foreach (var gameObjectPair in m_GameObjects)
                     if (gameObjectPair.m_OriginalGameObject == originalGameObject)
-                    {
                         return gameObjectPair.m_OverrideGameObject;
-                    }
-                }
+
                 return null;
             }
             set
             {
                 if (value == null)
                 {
-                    m_GameObjects = m_GameObjects.Where(gameObjectPair => gameObjectPair.m_OriginalGameObject != originalGameObject).ToList();
+                    m_GameObjects = m_GameObjects
+                        .Where(gameObjectPair => gameObjectPair.m_OriginalGameObject != originalGameObject).ToList();
                 }
                 else
                 {
-                    foreach (TileGameObjectPair gameObjectPair in m_GameObjects)
-                    {
+                    foreach (var gameObjectPair in m_GameObjects)
                         if (gameObjectPair.m_OriginalGameObject == originalGameObject)
                         {
                             gameObjectPair.m_OverrideGameObject = value;
                             return;
                         }
-                    }
-                    m_GameObjects.Add(new TileGameObjectPair()
+
+                    m_GameObjects.Add(new TileGameObjectPair
                     {
                         m_OriginalGameObject = originalGameObject,
-                        m_OverrideGameObject = value,
+                        m_OverrideGameObject = value
                     });
                 }
             }
         }
 
         /// <summary>
-        /// The RuleTile to override
+        ///     Callback when the tile is enabled
         /// </summary>
-        public RuleTile m_Tile;
-        /// <summary>
-        /// A list of Sprite Overrides
-        /// </summary>
-        public List<TileSpritePair> m_Sprites = new List<TileSpritePair>();
-        /// <summary>
-        /// A list of GameObject Overrides
-        /// </summary>
-        public List<TileGameObjectPair> m_GameObjects = new List<TileGameObjectPair>();
+        public void OnEnable()
+        {
+            if (m_Tile == null)
+                return;
 
-        /// <summary>
-        /// Returns the Rule Tile for retrieving TileData
-        /// </summary>
-        [HideInInspector] public RuleTile m_InstanceTile;
+            if (m_InstanceTile == null)
+                Override();
+        }
 
         private void CreateInstanceTile()
         {
             var t = m_Tile.GetType();
-            RuleTile instanceTile = CreateInstance(t) as RuleTile;
+            var instanceTile = CreateInstance(t) as RuleTile;
             instanceTile.hideFlags = HideFlags.NotEditable;
             instanceTile.name = m_Tile.name + " (Override)";
             m_InstanceTile = instanceTile;
 
 #if UNITY_EDITOR
-            if(AssetDatabase.Contains(this))
+            if (AssetDatabase.Contains(this))
                 AssetDatabase.AddObjectToAsset(instanceTile, this);
             EditorUtility.SetDirty(this);
-#endif            
+#endif
         }
-        
+
         /// <summary>
-        /// Applies overrides to this
+        ///     Applies overrides to this
         /// </summary>
         /// <param name="overrides">A list of overrides to apply</param>
         /// <exception cref="ArgumentNullException">The input overrides list is not valid</exception>
@@ -177,12 +152,12 @@ namespace UnityEngine.Tilemaps
             if (overrides == null)
                 throw new ArgumentNullException("overrides");
 
-            for (int i = 0; i < overrides.Count; i++)
+            for (var i = 0; i < overrides.Count; i++)
                 this[overrides[i].Key] = overrides[i].Value;
         }
 
         /// <summary>
-        /// Applies overrides to this
+        ///     Applies overrides to this
         /// </summary>
         /// <param name="overrides">A list of overrides to apply</param>
         /// <exception cref="ArgumentNullException">The input overrides list is not valid</exception>
@@ -191,12 +166,12 @@ namespace UnityEngine.Tilemaps
             if (overrides == null)
                 throw new ArgumentNullException("overrides");
 
-            for (int i = 0; i < overrides.Count; i++)
+            for (var i = 0; i < overrides.Count; i++)
                 this[overrides[i].Key] = overrides[i].Value;
         }
 
         /// <summary>
-        /// Gets overrides for this
+        ///     Gets overrides for this
         /// </summary>
         /// <param name="overrides">A list of overrides to fill</param>
         /// <param name="validCount">Returns the number of valid overrides for Sprites</param>
@@ -208,17 +183,17 @@ namespace UnityEngine.Tilemaps
 
             overrides.Clear();
 
-            List<Sprite> originalSprites = new List<Sprite>();
+            var originalSprites = new List<Sprite>();
 
             if (m_Tile)
             {
                 if (m_Tile.m_DefaultSprite)
                     originalSprites.Add(m_Tile.m_DefaultSprite);
 
-                foreach (RuleTile.TilingRule rule in m_Tile.m_TilingRules)
-                    foreach (Sprite sprite in rule.m_Sprites)
-                        if (sprite && !originalSprites.Contains(sprite))
-                            originalSprites.Add(sprite);
+                foreach (var rule in m_Tile.m_TilingRules)
+                foreach (var sprite in rule.m_Sprites)
+                    if (sprite && !originalSprites.Contains(sprite))
+                        originalSprites.Add(sprite);
             }
 
             validCount = originalSprites.Count;
@@ -227,12 +202,12 @@ namespace UnityEngine.Tilemaps
                 if (!originalSprites.Contains(pair.m_OriginalSprite))
                     originalSprites.Add(pair.m_OriginalSprite);
 
-            foreach (Sprite sprite in originalSprites)
+            foreach (var sprite in originalSprites)
                 overrides.Add(new KeyValuePair<Sprite, Sprite>(sprite, this[sprite]));
         }
 
         /// <summary>
-        /// Gets overrides for this
+        ///     Gets overrides for this
         /// </summary>
         /// <param name="overrides">A list of overrides to fill</param>
         /// <param name="validCount">Returns the number of valid overrides for GameObjects</param>
@@ -244,14 +219,14 @@ namespace UnityEngine.Tilemaps
 
             overrides.Clear();
 
-            List<GameObject> originalGameObjects = new List<GameObject>();
+            var originalGameObjects = new List<GameObject>();
 
             if (m_Tile)
             {
                 if (m_Tile.m_DefaultGameObject)
                     originalGameObjects.Add(m_Tile.m_DefaultGameObject);
 
-                foreach (RuleTile.TilingRule rule in m_Tile.m_TilingRules)
+                foreach (var rule in m_Tile.m_TilingRules)
                     if (rule.m_GameObject && !originalGameObjects.Contains(rule.m_GameObject))
                         originalGameObjects.Add(rule.m_GameObject);
             }
@@ -262,12 +237,12 @@ namespace UnityEngine.Tilemaps
                 if (!originalGameObjects.Contains(pair.m_OriginalGameObject))
                     originalGameObjects.Add(pair.m_OriginalGameObject);
 
-            foreach (GameObject gameObject in originalGameObjects)
+            foreach (var gameObject in originalGameObjects)
                 overrides.Add(new KeyValuePair<GameObject, GameObject>(gameObject, this[gameObject]));
         }
 
         /// <summary>
-        /// Updates the Rules with the Overrides set for this RuleOverrideTile
+        ///     Updates the Rules with the Overrides set for this RuleOverrideTile
         /// </summary>
         public virtual void Override()
         {
@@ -276,7 +251,7 @@ namespace UnityEngine.Tilemaps
 
             if (!m_InstanceTile)
                 CreateInstanceTile();
-            
+
             PrepareOverride();
 
             var tile = m_InstanceTile;
@@ -286,9 +261,9 @@ namespace UnityEngine.Tilemaps
 
             foreach (var rule in tile.m_TilingRules)
             {
-                for (int i = 0; i < rule.m_Sprites.Length; i++)
+                for (var i = 0; i < rule.m_Sprites.Length; i++)
                 {
-                    Sprite sprite = rule.m_Sprites[i];
+                    var sprite = rule.m_Sprites[i];
                     rule.m_Sprites[i] = this[sprite] ?? sprite;
                 }
 
@@ -297,13 +272,13 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        /// Prepares the Overrides set for this RuleOverrideTile
+        ///     Prepares the Overrides set for this RuleOverrideTile
         /// </summary>
         public void PrepareOverride()
         {
             // Create clone of instanceTile to keep data from collections being overridden by JsonUtility
             var tempTile = Instantiate(m_InstanceTile);
-            
+
             var customData = m_InstanceTile.GetCustomFields(true)
                 .ToDictionary(field => field, field => field.GetValue(tempTile));
 
@@ -314,13 +289,14 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        /// Retrieves any tile animation data from the scripted tile.
+        ///     Retrieves any tile animation data from the scripted tile.
         /// </summary>
         /// <param name="position">Position of the Tile on the Tilemap.</param>
         /// <param name="tilemap">The Tilemap the tile is present on.</param>
         /// <param name="tileAnimationData">Data to run an animation on the tile.</param>
         /// <returns>Whether the call was successful.</returns>
-        public override bool GetTileAnimationData(Vector3Int position, ITilemap tilemap, ref TileAnimationData tileAnimationData)
+        public override bool GetTileAnimationData(Vector3Int position, ITilemap tilemap,
+            ref TileAnimationData tileAnimationData)
         {
             if (!m_InstanceTile)
                 return false;
@@ -328,7 +304,7 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        /// Retrieves any tile rendering data from the scripted tile.
+        ///     Retrieves any tile rendering data from the scripted tile.
         /// </summary>
         /// <param name="position">Position of the Tile on the Tilemap.</param>
         /// <param name="tilemap">The Tilemap the tile is present on.</param>
@@ -341,7 +317,7 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        /// This method is called when the tile is refreshed.
+        ///     This method is called when the tile is refreshed.
         /// </summary>
         /// <param name="position">Position of the Tile on the Tilemap.</param>
         /// <param name="tilemap">The Tilemap the tile is present on.</param>
@@ -353,7 +329,7 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        /// StartUp is called on the first frame of the running Scene.
+        ///     StartUp is called on the first frame of the running Scene.
         /// </summary>
         /// <param name="position">Position of the Tile on the Tilemap.</param>
         /// <param name="tilemap">The Tilemap the tile is present on.</param>
@@ -367,15 +343,37 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        /// Callback when the tile is enabled
+        ///     A data structure storing the Sprite overriding the original RuleTile Sprite
         /// </summary>
-        public void OnEnable()
+        [Serializable]
+        public class TileSpritePair
         {
-            if (m_Tile == null)
-                return;
+            /// <summary>
+            ///     Original Sprite from the original RuleTile.
+            /// </summary>
+            public Sprite m_OriginalSprite;
 
-            if (m_InstanceTile == null)
-                Override();
+            /// <summary>
+            ///     Overriding Sprite for the Original Sprite.
+            /// </summary>
+            public Sprite m_OverrideSprite;
+        }
+
+        /// <summary>
+        ///     A data structure storing the GameObject overriding the original RuleTile GameObject
+        /// </summary>
+        [Serializable]
+        public class TileGameObjectPair
+        {
+            /// <summary>
+            ///     Original GameObject from the original RuleTile.
+            /// </summary>
+            public GameObject m_OriginalGameObject;
+
+            /// <summary>
+            ///     Overriding GameObject for the Original Sprite.
+            /// </summary>
+            public GameObject m_OverrideGameObject;
         }
     }
 }
