@@ -1,8 +1,11 @@
 # Prefab Brush
 
-__Contributions by:__  [Pepperized](https://github.com/Pepperized), [superkerokero](https://github.com/superkerokero), [vladderb](https://github.com/vladderb), [RyotaMurohoshi](https://github.com/RyotaMurohoshi), [ManickYoj](https://github.com/ManickYoj), [Quickz](https://github.com/Quickz), [basile](https://github.com/bazile)
+__Contributions by:
+__  [Pepperized](https://github.com/Pepperized), [superkerokero](https://github.com/superkerokero), [vladderb](https://github.com/vladderb), [RyotaMurohoshi](https://github.com/RyotaMurohoshi), [ManickYoj](https://github.com/ManickYoj), [Quickz](https://github.com/Quickz), [basile](https://github.com/bazile)
 
-This Brush instances and places randomly selected Prefabs onto the target location and parents the instanced object to the [paint target](https://docs.unity3d.com/Manual/Tilemap-Painting.htm). Use this Brush as an example to create custom Brushes which can quickly place an assortment of GameObjects onto structured locations.
+This Brush instances and places randomly selected Prefabs onto the target location and parents the instanced object to
+the [paint target](https://docs.unity3d.com/Manual/Tilemap-Painting.htm). Use this Brush as an example to create custom
+Brushes which can quickly place an assortment of GameObjects onto structured locations.
 
 ## Properties
 
@@ -37,11 +40,13 @@ This Brush instances and places randomly selected Prefabs onto the target locati
 
 ## Usage
 
-First set the number of Prefabs to select from in the __Prefabs__ property, then add Prefab Assets to the list. Adjust the __Perlin Scale__ property to adjust the distribution of Prefabs painted onto a particular cell. 
+First set the number of Prefabs to select from in the __Prefabs__ property, then add Prefab Assets to the list. Adjust
+the __Perlin Scale__ property to adjust the distribution of Prefabs painted onto a particular cell.
 
 ![Brush Editor with Prefab Brush](images/PrefabBrushEditor.png)
 
-When painting with the Prefab Brush, the Prefab Brush picks from the available Prefabs based on the __Perlin Scale__ set, and instantiate the Prefabs to the Scene.
+When painting with the Prefab Brush, the Prefab Brush picks from the available Prefabs based on the __Perlin Scale__
+set, and instantiate the Prefabs to the Scene.
 
 ![Scene View with Prefab Brush](images/PrefabBrush.png)
 
@@ -49,5 +54,5 @@ When painting with the Prefab Brush, the Prefab Brush picks from the available P
 
 The Prefab Brush inherits from the Grid Brush and implements the following overrides:
 
-- It overrides the `Paint` method to paint a Prefab from the Prefab selection. 
+- It overrides the `Paint` method to paint a Prefab from the Prefab selection.
 - It overrides the `Erase` method to be able to erase the instantiated Prefabs or other GameObjects from the Scene.

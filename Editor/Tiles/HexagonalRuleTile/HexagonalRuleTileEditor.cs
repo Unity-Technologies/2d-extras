@@ -4,19 +4,19 @@ using UnityEngine.Tilemaps;
 namespace UnityEditor
 {
     /// <summary>
-    /// The Editor for a HexagonalRuleTile.
+    ///     The Editor for a HexagonalRuleTile.
     /// </summary>
     [CustomEditor(typeof(HexagonalRuleTile), true)]
     [CanEditMultipleObjects]
     public class HexagonalRuleTileEditor : RuleTileEditor
     {
         /// <summary>
-        /// The HexagonalRuleTile being edited.
+        ///     The HexagonalRuleTile being edited.
         /// </summary>
         public HexagonalRuleTile hexTile => target as HexagonalRuleTile;
 
         /// <summary>
-        /// Gets the index for a Rule with the HexagonalRuleTile to display an arrow.
+        ///     Gets the index for a Rule with the HexagonalRuleTile to display an arrow.
         /// </summary>
         /// <param name="position">The adjacent position of the arrow.</param>
         /// <returns>Returns the index for a Rule with the HexagonalRuleTile to display an arrow.</returns>
@@ -32,33 +32,30 @@ namespace UnityEditor
             {
                 if (position.y > 0)
                     return hexTile.m_FlatTop ? 5 : 1;
-                else
-                    return hexTile.m_FlatTop ? 3 : 7;
+                return hexTile.m_FlatTop ? 3 : 7;
             }
-            else if (position.y == 0)
+
+            if (position.y == 0)
             {
                 if (position.x > 0)
                     return hexTile.m_FlatTop ? 1 : 5;
-                else
-                    return hexTile.m_FlatTop ? 7 : 3;
+                return hexTile.m_FlatTop ? 7 : 3;
             }
-            else
-            {
-                if (position.x < 0 && position.y > 0)
-                    return hexTile.m_FlatTop ? 8 : 0;
-                else if (position.x > 0 && position.y > 0)
-                    return hexTile.m_FlatTop ? 2 : 2;
-                else if (position.x < 0 && position.y < 0)
-                    return hexTile.m_FlatTop ? 6 : 6;
-                else if (position.x > 0 && position.y < 0)
-                    return hexTile.m_FlatTop ? 0 : 8;
-            }
+
+            if (position.x < 0 && position.y > 0)
+                return hexTile.m_FlatTop ? 8 : 0;
+            if (position.x > 0 && position.y > 0)
+                return hexTile.m_FlatTop ? 2 : 2;
+            if (position.x < 0 && position.y < 0)
+                return hexTile.m_FlatTop ? 6 : 6;
+            if (position.x > 0 && position.y < 0)
+                return hexTile.m_FlatTop ? 0 : 8;
 
             return -1;
         }
 
         /// <summary>
-        /// Get the GUI bounds for a Rule.
+        ///     Get the GUI bounds for a Rule.
         /// </summary>
         /// <param name="bounds">Cell bounds of the Rule.</param>
         /// <param name="rule">Rule to get GUI bounds for.</param>
@@ -66,29 +63,28 @@ namespace UnityEditor
         public override BoundsInt GetRuleGUIBounds(BoundsInt bounds, RuleTile.TilingRule rule)
         {
             foreach (var n in rule.GetNeighbors())
-            {
                 if (n.Key.x == bounds.xMax - 1 && n.Key.y % 2 != 0)
                 {
                     bounds.xMax++;
                     break;
                 }
-            }
+
             return base.GetRuleGUIBounds(bounds, rule);
         }
 
         /// <summary>
-        /// Gets the GUI matrix size for a Rule of a HexagonalRuleTile
+        ///     Gets the GUI matrix size for a Rule of a HexagonalRuleTile
         /// </summary>
         /// <param name="bounds">Cell bounds of the Rule.</param>
         /// <returns>Returns the GUI matrix size for a Rule of a HexagonalRuleTile.</returns>
         public override Vector2 GetMatrixSize(BoundsInt bounds)
         {
-            Vector2 size = base.GetMatrixSize(bounds);
+            var size = base.GetMatrixSize(bounds);
             return hexTile.m_FlatTop ? new Vector2(size.y, size.x) : size;
         }
 
         /// <summary>
-        /// Draws a Rule Matrix for the given Rule for a HexagonalRuleTile.
+        ///     Draws a Rule Matrix for the given Rule for a HexagonalRuleTile.
         /// </summary>
         /// <param name="tile">Tile to draw rule for.</param>
         /// <param name="rect">GUI Rect to draw rule at.</param>
@@ -96,18 +92,17 @@ namespace UnityEditor
         /// <param name="tilingRule">Rule to draw Rule Matrix for.</param>
         public override void RuleMatrixOnGUI(RuleTile tile, Rect rect, BoundsInt bounds, RuleTile.TilingRule tilingRule)
         {
-            bool flatTop = hexTile.m_FlatTop;
+            var flatTop = hexTile.m_FlatTop;
 
             Handles.color = EditorGUIUtility.isProSkin ? new Color(1f, 1f, 1f, 0.2f) : new Color(0f, 0f, 0f, 0.2f);
-            float w = rect.width / (flatTop ? bounds.size.y : bounds.size.x);
-            float h = rect.height / (flatTop ? bounds.size.x : bounds.size.y);
+            var w = rect.width / (flatTop ? bounds.size.y : bounds.size.x);
+            var h = rect.height / (flatTop ? bounds.size.x : bounds.size.y);
 
             // Grid
             if (flatTop)
-            {
-                for (int y = 0; y <= bounds.size.y; y++)
+                for (var y = 0; y <= bounds.size.y; y++)
                 {
-                    float left = rect.xMin + y * w;
+                    var left = rect.xMin + y * w;
                     float offset = 0;
 
                     if (y == 0 && bounds.yMax % 2 == 0)
@@ -119,20 +114,18 @@ namespace UnityEditor
 
                     if (y < bounds.size.y)
                     {
-                        bool noOffset = (y + bounds.yMax) % 2 != 0;
-                        for (int x = 0; x < (noOffset ? (bounds.size.x + 1) : bounds.size.x); x++)
+                        var noOffset = (y + bounds.yMax) % 2 != 0;
+                        for (var x = 0; x < (noOffset ? bounds.size.x + 1 : bounds.size.x); x++)
                         {
-                            float top = rect.yMin + x * h + (noOffset ? 0 : h / 2);
+                            var top = rect.yMin + x * h + (noOffset ? 0 : h / 2);
                             Handles.DrawLine(new Vector3(left, top), new Vector3(left + w, top));
                         }
                     }
                 }
-            }
             else
-            {
-                for (int y = 0; y <= bounds.size.y; y++)
+                for (var y = 0; y <= bounds.size.y; y++)
                 {
-                    float top = rect.yMin + y * h;
+                    var top = rect.yMin + y * h;
                     float offset = 0;
 
                     if (y == 0 && bounds.yMax % 2 == 0)
@@ -144,28 +137,28 @@ namespace UnityEditor
 
                     if (y < bounds.size.y)
                     {
-                        bool noOffset = (y + bounds.yMax) % 2 != 0;
-                        for (int x = 0; x < (noOffset ? (bounds.size.x + 1) : bounds.size.x); x++)
+                        var noOffset = (y + bounds.yMax) % 2 != 0;
+                        for (var x = 0; x < (noOffset ? bounds.size.x + 1 : bounds.size.x); x++)
                         {
-                            float left = rect.xMin + x * w + (noOffset ? 0 : w / 2);
+                            var left = rect.xMin + x * w + (noOffset ? 0 : w / 2);
                             Handles.DrawLine(new Vector3(left, top), new Vector3(left, top + h));
                         }
                     }
                 }
-            }
 
             var neighbors = tilingRule.GetNeighbors();
 
             // Icons
             Handles.color = Color.white;
-            for (int y = bounds.yMin; y < bounds.yMax; y++)
+            for (var y = bounds.yMin; y < bounds.yMax; y++)
             {
-                int xMax = y % 2 == 0 ? bounds.xMax : (bounds.xMax - 1);
-                for (int x = bounds.xMin; x < xMax; x++)
+                var xMax = y % 2 == 0 ? bounds.xMax : bounds.xMax - 1;
+                for (var x = bounds.xMin; x < xMax; x++)
                 {
-                    Vector3Int pos = new Vector3Int(x, y, 0);
-                    Vector2 offset = new Vector2(x - bounds.xMin, -y + bounds.yMax - 1);
-                    Rect r = flatTop ? new Rect(rect.xMax - offset.y * w - w, rect.yMax - offset.x * h - h, w - 1, h - 1)
+                    var pos = new Vector3Int(x, y, 0);
+                    var offset = new Vector2(x - bounds.xMin, -y + bounds.yMax - 1);
+                    var r = flatTop
+                        ? new Rect(rect.xMax - offset.y * w - w, rect.yMax - offset.x * h - h, w - 1, h - 1)
                         : new Rect(rect.xMin + offset.x * w, rect.yMin + offset.y * h, w - 1, h - 1);
 
                     if (y % 2 != 0)
@@ -182,7 +175,7 @@ namespace UnityEditor
         }
 
         /// <summary>
-        /// Creates a Preview for the HexagonalRuleTile.
+        ///     Creates a Preview for the HexagonalRuleTile.
         /// </summary>
         protected override void CreatePreview()
         {
@@ -198,15 +191,15 @@ namespace UnityEditor
                 tilemap.ClearAllTiles();
             }
 
-            for (int x = -1; x <= 0; ++x)
-                for (int y = -1; y <= 1; ++y)
-                    m_PreviewTilemaps[0].SetTile(new Vector3Int(x, y, 0), tile);
+            for (var x = -1; x <= 0; ++x)
+            for (var y = -1; y <= 1; ++y)
+                m_PreviewTilemaps[0].SetTile(new Vector3Int(x, y, 0), tile);
 
             m_PreviewTilemaps[1].SetTile(new Vector3Int(1, -1, 0), tile);
             m_PreviewTilemaps[1].SetTile(new Vector3Int(2, 0, 0), tile);
             m_PreviewTilemaps[1].SetTile(new Vector3Int(2, 1, 0), tile);
 
-            for (int x = -1; x <= 1; x++)
+            for (var x = -1; x <= 1; x++)
                 m_PreviewTilemaps[2].SetTile(new Vector3Int(x, -2, 0), tile);
 
             m_PreviewTilemaps[3].SetTile(new Vector3Int(1, 1, 0), tile);

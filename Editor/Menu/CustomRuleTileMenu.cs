@@ -1,15 +1,12 @@
-﻿using System;
 using System.IO;
 using UnityEditor.Tilemaps;
-using UnityEngine;
 
 namespace UnityEditor
 {
-    static class CustomRuleTileMenu
+    internal static class CustomRuleTileMenu
     {
-        private static string tempCustomRuleTilePath;
         private const string customRuleTileScript =
-@"using System.Collections;
+            @"using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -32,10 +29,12 @@ public class #SCRIPTNAME# : RuleTile<#SCRIPTNAME#.Neighbor> {
     }
 }";
 
+        private static string tempCustomRuleTilePath;
+
         [MenuItem("Assets/Create/2D/Tiles/Custom Rule Tile Script", false, (int)ETilesMenuItemOrder.CustomRuleTile)]
-        static void CreateCustomRuleTile()
+        private static void CreateCustomRuleTile()
         {
-            if (String.IsNullOrEmpty(tempCustomRuleTilePath) || !File.Exists(tempCustomRuleTilePath))
+            if (string.IsNullOrEmpty(tempCustomRuleTilePath) || !File.Exists(tempCustomRuleTilePath))
                 tempCustomRuleTilePath = FileUtil.GetUniqueTempPathInProject();
             File.WriteAllText(tempCustomRuleTilePath, customRuleTileScript);
             ProjectWindowUtil.CreateScriptAssetFromTemplateFile(tempCustomRuleTilePath, "NewCustomRuleTile.cs");
