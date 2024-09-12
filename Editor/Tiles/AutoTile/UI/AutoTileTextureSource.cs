@@ -9,7 +9,7 @@ namespace UnityEditor.Tilemaps
 {
     public class AutoTileTextureSource : ScrollView
     {
-        private Dictionary<Sprite, AutoTileSpriteSource> spriteToElementMap =
+        private Dictionary<Sprite, AutoTileSpriteSource> m_SpriteToElementMap =
             new Dictionary<Sprite, AutoTileSpriteSource>();
 
         private Image m_TextureElement;
@@ -35,63 +35,16 @@ namespace UnityEditor.Tilemaps
                 var spriteImage = new AutoTileSpriteSource(spriteAsset, m_ClickState, maskType);
                 spriteImage.maskChanged = maskChanged;
                 m_TextureElement.Add(spriteImage);
-                spriteToElementMap.Add(spriteAsset, spriteImage);
+                m_SpriteToElementMap.Add(spriteAsset, spriteImage);
             }
 
             RegisterCallback<PointerLeaveEvent>((evt) => m_ClickState.isPointerDown = false);
             RegisterCallback<PointerUpEvent>((evt) => m_ClickState.isPointerDown = false);
         }
 
-        internal void InitialiseSpriteMask(Sprite sprite, uint mask)
+        public void ApplyAutoTileTemplate(AutoTileTemplate template, bool matchExact = false)
         {
-            if (spriteToElementMap.TryGetValue(sprite, out var atss))
-            {
-                atss.InitialiseMask(mask);
-            }
-        }
-
-        private void SetSpriteMask(Sprite sprite, uint mask)
-        {
-            if (spriteToElementMap.TryGetValue(sprite, out var atss))
-            {
-                atss.SetMask(mask);
-            }
-        }
-
-        internal void SetDuplicate(Sprite sprite, bool isDuplicate)
-        {
-            if (spriteToElementMap.TryGetValue(sprite, out var atss))
-            {
-                atss.SetDuplicate(isDuplicate);
-            }
-        }
-        
-        public void ChangeScale(float newScale)
-        {
-            m_TextureElement.scaleMode = ScaleMode.StretchToFill;
-            m_TextureElement.style.width = m_TextureElement.image.width * newScale;
-            m_TextureElement.style.height = m_TextureElement.image.height * newScale;
-            foreach (var item in spriteToElementMap)
-            {
-                item.Value.ChangeScale(newScale);
-            }
-        }
-        
-        public void LoadTemplateFromFile()
-        {
-            var projectWindowUtilType = typeof(ProjectWindowUtil);
-            var getActiveFolderPath = projectWindowUtilType.GetMethod("GetActiveFolderPath", BindingFlags.Static | BindingFlags.NonPublic);
-            var obj = getActiveFolderPath.Invoke(null, new object[0]);
-            var pathToCurrentFolder = obj.ToString();
-
-            var templatePath = EditorUtility.OpenFilePanel("Load AutoTile template", pathToCurrentFolder, AutoTileTextureTemplate.kExtension);
-            var relativePath = FileUtil.GetProjectRelativePath(templatePath);
-            var template = AssetDatabase.LoadAssetAtPath<AutoTileTextureTemplate>(relativePath);
-            if (template == null)
-                return;
-
-            var matchExact = false;
-            foreach (var item in spriteToElementMap)
+            foreach (var item in m_SpriteToElementMap)
             {
                 foreach (var sprite in template.sprites)
                 {
@@ -114,27 +67,58 @@ namespace UnityEditor.Tilemaps
                 }
             }
         }
-        
-        public void SaveTemplateToFile()
+
+        public List<AutoTileTemplate.SpriteData> GetSpriteData()
         {
-            var template = ScriptableObject.CreateInstance<AutoTileTextureTemplate>();
-            template.width = m_TextureElement.image.width;
-            template.height = m_TextureElement.image.height;
-            template.sprites = new List<AutoTileTextureTemplate.SpriteData>();
-            foreach (var item in spriteToElementMap)
+            var spriteData = new List<AutoTileTemplate.SpriteData>();
+            foreach (var item in m_SpriteToElementMap)
             {
                 if (item.Value.mask == 0)
                     continue;
 
-                template.sprites.Add( new AutoTileTextureTemplate.SpriteData()
+                spriteData.Add( new AutoTileTemplate.SpriteData()
                 {
                     x = item.Key.rect.x,
                     y = item.Key.rect.y,
                     mask = item.Value.mask
                 });
             }
-            var path = EditorUtility.SaveFilePanelInProject("Save AutoTile template", "New AutoTile Template", AutoTileTextureTemplate.kExtension, "");
-            AssetDatabase.CreateAsset(template, path);
+            return spriteData;
+        }
+        
+        internal void InitialiseSpriteMask(Sprite sprite, uint mask)
+        {
+            if (m_SpriteToElementMap.TryGetValue(sprite, out var atss))
+            {
+                atss.InitialiseMask(mask);
+            }
+        }
+
+        private void SetSpriteMask(Sprite sprite, uint mask)
+        {
+            if (m_SpriteToElementMap.TryGetValue(sprite, out var atss))
+            {
+                atss.SetMask(mask);
+            }
+        }
+
+        internal void SetDuplicate(Sprite sprite, bool isDuplicate)
+        {
+            if (m_SpriteToElementMap.TryGetValue(sprite, out var atss))
+            {
+                atss.SetDuplicate(isDuplicate);
+            }
+        }
+        
+        public void ChangeScale(float newScale)
+        {
+            m_TextureElement.scaleMode = ScaleMode.StretchToFill;
+            m_TextureElement.style.width = m_TextureElement.image.width * newScale;
+            m_TextureElement.style.height = m_TextureElement.image.height * newScale;
+            foreach (var item in m_SpriteToElementMap)
+            {
+                item.Value.ChangeScale(newScale);
+            }
         }
     }
 }

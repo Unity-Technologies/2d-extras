@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Mono.Cecil;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -176,13 +177,24 @@ namespace UnityEditor.Tilemaps
                 he.Add(label);
                 var loadButton = new Button(() =>
                 {
-                    at.LoadTemplateFromFile();
-                    SaveTile();
+                    var template = AutoTileTemplateUtility.LoadTemplateFromFile();
+                    if (template != null)
+                    {
+                        at.ApplyAutoTileTemplate(template);
+                        SaveTile();    
+                    }
+                    Resources.UnloadAsset(template);
                 });
                 loadButton.text = "Load";
                 loadButton.userData = at;
                 he.Add(loadButton);
-                var saveButton = new Button(() => at.SaveTemplateToFile());
+                var saveButton = new Button(() =>
+                {
+                    AutoTileTemplateUtility.SaveTemplateToFile(texture2D.width
+                        , texture2D.height
+                        , autoTile.m_MaskType
+                        , at.GetSpriteData());
+                });
                 saveButton.text = "Save";
                 saveButton.userData = at;
                 he.Add(saveButton);
@@ -202,7 +214,7 @@ namespace UnityEditor.Tilemaps
             }
             LoadAutoTileMaskData();
         }
-
+        
         private void MaskChanged(Sprite sprite, uint oldMask, uint newMask)
         {
             if (oldMask != 0)

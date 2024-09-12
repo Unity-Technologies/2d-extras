@@ -1,0 +1,89 @@
+﻿using System.Collections.Generic;
+using System.Reflection;
+using UnityEngine;
+using UnityEngine.Tilemaps;
+
+namespace UnityEditor.Tilemaps
+{
+    public static class AutoTileTemplateUtility
+    {
+        public static AutoTileTemplate LoadTemplateFromFile()
+        {
+            var projectWindowUtilType = typeof(ProjectWindowUtil);
+            var getActiveFolderPath =
+                projectWindowUtilType.GetMethod("GetActiveFolderPath", BindingFlags.Static | BindingFlags.NonPublic);
+            var obj = getActiveFolderPath.Invoke(null, new object[0]);
+            var pathToCurrentFolder = obj.ToString();
+
+            var templatePath = EditorUtility.OpenFilePanel("Load AutoTile template", pathToCurrentFolder,
+                AutoTileTemplate.kExtension);
+            var relativePath = FileUtil.GetProjectRelativePath(templatePath);
+            var template = AssetDatabase.LoadAssetAtPath<AutoTileTemplate>(relativePath);
+            return template;
+        }
+
+        public static void ApplyTemplateToAutoTile(this AutoTileTemplate template
+            , Texture2D texture
+            , AutoTile autoTile
+            , bool matchExact = false)
+        {
+            if (template == null || texture == null || autoTile == null)
+                return;
+
+            autoTile.m_MaskType = template.maskType;
+            if (autoTile.m_TextureList == null)
+                autoTile.m_TextureList = new List<Texture2D>();
+            autoTile.m_TextureList.Add(texture);
+            var assets = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(texture));
+            foreach (var asset in assets)
+            {
+                var sprite = asset as Sprite;
+                if (sprite == null)
+                    continue;
+
+                foreach (var templateSprite in template.sprites)
+                {
+                    var match = false;
+                    if (matchExact)
+                    {
+                        match = Mathf.Approximately(templateSprite.x, sprite.rect.x)
+                                && Mathf.Approximately(templateSprite.y, sprite.rect.y);
+                    }
+                    else
+                    {
+                        match = Mathf.Approximately(templateSprite.x / template.width, sprite.rect.x / texture.width)
+                                && Mathf.Approximately(templateSprite.y / template.height, sprite.rect.y / texture.height);
+                    }
+                    if (match)
+                    {
+                        autoTile.AddSprite(sprite, templateSprite.mask);
+                        break;
+                    }
+                }
+            }
+        }
+
+        public static AutoTileTemplate CreateTemplate(int imageWidth
+            , int imageHeight
+            , AutoTile.AutoTileMaskType maskType
+            , List<AutoTileTemplate.SpriteData> spriteData)
+        {
+            var template = ScriptableObject.CreateInstance<AutoTileTemplate>();
+            template.width = imageWidth;
+            template.height = imageHeight;
+            template.maskType = maskType;
+            template.sprites = spriteData;
+            return template;
+        }
+        
+        public static void SaveTemplateToFile(int imageWidth
+            , int imageHeight
+            , AutoTile.AutoTileMaskType maskType
+            , List<AutoTileTemplate.SpriteData> spriteData)
+        {
+            var template = CreateTemplate(imageWidth, imageHeight, maskType, spriteData);
+            var path = EditorUtility.SaveFilePanelInProject("Save AutoTile template", "New AutoTile Template", AutoTileTemplate.kExtension, "");
+            AssetDatabase.CreateAsset(template, path);
+        }
+    }
+}

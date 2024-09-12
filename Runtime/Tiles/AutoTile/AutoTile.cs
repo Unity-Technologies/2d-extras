@@ -53,7 +53,6 @@ namespace UnityEngine.Tilemaps
         {
             Mask_2x2
             , Mask_3x3
-            , Mask_3x3_Full
         }
 
         #region Tile Data
