@@ -14,15 +14,20 @@ namespace UnityEditor.Tilemaps
         }
         
         private readonly Sprite m_Sprite;
+        private readonly Texture2D m_SourceTexture;
         private readonly ClickState m_ClickState;
         private readonly int m_Range;
 
         public uint mask;
         public Action<Sprite, uint, uint> maskChanged;
         
-        public AutoTileSpriteSource(Sprite spriteAsset, ClickState clickState, AutoTile.AutoTileMaskType maskType) : base()
+        public AutoTileSpriteSource(Sprite spriteAsset
+            , Texture2D sourceTexture
+            , ClickState clickState
+            , AutoTile.AutoTileMaskType maskType) : base()
         {
             m_Sprite = spriteAsset;
+            m_SourceTexture = sourceTexture;
             m_ClickState = clickState;
 
             switch (maskType)
@@ -36,7 +41,6 @@ namespace UnityEditor.Tilemaps
             }
             AddToClassList("ImageBase");
             
-            //this.sprite = sprite; // Debug
             style.position = Position.Absolute;
             style.flexShrink = 0;
             ChangeScale(1.0f);
@@ -65,7 +69,7 @@ namespace UnityEditor.Tilemaps
         public void ChangeScale(float newScale)
         {
             style.left = newScale * (m_Sprite.rect.x);
-            style.top = newScale * (m_Sprite.texture.height - m_Sprite.rect.height - m_Sprite.rect.y);
+            style.top = newScale * (m_SourceTexture.height - m_Sprite.rect.height - m_Sprite.rect.y);
             style.width = newScale * (m_Sprite.rect.width);
             style.height = newScale * (m_Sprite.rect.height);
         }

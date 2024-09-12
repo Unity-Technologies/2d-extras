@@ -32,7 +32,7 @@ namespace UnityEditor.Tilemaps
                 if (spriteAsset == null)
                     continue;
                 
-                var spriteImage = new AutoTileSpriteSource(spriteAsset, m_ClickState, maskType);
+                var spriteImage = new AutoTileSpriteSource(spriteAsset, texture2D, m_ClickState, maskType);
                 spriteImage.maskChanged = maskChanged;
                 m_TextureElement.Add(spriteImage);
                 m_SpriteToElementMap.Add(spriteAsset, spriteImage);
