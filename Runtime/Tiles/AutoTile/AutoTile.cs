@@ -3,11 +3,14 @@ using System.Collections.Generic;
 
 namespace UnityEngine.Tilemaps
 {
+    /// <summary>
+    /// Tile using AutoTiling mask and rules
+    /// </summary>
     [CreateAssetMenu]
     public class AutoTile : TileBase
     {
         [Serializable]
-        public abstract class SerializedDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
+        internal abstract class SerializedDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
         {
             [SerializeField, HideInInspector]
             private List<TKey> keyData = new List<TKey>();
@@ -22,6 +25,8 @@ namespace UnityEngine.Tilemaps
                 {
                     this[keyData[i]] = valueData[i];
                 }
+                keyData.Clear();
+                valueData.Clear();
             }
 
             void ISerializationCallbackReceiver.OnBeforeSerialize()
@@ -38,17 +43,20 @@ namespace UnityEngine.Tilemaps
         }
 
         [Serializable]
-        public class AutoTileData
+        internal class AutoTileData
         {
             [SerializeField]
             public List<Sprite> spriteList = new List<Sprite>();
         }
         
         [Serializable]
-        public class AutoTileDictionary : SerializedDictionary<uint, AutoTileData>
+        internal class AutoTileDictionary : SerializedDictionary<uint, AutoTileData>
         {
         };
 
+        /// <summary>
+        /// MaskType for AutoTile
+        /// </summary>
         public enum AutoTileMaskType
         {
             Mask_2x2
@@ -59,25 +67,29 @@ namespace UnityEngine.Tilemaps
         /// <summary>
         /// The Default Sprite set when creating a new Rule.
         /// </summary>
+        [SerializeField]
         public Sprite m_DefaultSprite;
         /// <summary>
         /// The Default GameObject set when creating a new Rule.
         /// </summary>
+        [SerializeField]
         public GameObject m_DefaultGameObject;
         /// <summary>
         /// The Default Collider Type set when creating a new Rule.
         /// </summary>
+        [SerializeField]
         public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
 
+        [SerializeField]
         public AutoTileMaskType m_MaskType;
         
-        [SerializeField]
-        public AutoTileDictionary m_AutoTileDictionary = new AutoTileDictionary();
+        [SerializeField, HideInInspector]
+        internal AutoTileDictionary m_AutoTileDictionary = new AutoTileDictionary();
         #endregion
 
         #region Editor Data
-        
-        public List<Texture2D> m_TextureList;
+        [SerializeField]
+        public List<Texture2D> m_TextureList = new List<Texture2D>();
         #endregion
         
         #region Runtime Data
@@ -113,7 +125,7 @@ namespace UnityEngine.Tilemaps
             tileData.sprite = m_DefaultSprite;
             tileData.gameObject = m_DefaultGameObject;
             tileData.colliderType = m_DefaultColliderType;
-            tileData.flags = TileFlags.LockTransform;
+            tileData.flags = TileFlags.LockAll;
             tileData.transform = iden;
             
             // Use Tilemap.GetTileBlockNonAlloc
@@ -178,6 +190,9 @@ namespace UnityEngine.Tilemaps
             autoTileData.spriteList.Remove(sprite);
         }
 
+        /// <summary>
+        /// Validate AutoTile Data
+        /// </summary>
         public void Validate()
         {
             if (m_MaskType == AutoTileMaskType.Mask_2x2)
@@ -197,7 +212,7 @@ namespace UnityEngine.Tilemaps
                 for (var i = 0; i < autoTileData.spriteList.Count;)
                 {
                     var sprite = autoTileData.spriteList[i];
-                    if (m_TextureList.Contains(sprite.texture))
+                    if (m_TextureList.Contains(sprite.texture) || sprite.packed)
                     {
                         ++i;
                     }

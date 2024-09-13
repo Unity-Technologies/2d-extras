@@ -14,8 +14,9 @@ namespace UnityEditor.Tilemaps
 
         private Image m_TextureElement;
         private AutoTileSpriteSource.ClickState m_ClickState;
+        private Action m_EditStopped;
         
-        public AutoTileTextureSource(Texture2D texture2D, AutoTile.AutoTileMaskType maskType, Action<Sprite, uint, uint> maskChanged) : base(ScrollViewMode.VerticalAndHorizontal)
+        public AutoTileTextureSource(Texture2D texture2D, AutoTile.AutoTileMaskType maskType, Action<Sprite, uint, uint> maskChanged, Action editStopped) : base(ScrollViewMode.VerticalAndHorizontal)
         {
             m_TextureElement = new Image();
             Add(m_TextureElement);
@@ -24,6 +25,8 @@ namespace UnityEditor.Tilemaps
             m_TextureElement.style.width = texture2D.width;
             m_TextureElement.style.height = texture2D.height;
 
+            m_EditStopped = editStopped;
+            
             var assetsAtPath = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(texture2D));
             m_ClickState = new AutoTileSpriteSource.ClickState();
             foreach (var assetAtPath in assetsAtPath)
@@ -38,10 +41,17 @@ namespace UnityEditor.Tilemaps
                 m_SpriteToElementMap.Add(spriteAsset, spriteImage);
             }
 
-            RegisterCallback<PointerLeaveEvent>((evt) => m_ClickState.isPointerDown = false);
-            RegisterCallback<PointerUpEvent>((evt) => m_ClickState.isPointerDown = false);
+            RegisterCallback<PointerLeaveEvent>((evt) => StoppedClick());
+            RegisterCallback<PointerUpEvent>((evt) => StoppedClick());
         }
 
+        private void StoppedClick()
+        {
+            m_ClickState.isPointerDown = false;
+            if (m_EditStopped != null)
+                m_EditStopped();
+        }
+        
         public void ApplyAutoTileTemplate(AutoTileTemplate template, bool matchExact = false)
         {
             foreach (var item in m_SpriteToElementMap)

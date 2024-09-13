@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -83,7 +84,8 @@ namespace UnityEditor.Tilemaps
         {
             var template = CreateTemplate(imageWidth, imageHeight, maskType, spriteData);
             var path = EditorUtility.SaveFilePanelInProject("Save AutoTile template", "New AutoTile Template", AutoTileTemplate.kExtension, "");
-            AssetDatabase.CreateAsset(template, path);
+            if (!String.IsNullOrWhiteSpace(path))
+                AssetDatabase.CreateAsset(template, path);
         }
     }
 }

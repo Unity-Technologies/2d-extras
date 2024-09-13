@@ -63,7 +63,7 @@ namespace UnityEditor.Tilemaps
             m_TextureList.makeItem = MakeTextureItem;
             m_TextureList.bindItem = BindTextureItem;
             m_TextureList.unbindItem = UnbindTextureItem;
-            //m_TextureList.itemsAdded += ItemListAdded;
+            m_TextureList.itemsAdded += ItemListAdded;
             m_TextureList.itemsRemoved += ItemListRemoved;
             m_TextureList.itemsSourceChanged += TexturesChanged;
             Add(m_TextureList);
@@ -97,7 +97,8 @@ namespace UnityEditor.Tilemaps
                 var autoTileData = pair.Value;
                 foreach (var sprite in autoTileData.spriteList)
                 {
-                    if (textureToElementMap.TryGetValue(sprite.texture, out var at))
+                    var spriteTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(AssetDatabase.GetAssetPath(sprite));
+                    if (textureToElementMap.TryGetValue(spriteTexture, out var at))
                     {
                         at.InitialiseSpriteMask(sprite, mask);
                     }
@@ -166,7 +167,7 @@ namespace UnityEditor.Tilemaps
                     continue;
 
                 var ve = new VisualElement();
-                var at = new AutoTileTextureSource(texture2D, autoTile.m_MaskType, MaskChanged);
+                var at = new AutoTileTextureSource(texture2D, autoTile.m_MaskType, MaskChanged, SaveTile);
                 textureToElementMap.Add(texture2D, at);
                 
                 var he = new VisualElement();
@@ -240,7 +241,6 @@ namespace UnityEditor.Tilemaps
             
             autoTile.RemoveSprite(sprite, oldMask);
             autoTile.AddSprite(sprite, newMask);
-            SaveTile();
 
             if (newMask != 0)
             {
@@ -283,7 +283,20 @@ namespace UnityEditor.Tilemaps
         
         private void SaveTile()
         {
+            // Clear empty values
+            var keys = new uint[autoTile.m_AutoTileDictionary.Count];
+            autoTile.m_AutoTileDictionary.Keys.CopyTo(keys, 0);
+            foreach (var key in keys)
+            {
+                if (autoTile.m_AutoTileDictionary.TryGetValue(key, out AutoTile.AutoTileData data))
+                {
+                    if (data.spriteList == null || data.spriteList.Count == 0)
+                        autoTile.m_AutoTileDictionary.Remove(key);
+                }
+            }
+            
             EditorUtility.SetDirty(autoTile);
+            AssetDatabase.SaveAssetIfDirty(autoTile);
             SceneView.RepaintAll();
         }
     }
