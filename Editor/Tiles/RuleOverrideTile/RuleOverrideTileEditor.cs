@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -6,7 +6,7 @@ using UnityEngine.Tilemaps;
 namespace UnityEditor
 {
     /// <summary>
-    ///     The Editor for a RuleOverrideTileEditor.
+    /// The Editor for a RuleOverrideTileEditor.
     /// </summary>
     [CustomEditor(typeof(RuleOverrideTile))]
     public class RuleOverrideTileEditor : Editor
@@ -46,12 +46,12 @@ namespace UnityEditor
         public List<KeyValuePair<Sprite, Sprite>> m_Sprites = new();
 
         /// <summary>
-        ///     The RuleOverrideTile being edited
+        /// The RuleOverrideTile being edited
         /// </summary>
         public RuleOverrideTile overrideTile => target as RuleOverrideTile;
 
         /// <summary>
-        ///     The RuleTileEditor for the overridden instance of the RuleTile
+        /// The RuleTileEditor for the overridden instance of the RuleTile
         /// </summary>
         public RuleTileEditor ruleTileEditor
         {
@@ -69,7 +69,7 @@ namespace UnityEditor
         }
 
         /// <summary>
-        ///     OnEnable for the RuleOverrideTileEditor
+        /// OnEnable for the RuleOverrideTileEditor
         /// </summary>
         public virtual void OnEnable()
         {
@@ -93,7 +93,7 @@ namespace UnityEditor
         }
 
         /// <summary>
-        ///     OnDisable for the RuleOverrideTileEditor
+        /// OnDisable for the RuleOverrideTileEditor
         /// </summary>
         public virtual void OnDisable()
         {
@@ -102,7 +102,7 @@ namespace UnityEditor
         }
 
         /// <summary>
-        ///     Draws the Inspector GUI for the RuleOverrideTileEditor
+        /// Draws the Inspector GUI for the RuleOverrideTileEditor
         /// </summary>
         public override void OnInspectorGUI()
         {
@@ -132,7 +132,7 @@ namespace UnityEditor
         }
 
         /// <summary>
-        ///     Draws the header for the Sprite list
+        /// Draws the header for the Sprite list
         /// </summary>
         /// <param name="rect">GUI Rect to draw the header at</param>
         public void DrawSpriteListHeader(Rect rect)
@@ -146,7 +146,7 @@ namespace UnityEditor
         }
 
         /// <summary>
-        ///     Draws the header for the GameObject list
+        /// Draws the header for the GameObject list
         /// </summary>
         /// <param name="rect">GUI Rect to draw the header at</param>
         public void DrawGameObjectListHeader(Rect rect)
@@ -160,7 +160,7 @@ namespace UnityEditor
         }
 
         /// <summary>
-        ///     Gets the GUI element height for a Sprite element with the given index
+        /// Gets the GUI element height for a Sprite element with the given index
         /// </summary>
         /// <param name="index">Index of the Sprite element</param>
         /// <returns>GUI element height for the Sprite element</returns>
@@ -176,7 +176,7 @@ namespace UnityEditor
         }
 
         /// <summary>
-        ///     Gets the GUI element height for a GameObject element with the given index
+        /// Gets the GUI element height for a GameObject element with the given index
         /// </summary>
         /// <param name="index">Index of the GameObject element</param>
         /// <returns>GUI element height for the GameObject element</returns>
@@ -192,7 +192,7 @@ namespace UnityEditor
         }
 
         /// <summary>
-        ///     Draws the Sprite element for the RuleOverride list
+        /// Draws the Sprite element for the RuleOverride list
         /// </summary>
         /// <param name="rect">Rect to draw the Sprite Element in</param>
         /// <param name="index">Index of the Sprite Element to draw</param>
@@ -232,7 +232,7 @@ namespace UnityEditor
         }
 
         /// <summary>
-        ///     Draws the GameObject element for the RuleOverride list
+        /// Draws the GameObject element for the RuleOverride list
         /// </summary>
         /// <param name="rect">Rect to draw the GameObject Element in</param>
         /// <param name="index">Index of the GameObject Element to draw</param>
@@ -272,7 +272,7 @@ namespace UnityEditor
         }
 
         /// <summary>
-        ///     Draws a field for the RuleTile be overridden
+        /// Draws a field for the RuleTile be overridden
         /// </summary>
         public void DrawTileField()
         {
@@ -319,7 +319,7 @@ namespace UnityEditor
         }
 
         /// <summary>
-        ///     Draw editor fields for custom properties for the RuleOverrideTile
+        /// Draw editor fields for custom properties for the RuleOverrideTile
         /// </summary>
         public void DrawCustomFields()
         {
@@ -365,14 +365,11 @@ namespace UnityEditor
             }
 
             if (assetChanged)
-            {
-                EditorUtility.SetDirty(overrideTile.m_InstanceTile);
-                AssetDatabase.SaveAssetIfDirty(overrideTile.m_InstanceTile);
-            }
+                AssetDatabase.SaveAssets();
         }
 
         /// <summary>
-        ///     Saves any changes to the RuleOverrideTile
+        /// Saves any changes to the RuleOverrideTile
         /// </summary>
         public void SaveTile()
         {
@@ -390,10 +387,10 @@ namespace UnityEditor
             if (ruleTileEditor && ruleTileEditor.m_PreviewTilemaps != null)
                 foreach (var tilemap in ruleTileEditor.m_PreviewTilemaps)
                     tilemap.RefreshAllTiles();
-        }
+            }
 
         /// <summary>
-        ///     Renders a static preview Texture2D for a RuleOverrideTile asset
+        /// Renders a static preview Texture2D for a RuleOverrideTile asset
         /// </summary>
         /// <param name="assetPath">Asset path of the RuleOverrideTile</param>
         /// <param name="subAssets">Arrays of assets from the given Asset path</param>
@@ -409,7 +406,7 @@ namespace UnityEditor
         }
 
         /// <summary>
-        ///     Whether the RuleOverrideTile has a preview GUI
+        /// Whether the RuleOverrideTile has a preview GUI
         /// </summary>
         /// <returns>True if RuleOverrideTile has a preview GUI. False if not.</returns>
         public override bool HasPreviewGUI()
@@ -421,7 +418,7 @@ namespace UnityEditor
         }
 
         /// <summary>
-        ///     Updates preview settings for the RuleOverrideTile.
+        /// Updates preview settings for the RuleOverrideTile.
         /// </summary>
         public override void OnPreviewSettings()
         {
@@ -430,7 +427,7 @@ namespace UnityEditor
         }
 
         /// <summary>
-        ///     Draws the preview GUI for the RuleTile
+        /// Draws the preview GUI for the RuleTile
         /// </summary>
         /// <param name="rect">Rect to draw the preview GUI</param>
         /// <param name="background">The GUIStyle of the background for the preview</param>
