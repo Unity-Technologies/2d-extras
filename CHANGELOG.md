@@ -4,6 +4,14 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [4.1.0] - 2024-09-18
+
+### Fixed
+
+- [GameObjectBrush] Allow expansion of SceneRoot Grid foldout when clicking on label
+- [GridInformation] Fix exception when serializing GridInformation component if component is part of a Prefab
+- Remove dependency on com.unity.ugui
+
 ## [4.0.2] - 2023-08-21
 
 ### Fixed
