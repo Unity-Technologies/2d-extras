@@ -215,14 +215,14 @@ namespace UnityEditor.Tilemaps
             LoadAutoTileMaskData();
         }
         
-        private void MaskChanged(Sprite sprite, uint oldMask, uint newMask)
+        private void MaskChanged(Sprite sprite, Texture2D sourceTexture, uint oldMask, uint newMask)
         {
             if (oldMask != 0)
             {
                 var spriteList = autoTile.m_AutoTileDictionary[oldMask].spriteList;
                 if (spriteList.Count > 2)
                 {
-                    if (textureToElementMap.TryGetValue(sprite.texture, out var at))
+                    if (textureToElementMap.TryGetValue(sourceTexture, out var at))
                     {
                         at.SetDuplicate(sprite, false);
                     }
@@ -231,7 +231,7 @@ namespace UnityEditor.Tilemaps
                 {
                     foreach (var autoTileSprite in spriteList)
                     {
-                        if (textureToElementMap.TryGetValue(autoTileSprite.texture, out var at))
+                        if (textureToElementMap.TryGetValue(sourceTexture, out var at))
                         {
                             at.SetDuplicate(autoTileSprite, false);
                         }
@@ -240,7 +240,7 @@ namespace UnityEditor.Tilemaps
             }
             
             autoTile.RemoveSprite(sprite, oldMask);
-            autoTile.AddSprite(sprite, newMask);
+            autoTile.AddSprite(sprite, sourceTexture, newMask);
 
             if (newMask != 0)
             {
@@ -250,7 +250,7 @@ namespace UnityEditor.Tilemaps
                 
                 foreach (var autoTileSprite in spriteList)
                 {
-                    if (textureToElementMap.TryGetValue(autoTileSprite.texture, out var at))
+                    if (textureToElementMap.TryGetValue(sourceTexture, out var at))
                     {
                         at.SetDuplicate(autoTileSprite, true);
                     }
@@ -296,7 +296,7 @@ namespace UnityEditor.Tilemaps
             }
             
             EditorUtility.SetDirty(autoTile);
-            AssetDatabase.SaveAssetIfDirty(autoTile);
+            //AssetDatabase.SaveAssetIfDirty(autoTile);
             SceneView.RepaintAll();
         }
     }

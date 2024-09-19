@@ -57,7 +57,7 @@ namespace UnityEditor.Tilemaps
                     }
                     if (match)
                     {
-                        autoTile.AddSprite(sprite, templateSprite.mask);
+                        autoTile.AddSprite(sprite, texture, templateSprite.mask);
                         break;
                     }
                 }

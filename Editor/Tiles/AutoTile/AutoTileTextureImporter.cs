@@ -163,7 +163,7 @@ namespace UnityEditor.Tilemaps
                     size.x, 0, SpriteMeshType.FullRect, Vector4.zero, true);
                 sprite.name = $"Sprite {i}";
                 ctx.AddObjectToAsset(sprite.name, sprite);
-                autoTile.AddSprite(sprite, (uint) s_Mask[i]);
+                autoTile.AddSprite(sprite, destTexture, (uint) s_Mask[i]);
 
                 if (i == 39)
                 {

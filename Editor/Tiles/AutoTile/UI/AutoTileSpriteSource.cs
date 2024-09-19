@@ -19,7 +19,7 @@ namespace UnityEditor.Tilemaps
         private readonly int m_Range;
 
         public uint mask;
-        public Action<Sprite, uint, uint> maskChanged;
+        public Action<Sprite, Texture2D, uint, uint> maskChanged;
         
         public AutoTileSpriteSource(Sprite spriteAsset
             , Texture2D sourceTexture
@@ -119,7 +119,7 @@ namespace UnityEditor.Tilemaps
             else
                 mask &= ~maskIndex;
             if (maskChanged != null)
-                maskChanged.Invoke(m_Sprite, oldMask, mask);
+                maskChanged.Invoke(m_Sprite, m_SourceTexture, oldMask, mask);
         }
 
         internal void InitialiseMask(uint newMask)
@@ -150,7 +150,7 @@ namespace UnityEditor.Tilemaps
                 }
             }
             if (maskChanged != null)
-                maskChanged.Invoke(m_Sprite, oldMask, mask);
+                maskChanged.Invoke(m_Sprite, m_SourceTexture, oldMask, mask);
         }
 
         public void SetDuplicate(bool isDuplicate)

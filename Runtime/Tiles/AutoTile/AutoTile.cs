@@ -47,6 +47,8 @@ namespace UnityEngine.Tilemaps
         {
             [SerializeField]
             public List<Sprite> spriteList = new List<Sprite>();
+            [SerializeField]
+            public List<Texture2D> textureList = new List<Texture2D>();
         }
         
         [Serializable]
@@ -158,7 +160,7 @@ namespace UnityEngine.Tilemaps
             }
         }
 
-        public void AddSprite(Sprite sprite, uint mask)
+        public void AddSprite(Sprite sprite, Texture2D texture, uint mask)
         {
             if ((m_MaskType == AutoTileMaskType.Mask_2x2 && (mask >> 4) > 0)
                 || (mask >> 9) > 0)
@@ -178,8 +180,13 @@ namespace UnityEngine.Tilemaps
                 if (isInList)
                     break;
             }
+
             if (!isInList)
+            {
                 autoTileData.spriteList.Add(sprite);
+                autoTileData.textureList.Add(texture);
+            }
+                
         }
 
         public void RemoveSprite(Sprite sprite, uint mask)
@@ -187,7 +194,12 @@ namespace UnityEngine.Tilemaps
             if (!m_AutoTileDictionary.TryGetValue(mask, out var autoTileData))
                 return;
 
-            autoTileData.spriteList.Remove(sprite);
+            var index = autoTileData.spriteList.IndexOf(sprite);
+            if (index < 0)
+                return;
+
+            autoTileData.spriteList.RemoveAt(index);
+            autoTileData.textureList.RemoveAt(index);
         }
 
         /// <summary>
@@ -212,13 +224,15 @@ namespace UnityEngine.Tilemaps
                 for (var i = 0; i < autoTileData.spriteList.Count;)
                 {
                     var sprite = autoTileData.spriteList[i];
-                    if (m_TextureList.Contains(sprite.texture) || sprite.packed)
+                    var texture = autoTileData.textureList[i];
+                    if (m_TextureList.Contains(texture))
                     {
                         ++i;
                     }
                     else
                     {
                         autoTileData.spriteList.RemoveAt(i);
+                        autoTileData.textureList.RemoveAt(i);
                     }
                 }
             }

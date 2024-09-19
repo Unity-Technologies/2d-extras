@@ -16,7 +16,7 @@ namespace UnityEditor.Tilemaps
         private AutoTileSpriteSource.ClickState m_ClickState;
         private Action m_EditStopped;
         
-        public AutoTileTextureSource(Texture2D texture2D, AutoTile.AutoTileMaskType maskType, Action<Sprite, uint, uint> maskChanged, Action editStopped) : base(ScrollViewMode.VerticalAndHorizontal)
+        public AutoTileTextureSource(Texture2D texture2D, AutoTile.AutoTileMaskType maskType, Action<Sprite, Texture2D, uint, uint> maskChanged, Action editStopped) : base(ScrollViewMode.VerticalAndHorizontal)
         {
             m_TextureElement = new Image();
             Add(m_TextureElement);
