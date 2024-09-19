@@ -16,7 +16,7 @@ namespace UnityEngine.Tilemaps
     }
 
     /// <summary>
-    ///     A simple MonoBehaviour that stores and provides information based on Grid positions and keywords.
+    /// A simple MonoBehaviour that stores and provides information based on Grid positions and keywords.
     /// </summary>
     [Serializable]
     [HelpURL(
@@ -59,14 +59,10 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        ///     Callback before serializing this GridInformation
+        /// Callback before serializing this GridInformation
         /// </summary>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
-            var grid = GetComponentInParent<Grid>();
-            if (grid == null)
-                return;
-
             m_PositionIntKeys.Clear();
             m_PositionIntValues.Clear();
             m_PositionStringKeys.Clear();
@@ -111,7 +107,7 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        ///     Callback after deserializing this GridInformation
+        /// Callback after deserializing this GridInformation
         /// </summary>
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
@@ -166,7 +162,7 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        ///     This is not supported.
+        /// This is not supported.
         /// </summary>
         /// <param name="position">Position to store information for</param>
         /// <param name="name">Property name to store information for</param>
@@ -180,7 +176,7 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        ///     Stores int information at the given position with the given property name
+        /// Stores int information at the given position with the given property name
         /// </summary>
         /// <param name="position">Position to store information for</param>
         /// <param name="name">Property name to store information for</param>
@@ -192,7 +188,7 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        ///     Stores string information at the given position with the given property name
+        /// Stores string information at the given position with the given property name
         /// </summary>
         /// <param name="position">Position to store information for</param>
         /// <param name="name">Property name to store information for</param>
@@ -204,7 +200,7 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        ///     Stores float information at the given position with the given property name
+        /// Stores float information at the given position with the given property name
         /// </summary>
         /// <param name="position">Position to store information for</param>
         /// <param name="name">Property name to store information for</param>
@@ -216,7 +212,7 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        ///     Stores double information at the given position with the given property name
+        /// Stores double information at the given position with the given property name
         /// </summary>
         /// <param name="position">Position to store information for</param>
         /// <param name="name">Property name to store information for</param>
@@ -228,7 +224,7 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        ///     Stores UnityEngine.Object information at the given position with the given property name
+        /// Stores UnityEngine.Object information at the given position with the given property name
         /// </summary>
         /// <param name="position">Position to store information for</param>
         /// <param name="name">Property name to store information for</param>
@@ -240,7 +236,7 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        ///     Stores color information at the given position with the given property name
+        /// Stores color information at the given position with the given property name
         /// </summary>
         /// <param name="position">Position to store information for</param>
         /// <param name="name">Property name to store information for</param>
@@ -273,7 +269,7 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        ///     Retrieves information stored at the given position with the given property name as the given Type
+        /// Retrieves information stored at the given position with the given property name as the given Type
         /// </summary>
         /// <param name="position">Position to retrieve information for</param>
         /// <param name="name">Property name to retrieve information for</param>
@@ -299,7 +295,7 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        ///     Retrieves int information stored at the given position with the given property name
+        /// Retrieves int information stored at the given position with the given property name
         /// </summary>
         /// <param name="position">Position to retrieve information for</param>
         /// <param name="name">Property name to retrieve information for</param>
@@ -324,7 +320,7 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        ///     Retrieves string information stored at the given position with the given property name
+        /// Retrieves string information stored at the given position with the given property name
         /// </summary>
         /// <param name="position">Position to retrieve information for</param>
         /// <param name="name">Property name to retrieve information for</param>
@@ -349,7 +345,7 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        ///     Retrieves float information stored at the given position with the given property name
+        /// Retrieves float information stored at the given position with the given property name
         /// </summary>
         /// <param name="position">Position to retrieve information for</param>
         /// <param name="name">Property name to retrieve information for</param>
@@ -374,7 +370,7 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        ///     Retrieves double information stored at the given position with the given property name
+        /// Retrieves double information stored at the given position with the given property name
         /// </summary>
         /// <param name="position">Position to retrieve information for</param>
         /// <param name="name">Property name to retrieve information for</param>
@@ -399,7 +395,7 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        ///     Retrieves Color information stored at the given position with the given property name
+        /// Retrieves Color information stored at the given position with the given property name
         /// </summary>
         /// <param name="position">Position to retrieve information for</param>
         /// <param name="name">Property name to retrieve information for</param>
@@ -424,7 +420,7 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        ///     Erases information stored at the given position with the given property name
+        /// Erases information stored at the given position with the given property name
         /// </summary>
         /// <param name="position">Position to erase</param>
         /// <param name="name">Property name to erase</param>
@@ -438,7 +434,7 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        ///     Gets all positions with information with the given property name
+        /// Gets all positions with information with the given property name
         /// </summary>
         /// <param name="propertyName">Property name to search for</param>
         /// <returns>An array of all positions with the property name</returns>
