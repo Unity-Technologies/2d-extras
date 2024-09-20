@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEditor.Tilemaps;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -1198,6 +1199,27 @@ namespace UnityEditor
                 var rulesWrapper = new RuleTileRuleWrapper();
                 EditorJsonUtility.FromJsonOverwrite(EditorGUIUtility.systemCopyBuffer, rulesWrapper);
                 tile.m_TilingRules.AddRange(rulesWrapper.rules);
+            }
+            catch (Exception)
+            {
+                Debug.LogError("Unable to paste rules from system copy buffer");
+            }
+        }
+        
+        /// <summary>
+        ///     Create a RuleTile template from this RuleTile
+        /// </summary>
+        /// <param name="item">MenuCommand for creating RuleTile template</param>
+        [MenuItem("CONTEXT/RuleTile/Create RuleTile Template")]
+        public static void CreateRuleTileTemplate(MenuCommand item)
+        {
+            var tile = item.context as RuleTile;
+            if (tile == null)
+                return;
+
+            try
+            {
+                RuleTileTemplateUtility.SaveTemplateToFile(tile);
             }
             catch (Exception)
             {
