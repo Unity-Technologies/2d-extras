@@ -760,6 +760,7 @@ namespace UnityEngine
         /// <param name="position">Position of the Tile on the Tilemap.</param>
         /// <param name="tilemap">Tilemap to match.</param>
         /// <param name="angle">Rotation angle for matching.</param>
+        /// <param name="mirrorX">Mirror X Axis for matching.</param>
         /// <returns>True if there is a match, False if not.</returns>
         public bool RuleMatches(TilingRule rule, Vector3Int position, ITilemap tilemap, int angle, bool mirrorX = false)
         {

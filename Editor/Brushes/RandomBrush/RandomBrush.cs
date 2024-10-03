@@ -78,6 +78,9 @@ namespace UnityEditor.Tilemaps
             public TileBase[] randomTiles;
         }
 
+        /// <summary>
+        /// Container for storing Tile changes for Random Tile.
+        /// </summary>
         [Serializable]
         public struct RandomTileChangeDataSet
         {

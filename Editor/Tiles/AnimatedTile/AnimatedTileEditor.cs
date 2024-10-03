@@ -9,6 +9,9 @@ using Object = UnityEngine.Object;
 
 namespace UnityEditor.Tilemaps
 {
+    /// <summary>
+    /// The Editor for an AnimatedTile.
+    /// </summary>
     [CustomEditor(typeof(AnimatedTile))]
     [MovedFrom(true, "UnityEngine.Tilemaps", "Unity.2D.Tilemap.Extras")]
     public class AnimatedTileEditor : Editor
