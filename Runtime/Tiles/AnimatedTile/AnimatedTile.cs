@@ -92,6 +92,9 @@ namespace UnityEngine.Tilemaps
     }
 
 #if UNITY_EDITOR
+    /// <summary>
+    /// The Editor for an AnimatedTile.
+    /// </summary>
     [CustomEditor(typeof(AnimatedTile))]
     public class AnimatedTileEditor : Editor
     {
