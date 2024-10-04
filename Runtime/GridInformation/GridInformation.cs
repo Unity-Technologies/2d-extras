@@ -108,10 +108,6 @@ namespace UnityEngine.Tilemaps
         /// </summary>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
-            Grid grid = GetComponentInParent<Grid>();
-            if (grid == null)
-                return;
-
             m_PositionIntKeys.Clear();
             m_PositionIntValues.Clear();
             m_PositionStringKeys.Clear();

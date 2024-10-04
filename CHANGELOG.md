@@ -3,6 +3,11 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [2.2.8] - 2024-10-04
+### Fixed
+- [GameObjectBrush] Allow expansion of SceneRoot Grid foldout when clicking on label
+- [GridInformation] Fix exception when serializing GridInformation component if component is part of a Prefab
+
 ## [2.2.7] - 2023-08-21
 ### Fixed
 - [GameObjectBrush] Use cell offset to determine location of GameObject when painting and erasing
