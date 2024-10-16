@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 namespace UnityEditor.Tilemaps
 {
     [Serializable]
-    public class AutoTileEditorElement : VisualElement
+    internal class AutoTileEditorElement : VisualElement
     {
         private static readonly string s_StylesheetPath =
             "Packages/com.unity.2d.tilemap.extras/Editor/Tiles/AutoTile/UI/AutoTileEditor.uss";

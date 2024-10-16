@@ -6,8 +6,15 @@ using UnityEngine.Tilemaps;
 
 namespace UnityEditor.Tilemaps
 {
+    /// <summary>
+    /// Class containing utility methods for AutoTile Template
+    /// </summary>
     public static class AutoTileTemplateUtility
     {
+        /// <summary>
+        /// Loads an AutoTileTemplate from an asset file with a File Panel.
+        /// </summary>
+        /// <returns>AutoTIleTemplate from asset file.</returns>
         public static AutoTileTemplate LoadTemplateFromFile()
         {
             var projectWindowUtilType = typeof(ProjectWindowUtil);
@@ -23,6 +30,14 @@ namespace UnityEditor.Tilemaps
             return template;
         }
 
+        /// <summary>
+        /// Applies an AutoTileTemplate to an AutoTile with a source Texture2D 
+        /// </summary>
+        /// <param name="template">AutoTileTemplate to apply.</param>
+        /// <param name="texture">Source Texture2D containing Sprites for the AutoTileTemplate.</param>
+        /// <param name="autoTile">AutoTile updated with AutoTileTemplate.</param>
+        /// <param name="matchExact">Match Sprites from Source exactly with positional data from AutoTileTemplate
+        /// or match based on relative positional size.</param>
         public static void ApplyTemplateToAutoTile(this AutoTileTemplate template
             , Texture2D texture
             , AutoTile autoTile
@@ -64,6 +79,14 @@ namespace UnityEditor.Tilemaps
             }
         }
 
+        /// <summary>
+        /// Creates an AutoTileTemplate with the given parameters.
+        /// </summary>
+        /// <param name="imageWidth">Width of original image.</param>
+        /// <param name="imageHeight">Height of original image.</param>
+        /// <param name="maskType">Mask Type to apply to AutoTile.</param>
+        /// <param name="spriteData">Positional Data for AutoTileTemplate based on original image.</param>
+        /// <returns>AutoTileTemplate generated with the given parameters.</returns>
         public static AutoTileTemplate CreateTemplate(int imageWidth
             , int imageHeight
             , AutoTile.AutoTileMaskType maskType
@@ -77,6 +100,13 @@ namespace UnityEditor.Tilemaps
             return template;
         }
         
+        /// <summary>
+        /// Creates and saves an AutoTileTemplate with a FilePanel.
+        /// </summary>
+        /// <param name="imageWidth">Width of original image.</param>
+        /// <param name="imageHeight">Height of original image.</param>
+        /// <param name="maskType">Mask Type to apply to AutoTile.</param>
+        /// <param name="spriteData">Positional Data for AutoTileTemplate based on original image.</param>
         public static void SaveTemplateToFile(int imageWidth
             , int imageHeight
             , AutoTile.AutoTileMaskType maskType

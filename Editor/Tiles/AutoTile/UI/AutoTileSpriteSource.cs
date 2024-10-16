@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace UnityEditor.Tilemaps
 {
-    public class AutoTileSpriteSource : Image
+    internal class AutoTileSpriteSource : Image
     {
         public class ClickState
         {

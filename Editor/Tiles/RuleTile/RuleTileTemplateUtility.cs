@@ -1,12 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 namespace UnityEditor.Tilemaps
 {
+    /// <summary>
+    /// Class containing utility methods for RuleTile Template
+    /// </summary>
     public static class RuleTileTemplateUtility
     {
+        /// <summary>
+        /// Applies an RuleTileTemplate to an RuleTile with a source Texture2D 
+        /// </summary>
+        /// <param name="template">RuleTileTemplate to apply.</param>
+        /// <param name="texture">Source Texture2D containing Sprites for the RuleTileTemplate.</param>
+        /// <param name="ruleTile">RuleTile updated with RuleTileTemplate.</param>
+        /// <param name="matchExact">Match Sprites from Source exactly with positional data from RuleTileTemplate
+        /// or match based on relative positional size.</param>
         public static void ApplyTemplateToRuleTile(this RuleTileTemplate template
             , Texture2D texture
             , RuleTile ruleTile
@@ -58,6 +68,14 @@ namespace UnityEditor.Tilemaps
             }
         }
 
+        /// <summary>
+        /// Creates an RuleTileTemplate with the given parameters.
+        /// </summary>
+        /// <param name="imageWidth">Width of original image.</param>
+        /// <param name="imageHeight">Height of original image.</param>
+        /// <param name="maskType">Mask Type to apply to RuleTile.</param>
+        /// <param name="spriteData">Positional Data for RuleTileTemplate based on original image.</param>
+        /// <returns>RuleTileTemplate generated with the given parameters.</returns>
         public static RuleTileTemplate CreateTemplate(RuleTile ruleTile)
         {
             var template = ScriptableObject.CreateInstance<RuleTileTemplate>();
@@ -84,6 +102,13 @@ namespace UnityEditor.Tilemaps
             return template;
         }
         
+        /// <summary>
+        /// Creates and saves an RuleTileTemplate with a FilePanel.
+        /// </summary>
+        /// <param name="imageWidth">Width of original image.</param>
+        /// <param name="imageHeight">Height of original image.</param>
+        /// <param name="maskType">Mask Type to apply to RuleTile.</param>
+        /// <param name="spriteData">Positional Data for RuleTileTemplate based on original image.</param>
         public static void SaveTemplateToFile(RuleTile ruleTile)
         {
             var template = CreateTemplate(ruleTile);

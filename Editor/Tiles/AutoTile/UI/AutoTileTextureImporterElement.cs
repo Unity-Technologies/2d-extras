@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 namespace UnityEditor.Tilemaps
 {
-    public class AutoTileTextureImporterElement : VisualElement
+    internal class AutoTileTextureImporterElement : VisualElement
     {
         public Action onRevert;
         public Action onApply;

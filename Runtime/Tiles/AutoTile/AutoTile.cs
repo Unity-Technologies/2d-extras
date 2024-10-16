@@ -82,6 +82,9 @@ namespace UnityEngine.Tilemaps
         [SerializeField]
         public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
 
+        /// <summary>
+        /// Mask Type for the AutoTile
+        /// </summary>
         [SerializeField]
         public AutoTileMaskType m_MaskType;
         
@@ -90,6 +93,9 @@ namespace UnityEngine.Tilemaps
         #endregion
 
         #region Editor Data
+        /// <summary>
+        /// List of Texture2Ds used by the AutoTile
+        /// </summary>
         [SerializeField]
         public List<Texture2D> m_TextureList = new List<Texture2D>();
         #endregion
@@ -129,10 +135,7 @@ namespace UnityEngine.Tilemaps
             tileData.colliderType = m_DefaultColliderType;
             tileData.flags = TileFlags.LockAll;
             tileData.transform = iden;
-            
-            // Use Tilemap.GetTileBlockNonAlloc
-            // var tilemap = itilemap.GetComponent<Tilemap>();
-            // tilemap.GetTilesBlockNonAlloc(new BoundsInt(position.x - 1, position.y - 1, position.z, 3, 3, 1), m_CachedTiles);
+
             uint mask = 0;
             var index = 0;
             for (var y = -1; y <= 1; ++y)
@@ -160,7 +163,7 @@ namespace UnityEngine.Tilemaps
             }
         }
 
-        public void AddSprite(Sprite sprite, Texture2D texture, uint mask)
+        internal void AddSprite(Sprite sprite, Texture2D texture, uint mask)
         {
             if ((m_MaskType == AutoTileMaskType.Mask_2x2 && (mask >> 4) > 0)
                 || (mask >> 9) > 0)
@@ -189,7 +192,7 @@ namespace UnityEngine.Tilemaps
                 
         }
 
-        public void RemoveSprite(Sprite sprite, uint mask)
+        internal void RemoveSprite(Sprite sprite, uint mask)
         {
             if (!m_AutoTileDictionary.TryGetValue(mask, out var autoTileData))
                 return;

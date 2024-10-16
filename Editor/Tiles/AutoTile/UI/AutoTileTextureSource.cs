@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 namespace UnityEditor.Tilemaps
 {
-    public class AutoTileTextureSource : ScrollView
+    internal class AutoTileTextureSource : ScrollView
     {
         private Dictionary<Sprite, AutoTileSpriteSource> m_SpriteToElementMap =
             new Dictionary<Sprite, AutoTileSpriteSource>();

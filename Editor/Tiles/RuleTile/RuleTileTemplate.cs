@@ -5,18 +5,40 @@ using UnityEngine.Tilemaps;
 
 namespace UnityEditor.Tilemaps
 {
+    /// <summary>
+    /// Template used to create a RuleTile from Texture2D and Sprites.
+    /// </summary>
     public class RuleTileTemplate : TileTemplate
     {
-        public static string kExtension = "asset"; 
+        internal static string kExtension = "asset"; 
         
+        /// <summary>
+        /// Positional and Rule Data for detecting RuleTile Sprites.
+        /// </summary>
         [Serializable]
         public struct RuleData
         {
+            /// <summary>
+            /// x, y positions on Texture2D.
+            /// </summary>
             public List<Vector2> spritePositions;
+            /// <summary>
+            /// Tiling Rule for Rule at position.
+            /// </summary>
             public RuleTile.TilingRule tilingRule;
         }
+        /// <summary>
+        /// List of Positional Data for detecting Sprites and Tiling Rules.
+        /// </summary>
         public List<RuleData> rules;
+        
+        /// <summary>
+        /// Original Width of the Template
+        /// </summary>
         public int textureWidth;
+        /// <summary>
+        /// Original Height of the Template
+        /// </summary>
         public int textureHeight;
 
         /// <summary>
@@ -34,6 +56,13 @@ namespace UnityEditor.Tilemaps
         /// </summary>
         public Tile.ColliderType defaultColliderType = Tile.ColliderType.Sprite;
         
+        /// <summary>
+        /// Creates a List of TileBase Assets with a RuleTile from Texture2D
+        /// and Sprites with placement data onto a Tile Palette.
+        /// </summary>
+        /// <param name="texture2D">Texture2D to generate Tile Assets from.</param>
+        /// <param name="sprites">Sprites to generate Tile Assets from.</param>
+        /// <param name="tilesToAdd">RuleTile asset and placement data to generate.</param>
         public override void CreateTileAssets(
             Texture2D texture2D
             , IEnumerable<Sprite> sprites
