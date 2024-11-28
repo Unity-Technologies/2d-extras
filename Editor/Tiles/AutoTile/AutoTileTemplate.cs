@@ -65,7 +65,7 @@ namespace UnityEngine.Tilemaps
             
             var autoTile = ScriptableObject.CreateInstance<AutoTile>();
             autoTile.name = $"{texture2D.name} AutoTile";
-            this.ApplyTemplateToAutoTile(texture2D, autoTile);
+            this.ApplyTemplateToAutoTile(texture2D, sprites, autoTile);
             var tileChangeData = new TileChangeData(
                 Vector3Int.zero
                 , autoTile

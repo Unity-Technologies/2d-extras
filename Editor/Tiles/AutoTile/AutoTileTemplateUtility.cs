@@ -40,6 +40,7 @@ namespace UnityEditor.Tilemaps
         /// or match based on relative positional size.</param>
         public static void ApplyTemplateToAutoTile(this AutoTileTemplate template
             , Texture2D texture
+            , IEnumerable<Sprite> sprites
             , AutoTile autoTile
             , bool matchExact = false)
         {
@@ -50,13 +51,8 @@ namespace UnityEditor.Tilemaps
             if (autoTile.m_TextureList == null)
                 autoTile.m_TextureList = new List<Texture2D>();
             autoTile.m_TextureList.Add(texture);
-            var assets = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(texture));
-            foreach (var asset in assets)
+            foreach (var sprite in sprites)
             {
-                var sprite = asset as Sprite;
-                if (sprite == null)
-                    continue;
-
                 foreach (var templateSprite in template.sprites)
                 {
                     var match = false;
