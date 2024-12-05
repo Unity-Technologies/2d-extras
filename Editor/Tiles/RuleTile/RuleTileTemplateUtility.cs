@@ -71,10 +71,7 @@ namespace UnityEditor.Tilemaps
         /// <summary>
         /// Creates an RuleTileTemplate with the given parameters.
         /// </summary>
-        /// <param name="imageWidth">Width of original image.</param>
-        /// <param name="imageHeight">Height of original image.</param>
-        /// <param name="maskType">Mask Type to apply to RuleTile.</param>
-        /// <param name="spriteData">Positional Data for RuleTileTemplate based on original image.</param>
+        /// <param name="ruleTile">RuleTile to save template with.</param>
         /// <returns>RuleTileTemplate generated with the given parameters.</returns>
         public static RuleTileTemplate CreateTemplate(RuleTile ruleTile)
         {
@@ -105,10 +102,7 @@ namespace UnityEditor.Tilemaps
         /// <summary>
         /// Creates and saves an RuleTileTemplate with a FilePanel.
         /// </summary>
-        /// <param name="imageWidth">Width of original image.</param>
-        /// <param name="imageHeight">Height of original image.</param>
-        /// <param name="maskType">Mask Type to apply to RuleTile.</param>
-        /// <param name="spriteData">Positional Data for RuleTileTemplate based on original image.</param>
+        /// <param name="ruleTile">RuleTile to save template with.</param>
         public static void SaveTemplateToFile(RuleTile ruleTile)
         {
             var template = CreateTemplate(ruleTile);

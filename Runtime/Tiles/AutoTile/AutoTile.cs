@@ -61,8 +61,14 @@ namespace UnityEngine.Tilemaps
         /// </summary>
         public enum AutoTileMaskType
         {
-            Mask_2x2
-            , Mask_3x3
+            /// <summary>
+            /// Mask for 2x2 blocks
+            /// </summary>
+            Mask_2x2,
+            /// <summary>
+            /// Mask for 3x3 blocks
+            /// </summary>
+            Mask_3x3
         }
 
         #region Tile Data
@@ -124,7 +130,7 @@ namespace UnityEngine.Tilemaps
         /// Retrieves any tile rendering data from the scripted tile.
         /// </summary>
         /// <param name="position">Position of the Tile on the Tilemap.</param>
-        /// <param name="tilemap">The Tilemap the tile is present on.</param>
+        /// <param name="itilemap">The Tilemap the tile is present on.</param>
         /// <param name="tileData">Data to render the tile.</param>
         public override void GetTileData(Vector3Int position, ITilemap itilemap, ref TileData tileData)
         {

@@ -35,6 +35,7 @@ namespace UnityEditor.Tilemaps
         /// </summary>
         /// <param name="template">AutoTileTemplate to apply.</param>
         /// <param name="texture">Source Texture2D containing Sprites for the AutoTileTemplate.</param>
+        /// <param name="sprites">Source Sprites to be used in the AutoTile.</param>
         /// <param name="autoTile">AutoTile updated with AutoTileTemplate.</param>
         /// <param name="matchExact">Match Sprites from Source exactly with positional data from AutoTileTemplate
         /// or match based on relative positional size.</param>
