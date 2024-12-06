@@ -184,7 +184,7 @@ namespace UnityEditor.Tilemaps
                         {
                             throw new InvalidOperationException($"AutoTile Mask '{autoTile.m_MaskType}' does not match Template Mask '{template.maskType}'");
                         }
-                        
+                        autoTile.m_AutoTileDictionary.Clear();
                         at.ApplyAutoTileTemplate(template);
                         SaveTile();    
                     }

@@ -56,6 +56,7 @@ namespace UnityEditor.Tilemaps
         {
             foreach (var item in m_SpriteToElementMap)
             {
+                item.Value.InitialiseMask(0);
                 foreach (var sprite in template.sprites)
                 {
                     var match = false;
