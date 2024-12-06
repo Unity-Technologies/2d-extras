@@ -180,6 +180,11 @@ namespace UnityEditor.Tilemaps
                     var template = AutoTileTemplateUtility.LoadTemplateFromFile();
                     if (template != null)
                     {
+                        if (autoTile.m_MaskType != template.maskType)
+                        {
+                            throw new InvalidOperationException($"AutoTile Mask '{autoTile.m_MaskType}' does not match Template Mask '{template.maskType}'");
+                        }
+                        
                         at.ApplyAutoTileTemplate(template);
                         SaveTile();    
                     }
