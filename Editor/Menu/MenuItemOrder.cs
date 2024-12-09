@@ -6,6 +6,7 @@ namespace UnityEditor.Tilemaps
     internal enum ETilesMenuItemOrder
     {
         AnimatedTile = 2,
+        AutoTile,
         RuleTile = 100,
         IsometricRuleTile,
         HexagonalRuleTile,
