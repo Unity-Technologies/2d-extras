@@ -27,6 +27,10 @@ namespace UnityEditor.Tilemaps
                 AutoTileTemplate.kExtension);
             var relativePath = FileUtil.GetProjectRelativePath(templatePath);
             var template = AssetDatabase.LoadAssetAtPath<AutoTileTemplate>(relativePath);
+            if (template == null)
+            {
+                Debug.LogWarningFormat("{0} does not contain a valid AutoTileTemplate.", relativePath);
+            }
             return template;
         }
 
