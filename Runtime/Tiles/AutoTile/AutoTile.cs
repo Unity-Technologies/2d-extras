@@ -6,7 +6,8 @@ namespace UnityEngine.Tilemaps
     /// <summary>
     /// Tile using AutoTiling mask and rules
     /// </summary>
-    [CreateAssetMenu]
+    [HelpURL(
+        "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/AutoTile.html")]
     public class AutoTile : TileBase
     {
         [Serializable]

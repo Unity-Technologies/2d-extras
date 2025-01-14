@@ -8,6 +8,7 @@
 * [Animated Tile](AnimatedTile.md)
 * [Rule Tile](RuleTile.md)
 * [Rule Override Tile](RuleOverrideTile.md)
+* [Auto Tile](AutoTile.md)
 * [Other](Other.md)
 * [Grid Information](GridInformation.md)
 * [Custom Rules for Rule Tile](CustomRulesForRuleTile.md)

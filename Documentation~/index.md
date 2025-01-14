@@ -49,6 +49,7 @@ the following additional Tile types that are included with this package.
   given [Rule Tile](RuleTile.md) to provide different behaviour without changing the original Rules.
 - [Advanced Rule Override Tile](AdvancedRuleOverrideTile.md): This Tile can override a subset of Rules for a
   given [Rule Tile](RuleTile.md) to provide specialized behavior, while keeping the rest of the original Rules intact.
+- [Auto Tile](AutoTile.md): This Tile match themselves based on the mask set on Textures to generate the AutoTile ruleset.
 
 ## Other
 
