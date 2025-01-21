@@ -8,6 +8,8 @@ namespace UnityEditor.Tilemaps
     /// <summary>
     /// Template used to create a RuleTile from Texture2D and Sprites.
     /// </summary>
+    [HelpURL(
+        "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/RuleTile.html")]
     public class RuleTileTemplate : TileTemplate
     {
         internal static string kExtension = "asset"; 

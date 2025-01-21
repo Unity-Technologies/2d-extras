@@ -4,6 +4,12 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [4.2.2] - 2025-01-17
+
+### Fixed
+
+- [AutoTile] Add AutoTile to Table of Contents
+
 ## [4.2.1] - 2024-12-10
 
 ### Fixed

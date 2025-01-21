@@ -7,6 +7,8 @@ namespace UnityEngine.Tilemaps
     /// <summary>
     /// Template used to create an AutoTile from Texture2D and Sprites.
     /// </summary>
+    [HelpURL(
+        "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/AutoTile.html")]
     public class AutoTileTemplate : TileTemplate
     {
         internal static string kExtension = "asset"; 
