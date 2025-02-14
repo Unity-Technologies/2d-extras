@@ -204,7 +204,11 @@ namespace UnityEditor.Tilemaps
                 saveButton.userData = at;
                 he.Add(saveButton);
 
-                var slider = new Slider("Scale", 0.25f, 2.5f, SliderDirection.Horizontal, 0.1f);
+                var start = 0.25f;
+                var minLength = Math.Min(texture2D.width, texture2D.height);
+                start = Math.Min(512.0f / minLength, start);
+                
+                var slider = new Slider("Scale", start, 2.5f, SliderDirection.Horizontal, 0.1f);
                 slider.style.flexGrow = 0.8f;
                 slider.value = 1.0f;
                 slider.RegisterValueChangedCallback(evt => at.ChangeScale(evt.newValue));
