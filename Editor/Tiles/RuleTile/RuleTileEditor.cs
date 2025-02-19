@@ -254,10 +254,10 @@ namespace UnityEditor
                 bounds.yMax++;
             }
 
-            bounds.xMin = Mathf.Min(bounds.xMin, -1);
-            bounds.yMin = Mathf.Min(bounds.yMin, -1);
-            bounds.xMax = Mathf.Max(bounds.xMax, 2);
-            bounds.yMax = Mathf.Max(bounds.yMax, 2);
+            bounds.xMin = Mathf.Max(Mathf.Min(bounds.xMin, -1), -10);
+            bounds.yMin = Mathf.Max(Mathf.Min(bounds.yMin, -1), -10);
+            bounds.xMax = Mathf.Min(Mathf.Max(bounds.xMax, 2), 11);
+            bounds.yMax = Mathf.Min(Mathf.Max(bounds.yMax, 2), 11);
             return bounds;
         }
 
