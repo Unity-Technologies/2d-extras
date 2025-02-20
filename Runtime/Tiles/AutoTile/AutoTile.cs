@@ -10,6 +10,8 @@ namespace UnityEngine.Tilemaps
         "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/AutoTile.html")]
     public class AutoTile : TileBase
     {
+        internal static readonly float s_DefaultTextureScale = 1f;
+        
         [Serializable]
         internal abstract class SerializedDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
         {
@@ -105,6 +107,13 @@ namespace UnityEngine.Tilemaps
         /// </summary>
         [SerializeField]
         public List<Texture2D> m_TextureList = new List<Texture2D>();
+        
+        /// <summary>
+        /// List of Texture Scale used by the AutoTile
+        /// </summary>
+        [SerializeField]
+        public List<float> m_TextureScaleList = new List<float>();
+        
         #endregion
         
         #region Runtime Data
@@ -245,6 +254,16 @@ namespace UnityEngine.Tilemaps
                         autoTileData.textureList.RemoveAt(i);
                     }
                 }
+            }
+            
+            if (m_TextureList.Count != m_TextureScaleList.Count)
+            {
+                if (m_TextureList.Count > m_TextureScaleList.Count)
+                    while (m_TextureList.Count - m_TextureScaleList.Count > 0)
+                        m_TextureScaleList.Add(s_DefaultTextureScale);    
+                else if (m_TextureList.Count < m_TextureScaleList.Count)
+                    while (m_TextureScaleList.Count - m_TextureList.Count > 0)
+                        m_TextureScaleList.RemoveAt(m_TextureScaleList.Count-1);
             }
         }
 
