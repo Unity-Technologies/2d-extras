@@ -12,6 +12,8 @@ namespace UnityEditor.Tilemaps
     {
         private static readonly string s_StylesheetPath =
             "Packages/com.unity.2d.tilemap.extras/Editor/Tiles/AutoTile/UI/AutoTileEditor.uss";
+
+        private static readonly float s_MaxSliderScale = 2.5f;
         
         private ListView m_TextureList;
         private ScrollView m_TextureScroller;
@@ -146,20 +148,22 @@ namespace UnityEditor.Tilemaps
                 return;
 
             m_AutoTile.m_TextureList[index] = texture2D;
+            m_AutoTile.m_TextureScaleList[index] = AutoTile.s_DefaultTextureScale;
             TexturesChanged();
         }
 
         private void PopulateTextureScrollView()
         {
             textureToElementMap.Clear();
-            m_TextureScroller.contentContainer.Clear(); 
+            m_TextureScroller.Clear(); 
             
             if (m_TextureList.itemsSource == null)
                 return;
-            
-            foreach (var item in m_TextureList.itemsSource)
+
+            var count = Math.Min(m_AutoTile.m_TextureScaleList.Count, m_TextureList.itemsSource.Count);
+            for (var i = 0; i < count; ++i)
             {
-                var texture2D = item as Texture2D;
+                var texture2D = m_TextureList.itemsSource[i] as Texture2D;
                 if (texture2D == null)
                     continue;
 
@@ -203,15 +207,26 @@ namespace UnityEditor.Tilemaps
                 saveButton.text = "Save";
                 saveButton.userData = at;
                 he.Add(saveButton);
+                
+                var minLength = Math.Max(texture2D.width, texture2D.height);
+                var start = 256.0f / minLength;
 
-                var slider = new Slider("Scale", 0.25f, 2.5f, SliderDirection.Horizontal, 0.1f);
-                slider.style.flexGrow = 0.8f;
-                slider.value = 1.0f;
-                slider.RegisterValueChangedCallback(evt => at.ChangeScale(evt.newValue));
+                var sliderValue = Math.Min(Mathf.Max(start, m_AutoTile.m_TextureScaleList[i]), s_MaxSliderScale);
+                
+                var slider = new Slider("Scale", start, s_MaxSliderScale, SliderDirection.Horizontal, 0.1f);
+                slider.style.flexGrow = 0.9f;
+                slider.value = Mathf.Max(start, sliderValue);
+                slider.userData = i;
+                slider.RegisterValueChangedCallback(evt =>
+                {
+                    at.ChangeScale(evt.newValue);
+                    m_AutoTile.m_TextureScaleList[(int) slider.userData] = evt.newValue;
+                    SaveTile();
+                });
                 he.Add(slider);
                 ve.Add(he);
                 
-                at.ChangeScale(1.0f);
+                at.ChangeScale(sliderValue);
                 
                 ve.Add(at);
                 
@@ -265,6 +280,9 @@ namespace UnityEditor.Tilemaps
         
         private void ItemListAdded(IEnumerable<int> insertions)
         {
+            // Note: m_AutoTile.m_TextureList is increased before this method
+            foreach (var i in insertions)
+                m_AutoTile.m_TextureScaleList.Insert(i, AutoTile.s_DefaultTextureScale);
             SaveTile();
             m_TextureList.Rebuild();
             TexturesChanged();
@@ -272,6 +290,9 @@ namespace UnityEditor.Tilemaps
         
         private void ItemListRemoved(IEnumerable<int> removals)
         {
+            // Note: m_AutoTile.m_TextureList is reduced after this method ends
+            foreach (var i in removals)
+                m_AutoTile.m_TextureScaleList.RemoveAt(i);
             SaveTile();
             m_TextureList.Rebuild();
             TexturesChanged();
@@ -301,7 +322,6 @@ namespace UnityEditor.Tilemaps
             }
             
             EditorUtility.SetDirty(autoTile);
-            //AssetDatabase.SaveAssetIfDirty(autoTile);
             SceneView.RepaintAll();
         }
     }
