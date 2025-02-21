@@ -371,6 +371,7 @@ namespace UnityEditor
                 tile.m_TilingRules.RemoveAt(count + 1);
                 if (list.IsSelected(list.index))
                     list.index += 1;
+                tile.m_TilingRules[list.index] = rule;
             }
 
             UpdateTilingRuleIds();
