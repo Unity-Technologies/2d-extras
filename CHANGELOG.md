@@ -9,6 +9,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Fixed
 
 - [AutoTile] Add AutoTile to Table of Contents
+- [AutoTile] Add warning when loading an asset which is not an AutoTileTemplate when loading an AutoTileTemplate
+- [AutoTileEditor] Set better limits for Texture Scale depending on size of original Texture
+- [AutoTileEditor] Save set Texture Scale
+- [RuleTileEditor] Set expansion limits for TilingRule to a maximum of 10
+- [RuleTileEditor] Set default properties to TilingRule when adding a new TilingRule
+- [Editor] Set an upper limit of 1000 for editable collection sizes
 
 ## [4.2.1] - 2024-12-10
 
