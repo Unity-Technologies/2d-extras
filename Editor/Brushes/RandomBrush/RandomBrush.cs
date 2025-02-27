@@ -368,8 +368,7 @@ namespace UnityEditor.Tilemaps
 
             var randomTileSetCount = EditorGUILayout.DelayedIntField("Number of Tiles",
                 randomBrush.randomTileSets != null ? randomBrush.randomTileSets.Length : 0);
-            if (randomTileSetCount < 0)
-                randomTileSetCount = 0;
+            randomTileSetCount = Math.Clamp(randomTileSetCount, 0, 1000);
             if (randomBrush.randomTileSets == null || randomBrush.randomTileSets.Length != randomTileSetCount)
             {
                 Array.Resize(ref randomBrush.randomTileSets, randomTileSetCount);

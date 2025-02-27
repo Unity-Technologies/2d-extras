@@ -508,8 +508,7 @@ namespace UnityEditor
 
             EditorGUI.BeginChangeCheck();
             var count = EditorGUILayout.DelayedIntField(Styles.numberOfTilingRules, tile.m_TilingRules?.Count ?? 0);
-            if (count < 0)
-                count = 0;
+            count = Math.Clamp(count, 0, 1000);
             if (EditorGUI.EndChangeCheck())
                 ResizeRuleTileList(count);
 

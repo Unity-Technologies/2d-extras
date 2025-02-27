@@ -106,8 +106,7 @@ namespace UnityEngine.Tilemaps
 
             var count = EditorGUILayout.DelayedIntField("Number of Sprites",
                 Tile.Sprites != null ? Tile.Sprites.Length : 0);
-            if (count < 0)
-                count = 0;
+            count = Math.Clamp(count, 0, 1000);
 
             if (Tile.Sprites == null || Tile.Sprites.Length != count) Array.Resize(ref Tile.Sprites, count);
 
