@@ -208,8 +208,7 @@ namespace UnityEditor.Tilemaps
             EditorGUI.BeginChangeCheck();
             var count = EditorGUILayout.DelayedIntField("Number of Animated Sprites",
                 tile.m_AnimatedSprites != null ? tile.m_AnimatedSprites.Length : 0);
-            if (count < 0)
-                count = 0;
+            count = Math.Clamp(count, 0, 1000);
 
             if (tile.m_AnimatedSprites == null || tile.m_AnimatedSprites.Length != count)
                 ResizeAnimatedSpriteList(count);

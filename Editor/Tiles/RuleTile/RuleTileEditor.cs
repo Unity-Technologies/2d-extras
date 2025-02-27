@@ -509,8 +509,7 @@ namespace UnityEditor
 
             EditorGUI.BeginChangeCheck();
             var count = EditorGUILayout.DelayedIntField(Styles.numberOfTilingRules, tile.m_TilingRules?.Count ?? 0);
-            if (count < 0)
-                count = 0;
+            count = Math.Clamp(count, 0, 1000);
             if (EditorGUI.EndChangeCheck())
                 ResizeRuleTileList(count);
 
@@ -911,7 +910,10 @@ namespace UnityEditor
                     new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight),
                     tilingRule.m_Sprites.Length);
                 if (EditorGUI.EndChangeCheck())
+                {
+                    newLength = Math.Clamp(newLength, 0, 1000);
                     Array.Resize(ref tilingRule.m_Sprites, Math.Max(newLength, 1));
+                }
                 y += k_SingleLineHeight;
 
                 for (var i = 0; i < tilingRule.m_Sprites.Length; i++)
