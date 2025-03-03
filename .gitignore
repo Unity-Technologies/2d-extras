@@ -61,6 +61,6 @@ SceneDependencyCache/
 .multitool
 
 #Packageworks
-!Wrench/U2D-recipes.sln
-!Wrench/U2D.Cookbook.csproj
+!Wrench/*.sln
+!Wrench/*.csproj
 Wrench/bin/
