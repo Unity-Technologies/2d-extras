@@ -24,7 +24,6 @@ package_pack_-_2d_tilemap_extras:
   - command: upm-ci package pack --package-path .
   - command: cp upm-ci~/packages/packages.json upm-ci~/packages/com.unity.2d.tilemap.extras_packages.json
   - command: mv upm-ci~/temp/packages/* upm-ci~/packages
-  - command: python PythonScripts/PackageJsonCondersor.py
   after:
   - command: bash .yamato/generated-scripts/infrastructure-instability-detection-linux.sh
   artifacts:
