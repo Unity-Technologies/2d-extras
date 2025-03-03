@@ -1,18 +1,22 @@
 {
-  "project_path": "Wrench",
-  "schema_version": 0.5,
+  "schema_version": 0.7,
   "packages": {
     "com.unity.2d.tilemap.extras": {
       "directory": "./",
       "prePackCommands": [],
-      "preTestCommands": {},
+      "preTestCommands": {
+        "MacOS": [],
+        "Ubuntu": [],
+        "Windows": []
+      },
       "InternalOnly": false,
       "NeverPublish": false,
-      "MaxEditorVersion": "2021.3",
+      "MaxEditorVersion": "",
       "coverageEnabled": false,
       "coverageCommands": [
         "generateAdditionalMetrics;generateHtmlReport;assemblyFilters:ASSEMBLY_NAME;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:YAMATO_SOURCE_DIR/Packages;"
-      ]
+      ],
+      "dependantsToIgnoreInPreviewApv": {}
     }
   },
   "releasing_packages": [
@@ -27,6 +31,7 @@
   },
   "publishing_job": ".yamato/wrench/promotion-jobs.yml#publish_2d_tilemap_extras",
   "branch_pattern": "ReleaseSlash",
-  "wrench_version": "0.10.14.0",
-  "pvp_exemption_path": ".yamato/wrench/pvp-exemptions.json"
+  "wrench_version": "0.10.42.0",
+  "pvp_exemption_path": ".yamato/wrench/pvp-exemptions.json",
+  "cs_project_path": "Wrench/TilemapExtras.Cookbook.csproj"
 }
