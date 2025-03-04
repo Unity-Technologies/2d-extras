@@ -4,6 +4,7 @@ build/**
 .npmrc
 .npmignore
 .gitignore
+.Wrench
 CONTRIBUTING.md
 CONTRIBUTING.md.meta
 QAReport.md
