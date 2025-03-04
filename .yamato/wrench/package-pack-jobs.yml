@@ -12,6 +12,10 @@ package_pack_-_2d_tilemap_extras:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     timeout: 20
     retries: 10
+  - command: git clone $UNITY_2D_REPO_GIT --no-checkout ../.unity/2d
+  - command: cd ../.unity/2d && git fetch origin $GIT_BRANCH
+  - command: cd ../.unity/2d && rm -f .git/index.lock
+  - command: cd ../.unity/2d && git checkout -f --detach FETCH_HEAD
   - command: upm-ci package pack --package-path .
   - command: cp upm-ci~/packages/packages.json upm-ci~/packages/com.unity.2d.tilemap.extras_packages.json
   after:

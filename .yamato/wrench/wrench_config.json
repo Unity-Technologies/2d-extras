@@ -3,7 +3,12 @@
   "packages": {
     "com.unity.2d.tilemap.extras": {
       "directory": "./",
-      "prePackCommands": [],
+      "prePackCommands": [
+        "git clone $UNITY_2D_REPO_GIT --no-checkout ../.unity/2d",
+        "cd ../.unity/2d && git fetch origin $GIT_BRANCH",
+        "cd ../.unity/2d && rm -f .git/index.lock",
+        "cd ../.unity/2d && git checkout -f --detach FETCH_HEAD"
+      ],
       "preTestCommands": {
         "MacOS": [],
         "Ubuntu": [],
