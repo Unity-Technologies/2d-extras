@@ -16,6 +16,9 @@ package_pack_-_2d_tilemap_extras:
   - command: cd ../.unity/2d && git fetch origin $GIT_BRANCH
   - command: cd ../.unity/2d && rm -f .git/index.lock
   - command: cd ../.unity/2d && git checkout -f --detach FETCH_HEAD
+  - command: upm-ci package pack --package-path ../.unity/2d/Packages/com.unity.2d.tilemap.extras.tests
+  - command: cp upm-ci~/packages/packages.json upm-ci~/packages/com.unity.2d.tilemap.extras.tests_packages.json
+  - command: rm upm-ci~/packages/packages.json
   - command: upm-ci package pack --package-path .
   - command: cp upm-ci~/packages/packages.json upm-ci~/packages/com.unity.2d.tilemap.extras_packages.json
   after:

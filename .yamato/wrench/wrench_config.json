@@ -7,7 +7,10 @@
         "git clone $UNITY_2D_REPO_GIT --no-checkout ../.unity/2d",
         "cd ../.unity/2d && git fetch origin $GIT_BRANCH",
         "cd ../.unity/2d && rm -f .git/index.lock",
-        "cd ../.unity/2d && git checkout -f --detach FETCH_HEAD"
+        "cd ../.unity/2d && git checkout -f --detach FETCH_HEAD",
+        "upm-ci package pack --package-path ../.unity/2d/Packages/com.unity.2d.tilemap.extras.tests",
+        "cp upm-ci~/packages/packages.json upm-ci~/packages/com.unity.2d.tilemap.extras.tests_packages.json",
+        "rm upm-ci~/packages/packages.json"
       ],
       "preTestCommands": {
         "MacOS": [],
