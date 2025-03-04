@@ -12,15 +12,51 @@ package_pack_-_2d_tilemap_extras:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     timeout: 20
     retries: 10
-  - command: git clone $UNITY_2D_REPO_GIT --no-checkout ../.unity/2d
-  - command: cd ../.unity/2d && git fetch origin $GIT_BRANCH
-  - command: cd ../.unity/2d && rm -f .git/index.lock
-  - command: cd ../.unity/2d && git checkout -f --detach FETCH_HEAD
-  - command: upm-ci package pack --package-path ../.unity/2d/Packages/com.unity.2d.tilemap.extras.tests
+  - command: git clone $UNITY_2D_REPO_GIT --no-checkout .tests
+  - command: cd .tests && git fetch origin $GIT_BRANCH
+  - command: cd .tests && rm -f .git/index.lock
+  - command: cd .tests && git checkout -f --detach FETCH_HEAD
+  - command: upm-ci package pack --package-path .tests/Packages/com.unity.2d.tilemap.extras.tests
   - command: cp upm-ci~/packages/packages.json upm-ci~/packages/com.unity.2d.tilemap.extras.tests_packages.json
   - command: rm upm-ci~/packages/packages.json
+  - command: mkdir -p upm-ci~/temp/packages
+  - command: mv upm-ci~/packages/* upm-ci~/temp/packages
   - command: upm-ci package pack --package-path .
   - command: cp upm-ci~/packages/packages.json upm-ci~/packages/com.unity.2d.tilemap.extras_packages.json
+  - command: mv upm-ci~/temp/packages/* upm-ci~/packages
+  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-2-58_ab06748e39f9b01f55b979c0c06d7c1f787e07cbca4dc6ae5eef274fd195612a.zip -o wrench-localapv.zip
+  - command: 7z x -aoa wrench-localapv.zip
+  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
+  - command: python PythonScripts/PackageJsonCondersor.py
+  after:
+  - command: bash .yamato/generated-scripts/infrastructure-instability-detection-linux.sh
+  artifacts:
+    packages:
+      paths:
+      - upm-ci~/packages/**/*
+  variables:
+    UPMCI_ACK_LARGE_PACKAGE: 1
+  metadata:
+    Job Maintainers: '#rm-packageworks'
+    Wrench: 0.10.42.0
+
+# Pack 2D Tilemap Extras Tests
+package_pack_-_2d_tilemap_extras_tests:
+  name: Package Pack - 2d.tilemap.extras.tests
+  agent:
+    image: package-ci/ubuntu-20.04:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    timeout: 20
+    retries: 10
+  - command: git clone $UNITY_2D_REPO_GIT --no-checkout .tests
+  - command: cd .tests && git fetch origin $GIT_BRANCH
+  - command: cd .tests && rm -f .git/index.lock
+  - command: cd .tests && git checkout -f --detach FETCH_HEAD
+  - command: upm-ci package pack --package-path .tests/Packages/com.unity.2d.tilemap.extras.tests
+  - command: cp upm-ci~/packages/packages.json upm-ci~/packages/com.unity.2d.tilemap.extras.tests_packages.json
   after:
   - command: bash .yamato/generated-scripts/infrastructure-instability-detection-linux.sh
   artifacts:

@@ -4,13 +4,10 @@
     "com.unity.2d.tilemap.extras": {
       "directory": "./",
       "prePackCommands": [
-        "git clone $UNITY_2D_REPO_GIT --no-checkout ../.unity/2d",
-        "cd ../.unity/2d && git fetch origin $GIT_BRANCH",
-        "cd ../.unity/2d && rm -f .git/index.lock",
-        "cd ../.unity/2d && git checkout -f --detach FETCH_HEAD",
-        "upm-ci package pack --package-path ../.unity/2d/Packages/com.unity.2d.tilemap.extras.tests",
-        "cp upm-ci~/packages/packages.json upm-ci~/packages/com.unity.2d.tilemap.extras.tests_packages.json",
-        "rm upm-ci~/packages/packages.json"
+        "git clone $UNITY_2D_REPO_GIT --no-checkout .tests",
+        "cd .tests && git fetch origin $GIT_BRANCH",
+        "cd .tests && rm -f .git/index.lock",
+        "cd .tests && git checkout -f --detach FETCH_HEAD"
       ],
       "preTestCommands": {
         "MacOS": [],
@@ -19,6 +16,28 @@
       },
       "InternalOnly": false,
       "NeverPublish": false,
+      "MaxEditorVersion": "",
+      "coverageEnabled": false,
+      "coverageCommands": [
+        "generateAdditionalMetrics;generateHtmlReport;assemblyFilters:ASSEMBLY_NAME;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:YAMATO_SOURCE_DIR/Packages;"
+      ],
+      "dependantsToIgnoreInPreviewApv": {}
+    },
+    "com.unity.2d.tilemap.extras.tests": {
+      "directory": ".tests/Packages/com.unity.2d.tilemap.extras.tests/",
+      "prePackCommands": [
+        "git clone $UNITY_2D_REPO_GIT --no-checkout .tests",
+        "cd .tests && git fetch origin $GIT_BRANCH",
+        "cd .tests && rm -f .git/index.lock",
+        "cd .tests && git checkout -f --detach FETCH_HEAD"
+      ],
+      "preTestCommands": {
+        "MacOS": [],
+        "Ubuntu": [],
+        "Windows": []
+      },
+      "InternalOnly": false,
+      "NeverPublish": true,
       "MaxEditorVersion": "",
       "coverageEnabled": false,
       "coverageCommands": [
