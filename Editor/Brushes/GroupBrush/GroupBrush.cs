@@ -19,9 +19,11 @@ namespace UnityEditor.Tilemaps
 
         [SerializeField] private Vector3Int m_Limit = Vector3Int.one * 3;
 
+        [SerializeField] private bool m_ContinueIfEmpty = true;
+        
         [SerializeField] private readonly Stack<Vector3Int> m_NextPosition = new();
 
-        [SerializeField] private BitArray m_VisitedLocations = new(7 * 7 * 7);
+        [SerializeField] private BitArray m_VisitedLocations = new(1);
 
         /// <summary>
         ///     The gap in cell count before stopping to consider a Tile in a Group
@@ -49,8 +51,11 @@ namespace UnityEditor.Tilemaps
             }
         }
 
-        private int visitedLocationsSize => (m_Limit.x * 2 + 1) * (m_Limit.y * 2 + 1) * (m_Limit.z * 2 + 1);
-
+        private int GetVisitedLocationsSize(BoundsInt bounds)
+        {
+            return (m_Limit.x * 2 + bounds.size.x) * (m_Limit.y * 2 + bounds.size.y) * (m_Limit.z * 2 + bounds.size.z);
+        }
+        
         private void OnValidate()
         {
             if (m_Gap.x < 0)
@@ -65,8 +70,6 @@ namespace UnityEditor.Tilemaps
                 m_Limit.y = 0;
             if (m_Limit.z < 0)
                 m_Limit.z = 0;
-            if (m_VisitedLocations.Length != visitedLocationsSize)
-                m_VisitedLocations = new BitArray(visitedLocationsSize);
         }
 
         /// <summary>
@@ -80,7 +83,7 @@ namespace UnityEditor.Tilemaps
         public override void Pick(GridLayout grid, GameObject brushTarget, BoundsInt position, Vector3Int pickStart)
         {
             // Do standard pick if user has selected a custom bounds
-            if (position.size.x > 1 || position.size.y > 1 || position.size.z > 1)
+            if (Event.current.command || Event.current.control)
             {
                 base.Pick(grid, brushTarget, position, pickStart);
                 return;
@@ -92,38 +95,54 @@ namespace UnityEditor.Tilemaps
 
             Reset();
 
+            var visitedLocationsSize = GetVisitedLocationsSize(position);
+            if (m_VisitedLocations.Length != visitedLocationsSize)
+                m_VisitedLocations = new BitArray(visitedLocationsSize);
+
             // Determine size of picked locations based on gap and limit
             var limitOrigin = position.position - limit;
-            var limitSize = Vector3Int.one + limit * 2;
+            var limitSize = position.size + limit * 2;
             var limitBounds = new BoundsInt(limitOrigin, limitSize);
-            var pickBounds = new BoundsInt(position.position, Vector3Int.one);
-
+            var pickBounds = new BoundsInt(position.position, position.size);
+            
             m_VisitedLocations.SetAll(false);
-            m_VisitedLocations.Set(GetIndex(position.position, limitOrigin, limitSize), true);
             m_NextPosition.Clear();
-            m_NextPosition.Push(position.position);
-
-            while (m_NextPosition.Count > 0)
+            foreach (var pickPosition in position.allPositionsWithin)
             {
-                var next = m_NextPosition.Pop();
-                if (tilemap.GetTile(next) != null)
+                var pickIndex = GetIndex(pickPosition, limitOrigin, limitSize);
+                if (m_VisitedLocations.Get(pickIndex))
+                    continue;
+                    
+                m_VisitedLocations.Set(pickIndex, true);
+                m_NextPosition.Push(pickPosition);
+                
+                bool found = false;
+                while (m_NextPosition.Count > 0)
                 {
-                    Encapsulate(ref pickBounds, next);
-                    var gapBounds = new BoundsInt(next - gap, Vector3Int.one + gap * 2);
-                    foreach (var gapPosition in gapBounds.allPositionsWithin)
+                    var next = m_NextPosition.Pop();
+                    var hasTile = tilemap.HasTile(next);
+                    if (hasTile || (!found && m_ContinueIfEmpty))
                     {
-                        if (!limitBounds.Contains(gapPosition))
-                            continue;
-                        var index = GetIndex(gapPosition, limitOrigin, limitSize);
-                        if (!m_VisitedLocations.Get(index))
+                        if (!found && m_ContinueIfEmpty)
+                            found = hasTile;
+
+                        Encapsulate(ref pickBounds, next);
+                        var gapBounds = new BoundsInt(next - gap, Vector3Int.one + gap * 2);
+                        foreach (var gapPosition in gapBounds.allPositionsWithin)
                         {
-                            m_NextPosition.Push(gapPosition);
-                            m_VisitedLocations.Set(index, true);
+                            if (!limitBounds.Contains(gapPosition))
+                                continue;
+                            var index = GetIndex(gapPosition, limitOrigin, limitSize);
+                            if (!m_VisitedLocations.Get(index))
+                            {
+                                m_NextPosition.Push(gapPosition);
+                                m_VisitedLocations.Set(index, true);
+                            }
                         }
                     }
                 }
+                
             }
-
             UpdateSizeAndPivot(pickBounds.size, position.position - pickBounds.position);
 
             foreach (var pos in pickBounds.allPositionsWithin)
