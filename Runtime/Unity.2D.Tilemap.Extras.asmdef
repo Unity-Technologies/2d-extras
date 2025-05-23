@@ -1,4 +1,6 @@
 {
   "name": "Unity.2D.Tilemap.Extras",
-  "references":[ "GUID:3a9781db4804a9945b9883f3a7c46d45" ]
+  "references": [
+    "GUID:3a9781db4804a9945b9883f3a7c46d45"
+  ]
 }

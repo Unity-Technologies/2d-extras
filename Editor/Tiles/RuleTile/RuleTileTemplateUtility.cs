@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -44,7 +44,7 @@ namespace UnityEditor.Tilemaps
                         var sprite = asset as Sprite;
                         if (sprite == null)
                             continue;
-                    
+
                         var match = false;
                         if (matchExact)
                         {
@@ -53,16 +53,21 @@ namespace UnityEditor.Tilemaps
                         }
                         else
                         {
-                            match = Mathf.Approximately(spritePosition.x / template.textureWidth, sprite.rect.x / texture.width)
-                                    && Mathf.Approximately(spritePosition.y / template.textureHeight, sprite.rect.y / texture.height);
+                            match = Mathf.Approximately(spritePosition.x / template.textureWidth,
+                                        sprite.rect.x / texture.width)
+                                    && Mathf.Approximately(spritePosition.y / template.textureHeight,
+                                        sprite.rect.y / texture.height);
                         }
+
                         if (match)
                         {
-                            copyRule.m_Sprites[i] = sprite;;
+                            copyRule.m_Sprites[i] = sprite;
+                            ;
                             break;
                         }
-                    }                    
+                    }
                 }
+
                 ruleTile.m_TilingRules.Add(copyRule);
                 j++;
             }
@@ -94,11 +99,13 @@ namespace UnityEditor.Tilemaps
                     var position = sprite != null ? sprite.rect.position : Vector2.zero;
                     ruleData.spritePositions.Add(position);
                 }
+
                 template.rules.Add(ruleData);
             }
+
             return template;
         }
-        
+
         /// <summary>
         /// Creates and saves an RuleTileTemplate with a FilePanel.
         /// </summary>
@@ -106,7 +113,8 @@ namespace UnityEditor.Tilemaps
         public static void SaveTemplateToFile(RuleTile ruleTile)
         {
             var template = CreateTemplate(ruleTile);
-            var path = EditorUtility.SaveFilePanelInProject("Save RuleTile template", "New RuleTile Template", RuleTileTemplate.kExtension, "");
+            var path = EditorUtility.SaveFilePanelInProject("Save RuleTile template", "New RuleTile Template",
+                RuleTileTemplate.kExtension, "");
             if (!String.IsNullOrWhiteSpace(path))
                 AssetDatabase.CreateAsset(template, path);
         }

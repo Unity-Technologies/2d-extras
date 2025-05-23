@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -12,8 +12,8 @@ namespace UnityEditor.Tilemaps
         "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/RuleTile.html")]
     public class RuleTileTemplate : TileTemplate
     {
-        internal static string kExtension = "asset"; 
-        
+        internal static string kExtension = "asset";
+
         /// <summary>
         /// Positional and Rule Data for detecting RuleTile Sprites.
         /// </summary>
@@ -24,20 +24,23 @@ namespace UnityEditor.Tilemaps
             /// x, y positions on Texture2D.
             /// </summary>
             public List<Vector2> spritePositions;
+
             /// <summary>
             /// Tiling Rule for Rule at position.
             /// </summary>
             public RuleTile.TilingRule tilingRule;
         }
+
         /// <summary>
         /// List of Positional Data for detecting Sprites and Tiling Rules.
         /// </summary>
         public List<RuleData> rules;
-        
+
         /// <summary>
         /// Original Width of the Template
         /// </summary>
         public int textureWidth;
+
         /// <summary>
         /// Original Height of the Template
         /// </summary>
@@ -57,7 +60,7 @@ namespace UnityEditor.Tilemaps
         /// The Default Collider Type set when creating a new Rule.
         /// </summary>
         public Tile.ColliderType defaultColliderType = Tile.ColliderType.Sprite;
-        
+
         /// <summary>
         /// Creates a List of TileBase Assets with a RuleTile from Texture2D
         /// and Sprites with placement data onto a Tile Palette.
@@ -72,12 +75,12 @@ namespace UnityEditor.Tilemaps
         {
             if (texture2D == null)
                 return;
-            
+
             var ruleTile = ScriptableObject.CreateInstance<RuleTile>();
             ruleTile.name = $"{texture2D.name} RuleTile";
-            
+
             this.ApplyTemplateToRuleTile(texture2D, ruleTile);
-            
+
             var tileChangeData = new TileChangeData(
                 Vector3Int.zero
                 , ruleTile

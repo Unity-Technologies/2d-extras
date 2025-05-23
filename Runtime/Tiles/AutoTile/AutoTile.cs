@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace UnityEngine.Tilemaps
@@ -11,15 +11,14 @@ namespace UnityEngine.Tilemaps
     public class AutoTile : TileBase
     {
         internal static readonly float s_DefaultTextureScale = 1f;
-        
+
         [Serializable]
-        internal abstract class SerializedDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
+        internal abstract class SerializedDictionary<TKey, TValue> : Dictionary<TKey, TValue>,
+            ISerializationCallbackReceiver
         {
-            [SerializeField, HideInInspector]
-            private List<TKey> keyData = new List<TKey>();
-	
-            [SerializeField, HideInInspector]
-            private List<TValue> valueData = new List<TValue>();
+            [SerializeField, HideInInspector] private List<TKey> keyData = new List<TKey>();
+
+            [SerializeField, HideInInspector] private List<TValue> valueData = new List<TValue>();
 
             void ISerializationCallbackReceiver.OnAfterDeserialize()
             {
@@ -28,6 +27,7 @@ namespace UnityEngine.Tilemaps
                 {
                     this[keyData[i]] = valueData[i];
                 }
+
                 keyData.Clear();
                 valueData.Clear();
             }
@@ -48,12 +48,10 @@ namespace UnityEngine.Tilemaps
         [Serializable]
         internal class AutoTileData
         {
-            [SerializeField]
-            public List<Sprite> spriteList = new List<Sprite>();
-            [SerializeField]
-            public List<Texture2D> textureList = new List<Texture2D>();
+            [SerializeField] public List<Sprite> spriteList = new List<Sprite>();
+            [SerializeField] public List<Texture2D> textureList = new List<Texture2D>();
         }
-        
+
         [Serializable]
         internal class AutoTileDictionary : SerializedDictionary<uint, AutoTileData>
         {
@@ -68,6 +66,7 @@ namespace UnityEngine.Tilemaps
             /// Mask for 2x2 blocks
             /// </summary>
             Mask_2x2,
+
             /// <summary>
             /// Mask for 3x3 blocks
             /// </summary>
@@ -75,49 +74,49 @@ namespace UnityEngine.Tilemaps
         }
 
         #region Tile Data
+
         /// <summary>
         /// The Default Sprite set when creating a new Rule.
         /// </summary>
-        [SerializeField]
-        public Sprite m_DefaultSprite;
+        [SerializeField] public Sprite m_DefaultSprite;
+
         /// <summary>
         /// The Default GameObject set when creating a new Rule.
         /// </summary>
-        [SerializeField]
-        public GameObject m_DefaultGameObject;
+        [SerializeField] public GameObject m_DefaultGameObject;
+
         /// <summary>
         /// The Default Collider Type set when creating a new Rule.
         /// </summary>
-        [SerializeField]
-        public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
+        [SerializeField] public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
 
         /// <summary>
         /// Mask Type for the AutoTile
         /// </summary>
-        [SerializeField]
-        public AutoTileMaskType m_MaskType;
-        
-        [SerializeField, HideInInspector]
-        internal AutoTileDictionary m_AutoTileDictionary = new AutoTileDictionary();
+        [SerializeField] public AutoTileMaskType m_MaskType;
+
+        [SerializeField, HideInInspector] internal AutoTileDictionary m_AutoTileDictionary = new AutoTileDictionary();
+
         #endregion
 
         #region Editor Data
+
         /// <summary>
         /// List of Texture2Ds used by the AutoTile
         /// </summary>
-        [SerializeField]
-        public List<Texture2D> m_TextureList = new List<Texture2D>();
-        
+        [SerializeField] public List<Texture2D> m_TextureList = new List<Texture2D>();
+
         /// <summary>
         /// List of Texture Scale used by the AutoTile
         /// </summary>
-        [SerializeField]
-        public List<float> m_TextureScaleList = new List<float>();
-        
+        [SerializeField] public List<float> m_TextureScaleList = new List<float>();
+
         #endregion
-        
+
         #region Runtime Data
+
         private readonly TileBase[] m_CachedTiles = new TileBase[9];
+
         #endregion
 
         /// <summary>
@@ -132,10 +131,10 @@ namespace UnityEngine.Tilemaps
                 for (var x = -1; x <= 1; ++x)
                 {
                     tilemap.RefreshTile(new Vector3Int(position.x + x, position.y + y, position.z));
-                }   
+                }
             }
         }
-        
+
         /// <summary>
         /// Retrieves any tile rendering data from the scripted tile.
         /// </summary>
@@ -160,10 +159,10 @@ namespace UnityEngine.Tilemaps
                 {
                     var tilePosition = new Vector3Int(position.x + x, position.y + y, position.z);
                     m_CachedTiles[index] = itilemap.GetTile(tilePosition);
-                    if (m_CachedTiles[index] == this) 
-                        mask |= (uint) 1 << index;
+                    if (m_CachedTiles[index] == this)
+                        mask |= (uint)1 << index;
                     index++;
-                }   
+                }
             }
 
             mask = m_MaskType switch
@@ -186,12 +185,13 @@ namespace UnityEngine.Tilemaps
             {
                 throw new ArgumentOutOfRangeException($"Mask {mask} is not valid for {m_MaskType}");
             }
-            
+
             if (!m_AutoTileDictionary.TryGetValue(mask, out var autoTileData))
             {
                 autoTileData = new AutoTileData();
                 m_AutoTileDictionary.Add(mask, autoTileData);
             }
+
             var isInList = false;
             foreach (var spriteData in autoTileData.spriteList)
             {
@@ -205,7 +205,6 @@ namespace UnityEngine.Tilemaps
                 autoTileData.spriteList.Add(sprite);
                 autoTileData.textureList.Add(texture);
             }
-                
         }
 
         internal void RemoveSprite(Sprite sprite, uint mask)
@@ -237,6 +236,7 @@ namespace UnityEngine.Tilemaps
                     }
                 }
             }
+
             foreach (var pair in m_AutoTileDictionary)
             {
                 var autoTileData = pair.Value;
@@ -255,15 +255,15 @@ namespace UnityEngine.Tilemaps
                     }
                 }
             }
-            
+
             if (m_TextureList.Count != m_TextureScaleList.Count)
             {
                 if (m_TextureList.Count > m_TextureScaleList.Count)
                     while (m_TextureList.Count - m_TextureScaleList.Count > 0)
-                        m_TextureScaleList.Add(s_DefaultTextureScale);    
+                        m_TextureScaleList.Add(s_DefaultTextureScale);
                 else if (m_TextureList.Count < m_TextureScaleList.Count)
                     while (m_TextureScaleList.Count - m_TextureList.Count > 0)
-                        m_TextureScaleList.RemoveAt(m_TextureScaleList.Count-1);
+                        m_TextureScaleList.RemoveAt(m_TextureScaleList.Count - 1);
             }
         }
 
@@ -301,7 +301,7 @@ namespace UnityEngine.Tilemaps
                 case 1 + 16 + 32 + 256:
                 case 4 + 16 + 32 + 64:
                 case 16 + 32 + 64 + 256:
-                case 1 + 16 + 32 + 64 + 256:    
+                case 1 + 16 + 32 + 64 + 256:
                 case 1 + 4 + 16 + 32 + 64:
                 case 1 + 4 + 16 + 32 + 256:
                 case 4 + 16 + 32 + 64 + 256:
@@ -333,7 +333,7 @@ namespace UnityEngine.Tilemaps
                 // Top
                 case 1 + 2 + 16:
                 case 2 + 4 + 16:
-                case 1 + 2 + 4 + 16: 
+                case 1 + 2 + 4 + 16:
                 case 2 + 16 + 64:
                 case 2 + 16 + 256:
                 case 2 + 16 + 64 + 256:
@@ -381,7 +381,7 @@ namespace UnityEngine.Tilemaps
                 case 1 + 2 + 16 + 128 + 256:
                 case 2 + 4 + 16 + 64 + 128:
                 case 2 + 4 + 16 + 128 + 256:
-                case 1 + 2 + 16 + 64 + 128 + 256:    
+                case 1 + 2 + 16 + 64 + 128 + 256:
                 case 1 + 2 + 4 + 64 + 128 + 256:
                 case 1 + 2 + 4 + 16 + 128 + 256:
                 case 1 + 2 + 4 + 16 + 64 + 128:
@@ -389,7 +389,7 @@ namespace UnityEngine.Tilemaps
                 case 1 + 2 + 4 + 16 + 64 + 128 + 256:
                 {
                     mask = 2 + 16 + 128;
-                    break;           
+                    break;
                 }
                 // Horizontal Straight
                 case 1 + 8 + 16 + 32:
@@ -399,21 +399,21 @@ namespace UnityEngine.Tilemaps
                 case 8 + 16 + 32 + 256:
                 case 4 + 8 + 16 + 32 + 64:
                 case 4 + 8 + 16 + 32 + 256:
-                case 1 + 4 + 8 + 16 + 32:    
+                case 1 + 4 + 8 + 16 + 32:
                 case 1 + 8 + 16 + 32 + 256:
-                case 8 + 16 + 32 + 64 + 256:    
+                case 8 + 16 + 32 + 64 + 256:
                 case 1 + 4 + 8 + 16 + 32 + 64:
                 case 1 + 4 + 8 + 16 + 32 + 256:
-                case 1 + 8 + 16 + 32 + 64 + 256:    
-                case 4 + 8 + 16 + 32 + 64 + 256:    
-                case 1 + 4 + 8 + 16 + 32 + 64 + 256:  
+                case 1 + 8 + 16 + 32 + 64 + 256:
+                case 4 + 8 + 16 + 32 + 64 + 256:
+                case 1 + 4 + 8 + 16 + 32 + 64 + 256:
                 {
                     mask = 8 + 16 + 32;
-                    break;           
+                    break;
                 }
                 // Top Left Corner
                 case 1 + 2 + 4 + 16 + 32:
-                case 2 + 4 + 16 + 32 + 256: 
+                case 2 + 4 + 16 + 32 + 256:
                 case 2 + 4 + 16 + 32 + 64:
                 case 1 + 2 + 4 + 16 + 32 + 256:
                 case 1 + 2 + 4 + 16 + 32 + 64:
@@ -421,13 +421,13 @@ namespace UnityEngine.Tilemaps
                 case 1 + 2 + 4 + 16 + 32 + 64 + 256:
                 {
                     mask = 2 + 4 + 16 + 32;
-                    break;           
+                    break;
                 }
                 // Bottom Left Corner
                 case 1 + 16 + 32 + 128 + 256:
                 case 4 + 16 + 32 + 128 + 256:
                 case 16 + 32 + 64 + 128 + 256:
-                case 4 + 16 + 32 + 64 + 128 + 256: 
+                case 4 + 16 + 32 + 64 + 128 + 256:
                 case 1 + 4 + 16 + 32 + 128 + 256:
                 case 1 + 16 + 32 + 64 + 128 + 256:
                 case 1 + 4 + 16 + 32 + 64 + 128 + 256:
@@ -445,7 +445,7 @@ namespace UnityEngine.Tilemaps
                 case 1 + 2 + 4 + 8 + 16 + 64 + 256:
                 {
                     mask = 1 + 2 + 8 + 16;
-                    break;           
+                    break;
                 }
                 // Bottom Right Corner
                 case 1 + 8 + 16 + 64 + 128:
@@ -453,11 +453,11 @@ namespace UnityEngine.Tilemaps
                 case 4 + 8 + 16 + 64 + 128:
                 case 1 + 4 + 8 + 16 + 64 + 128:
                 case 1 + 8 + 16 + 64 + 128 + 256:
-                case 4 + 8 + 16 + 64 + 128 + 256:    
+                case 4 + 8 + 16 + 64 + 128 + 256:
                 case 1 + 4 + 8 + 16 + 64 + 128 + 256:
                 {
                     mask = 8 + 16 + 64 + 128;
-                    break;           
+                    break;
                 }
                 // Full Top
                 case 1 + 2 + 4 + 8 + 16 + 32 + 64:
@@ -532,7 +532,7 @@ namespace UnityEngine.Tilemaps
                 case 4 + 8 + 16 + 128:
                 case 8 + 16 + 128 + 256:
                 case 1 + 8 + 16 + 128 + 256:
-                case 1 + 4 + 8 + 16 + 128:    
+                case 1 + 4 + 8 + 16 + 128:
                 case 4 + 8 + 16 + 128 + 256:
                 case 1 + 4 + 8 + 16 + 128 + 256:
                 {

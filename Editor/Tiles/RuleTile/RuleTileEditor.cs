@@ -914,6 +914,7 @@ namespace UnityEditor
                     newLength = Math.Clamp(newLength, 0, 1000);
                     Array.Resize(ref tilingRule.m_Sprites, Math.Max(newLength, 1));
                 }
+
                 y += k_SingleLineHeight;
 
                 for (var i = 0; i < tilingRule.m_Sprites.Length; i++)
@@ -1208,7 +1209,7 @@ namespace UnityEditor
                 Debug.LogError("Unable to paste rules from system copy buffer");
             }
         }
-        
+
         /// <summary>
         ///     Create a RuleTile template from this RuleTile
         /// </summary>
@@ -1287,10 +1288,7 @@ namespace UnityEditor
                 alignment = TextAnchor.MiddleLeft,
                 fontStyle = FontStyle.Bold,
                 fontSize = 10,
-                normal = new GUIStyleState
-                {
-                    textColor = Color.black
-                }
+                normal = new GUIStyleState { textColor = Color.black }
             };
 
             public static readonly GUIStyle extendNeighborsDarkStyle = new()
@@ -1298,10 +1296,7 @@ namespace UnityEditor
                 alignment = TextAnchor.MiddleLeft,
                 fontStyle = FontStyle.Bold,
                 fontSize = 10,
-                normal = new GUIStyleState
-                {
-                    textColor = Color.white
-                }
+                normal = new GUIStyleState { textColor = Color.white }
             };
         }
 

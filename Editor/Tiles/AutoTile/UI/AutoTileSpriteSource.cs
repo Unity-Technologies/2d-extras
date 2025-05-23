@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UIElements;
@@ -12,7 +12,7 @@ namespace UnityEditor.Tilemaps
             public bool isPointerDown;
             public bool toggleState;
         }
-        
+
         private readonly Sprite m_Sprite;
         private readonly Texture2D m_SourceTexture;
         private readonly ClickState m_ClickState;
@@ -20,7 +20,7 @@ namespace UnityEditor.Tilemaps
 
         public uint mask;
         public Action<Sprite, Texture2D, uint, uint> maskChanged;
-        
+
         public AutoTileSpriteSource(Sprite spriteAsset
             , Texture2D sourceTexture
             , ClickState clickState
@@ -39,8 +39,9 @@ namespace UnityEditor.Tilemaps
                     m_Range = 3;
                     break;
             }
+
             AddToClassList("ImageBase");
-            
+
             style.position = Position.Absolute;
             style.flexShrink = 0;
             ChangeScale(1.0f);
@@ -57,11 +58,12 @@ namespace UnityEditor.Tilemaps
                     region.name = "Region";
                     region.AddToClassList("RegionHover");
                     region.userData = index++;
-                    region.RegisterCallback<PointerEnterEvent>((evt) => PointerEnterEvent(evt, region) );
+                    region.RegisterCallback<PointerEnterEvent>((evt) => PointerEnterEvent(evt, region));
                     region.RegisterCallback<PointerLeaveEvent>((evt) => PointerLeaveEvent(region));
                     region.RegisterCallback<PointerDownEvent>((evt) => PointerDownEvent(region));
                     horizontal.Add(region);
-                }   
+                }
+
                 hierarchy.Insert(0, horizontal);
             }
         }
@@ -73,7 +75,7 @@ namespace UnityEditor.Tilemaps
             style.width = newScale * (m_Sprite.rect.width);
             style.height = newScale * (m_Sprite.rect.height);
         }
-        
+
         private void PointerEnterEvent(PointerEnterEvent evt, VisualElement element)
         {
             element.AddToClassList("PointerHover");
@@ -87,7 +89,7 @@ namespace UnityEditor.Tilemaps
         {
             element.RemoveFromClassList("PointerHover");
         }
-        
+
         private void PointerDownEvent(VisualElement element)
         {
             ToggleElement(element);
@@ -97,15 +99,15 @@ namespace UnityEditor.Tilemaps
 
         private void ToggleElement(VisualElement element)
         {
-            var index = (int) element.userData;
+            var index = (int)element.userData;
             element.ToggleInClassList("Clicked");
             var clicked = element.ClassListContains("Clicked");
             UpdateMaskFromBit(index, clicked);
         }
-        
+
         private void SetElement(VisualElement element, bool toggleState)
         {
-            var index = (int) element.userData;
+            var index = (int)element.userData;
             element.EnableInClassList("Clicked", toggleState);
             UpdateMaskFromBit(index, toggleState);
         }
@@ -113,7 +115,7 @@ namespace UnityEditor.Tilemaps
         private void UpdateMaskFromBit(int bit, bool state)
         {
             var oldMask = mask;
-            var maskIndex = (uint) 1 << bit;
+            var maskIndex = (uint)1 << bit;
             if (state)
                 mask |= maskIndex;
             else
@@ -131,11 +133,11 @@ namespace UnityEditor.Tilemaps
                 {
                     var index = (int)visualElement.userData;
                     var toggled = ((mask & (uint)(1 << index)) > 0);
-                    visualElement.EnableInClassList("Clicked", toggled);    
+                    visualElement.EnableInClassList("Clicked", toggled);
                 }
             }
         }
-        
+
         public void SetMask(uint newMask)
         {
             var oldMask = mask;
@@ -146,9 +148,10 @@ namespace UnityEditor.Tilemaps
                 {
                     var index = (int)visualElement.userData;
                     var toggled = ((mask & (uint)(1 << index)) > 0);
-                    visualElement.EnableInClassList("Clicked", toggled);    
+                    visualElement.EnableInClassList("Clicked", toggled);
                 }
             }
+
             if (maskChanged != null)
                 maskChanged.Invoke(m_Sprite, m_SourceTexture, oldMask, mask);
         }

@@ -4,7 +4,7 @@ __Contribution by:__  MahdiMahzuni
 
 An Animated Tile runs through and displays a list of Sprites in sequence to create a frame-by-frame animation.
 
-![](images/AnimatedTileEditor.png)<br/>Animated Tile editor window
+![Animated Tile editor window.](images/AnimatedTileEditor.png)<br/>Animated Tile editor window
 
 ### Properties
 
@@ -28,4 +28,4 @@ Create the Animated Tile by selecting and ordering the Sprites that makes up its
 editor, then paint the Animated Tile with
 the [Tile Palette tools](https://docs.unity3d.com/Manual/Tilemap-Painting.html).
 
-![](images/AnimatedTile.png)<br/>Game view, painted with the [Group Brush](GroupBrush.md).
+![Example: Game view, painted with the Group Brush.](images/AnimatedTile.png)<br/>Game view, painted with the [Group Brush](GroupBrush.md).

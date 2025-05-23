@@ -4,6 +4,13 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [4.3.1] - 2025-05-13
+
+### Fixed
+
+- [AutoTileEditor] Only clear entries for current Texture when loading an AutoTileTemplate for the selected Texture
+- [AutoTileEditor] Improve duplication checks for entries across multiple Textures
+
 ## [4.3.0] - 2025-01-17
 
 ### Fixed
@@ -20,7 +27,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 
-- [AutoTile] Fix AutoTile Create Asset menu item 
+- [AutoTile] Fix AutoTile Create Asset menu item
 
 ## [4.2.0] - 2024-12-05
 

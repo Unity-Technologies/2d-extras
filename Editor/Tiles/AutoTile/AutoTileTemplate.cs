@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEditor.Tilemaps;
 
@@ -11,8 +11,8 @@ namespace UnityEngine.Tilemaps
         "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/AutoTile.html")]
     public class AutoTileTemplate : TileTemplate
     {
-        internal static string kExtension = "asset"; 
-        
+        internal static string kExtension = "asset";
+
         /// <summary>
         /// Positional Data for detecting AutoTile Sprites
         /// </summary>
@@ -23,33 +23,38 @@ namespace UnityEngine.Tilemaps
             /// x position on Texture2D.
             /// </summary>
             public float x;
+
             /// <summary>
             /// y position on Texture2D.
             /// </summary>
             public float y;
+
             /// <summary>
             /// Mask Rule for Sprite at position.
             /// </summary>
             public uint mask;
         }
-        
+
         /// <summary>
         /// Original Width of the Template
         /// </summary>
         public int width;
+
         /// <summary>
         /// Original Height of the Template
         /// </summary>
         public int height;
+
         /// <summary>
         /// Mask Type for generated AutoTIle
         /// </summary>
         public AutoTile.AutoTileMaskType maskType;
+
         /// <summary>
         /// Positional Data for detecting AutoTile Sprites 
         /// </summary>
         public List<SpriteData> sprites;
-        
+
         /// <summary>
         /// Creates a List of TileBase Assets with an AutoTile from Texture2D
         /// and Sprites with placement data onto a Tile Palette.
@@ -64,7 +69,7 @@ namespace UnityEngine.Tilemaps
         {
             if (texture2D == null)
                 return;
-            
+
             var autoTile = ScriptableObject.CreateInstance<AutoTile>();
             autoTile.name = $"{texture2D.name} AutoTile";
             this.ApplyTemplateToAutoTile(texture2D, sprites, autoTile);

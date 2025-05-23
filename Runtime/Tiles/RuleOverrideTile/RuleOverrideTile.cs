@@ -67,11 +67,7 @@ namespace UnityEngine.Tilemaps
                             return;
                         }
 
-                    m_Sprites.Add(new TileSpritePair
-                    {
-                        m_OriginalSprite = originalSprite,
-                        m_OverrideSprite = value
-                    });
+                    m_Sprites.Add(new TileSpritePair { m_OriginalSprite = originalSprite, m_OverrideSprite = value });
                 }
             }
         }
@@ -108,8 +104,7 @@ namespace UnityEngine.Tilemaps
 
                     m_GameObjects.Add(new TileGameObjectPair
                     {
-                        m_OriginalGameObject = originalGameObject,
-                        m_OverrideGameObject = value
+                        m_OriginalGameObject = originalGameObject, m_OverrideGameObject = value
                     });
                 }
             }

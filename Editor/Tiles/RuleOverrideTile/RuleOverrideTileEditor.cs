@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -387,7 +387,7 @@ namespace UnityEditor
             if (ruleTileEditor && ruleTileEditor.m_PreviewTilemaps != null)
                 foreach (var tilemap in ruleTileEditor.m_PreviewTilemaps)
                     tilemap.RefreshAllTiles();
-            }
+        }
 
         /// <summary>
         /// Renders a static preview Texture2D for a RuleOverrideTile asset

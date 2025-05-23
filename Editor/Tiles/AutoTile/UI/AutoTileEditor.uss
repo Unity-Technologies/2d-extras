@@ -1,11 +1,9 @@
-﻿.ImageBase
-{
+.ImageBase {
     border-width: 2px;
     border-color: lightslategrey;
 }
 
-.ImageBase.IsDuplicate
-{
+.ImageBase.IsDuplicate {
     border-width: 3px;
     border-color: firebrick;
 }

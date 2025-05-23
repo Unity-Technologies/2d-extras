@@ -1,4 +1,4 @@
-﻿using UnityEditor.UIElements;
+using UnityEditor.UIElements;
 using UnityEngine.Tilemaps;
 using UnityEngine.UIElements;
 

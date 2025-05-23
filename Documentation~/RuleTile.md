@@ -14,7 +14,7 @@ Tiles all possess the same properties.
 
 ## Properties
 
-![](images/RuleTileEditor.png)<br/>The Rule Tile editor of a Terrain Tile.
+![The Rule Tile editor of a Terrain Tile.](images/RuleTileEditor.png)<br/>The Rule Tile editor of a Terrain Tile.
 
 | Property               | Function                                                |
 |------------------------|---------------------------------------------------------|
@@ -24,7 +24,7 @@ Tiles all possess the same properties.
 
 ### Tiling Rules
 
-![](images/RuleTileRule.png)<br/>Tiling Rules properties
+![Tiling Rules properties.](images/RuleTileRule.png)<br/>Tiling Rules properties
 
 | Property       | Function                                                                               |
 |----------------|----------------------------------------------------------------------------------------|
@@ -71,12 +71,13 @@ have a Rule selected, clicking on the + button will allow you to choose between 
 selected Rule. The newly created Rule will be placed after the current selected Rule. Select and hold the top left
 corner of each row to drag them up or down to change the order of the Rules in the list.
 
-![](images/RuleTileEditor.png)<br/>Rule Tile Editor
+![Rule Tile Editor.](images/RuleTileEditor.png)<br/>Rule Tile Editor
 
 When you add a new Rule, the Rule editor displays the following: the list of Rule properties, a 3x3 box that visualizes
 the behavior of the set Rules, and a Sprite selector that displays a preview of the selected Sprite.
 
-![](images/RuleTileRule.png)
+![The list of Rule properties, a 3x3 box that visualizes
+the behavior of the set Rules, and a Sprite selector that displays a preview of the selected Sprite.](images/RuleTileRule.png)
 
 The 3x3 box represents the neighbors a Tile can have, where the center represents the Tile itself, and the eight
 bordering cells are its neighboring Tiles in their relative positions to the Tile. Each of the neighboring cells can be
@@ -95,42 +96,42 @@ considered matched and the rest of the Rule properties are applied.
 When the Rule is set to Fixed, the Rule will only match exactly the conditions set for its neighbors. The example below
 will only match if there are the same Rule Tiles to the left and right of it.
 
-![Rule Tile with Fixed Rule](images/RuleTileRuleFixed.png)
+![Rule Tile with Fixed Rule.](images/RuleTileRuleFixed.png)
 
 When the Rule is set to ‘Rotated’, the 3x3 box will be rotated 90 degrees each time the Rule fails to match and it will
 try to match again with this rotated 3x3 box. If the Rule now matches, the contents of this Rule will be applied as well
 as the rotation required to match the Rule. Use this if you want the Rule to match for the four 90 degree rotations if
 rotation is possible.
 
-![Rule Tile with Rotated Rule](images/RuleTileRuleRotated.png)
+![Rule Tile with Rotated Rule.](images/RuleTileRuleRotated.png)
 
 When the Rule is set to Mirror X, Mirror Y or Mirror XY, the 3x3 box will be mirrored in that axis each time the Rule
 fails to match and it will try to match again with this mirrored 3x3 box. If the Rule now matches, the contents of this
 Rule will be applied as well as the mirroring required to match the Rule. Use this if you want the Rule to match for the
 mirrored locations if mirroring is possible.
 
-![Rule Tile with Mirror XY Rule](images/RuleTileRuleMirror.png)
+![Rule Tile with Mirror XY Rule.](images/RuleTileRuleMirror.png)
 
 If you want the Rule Tile to have a Random output, you can set the Output to Random. This will allow you to specify a
 number of input Sprites to randomize from. The rotation of the Sprites can be randomized as well by changing the _
 _Shuffle__ property.
 
-![Rule Tile with Random Output](images/RuleTileOutputRandom.png)
+![Rule Tile with Random Output.](images/RuleTileOutputRandom.png)
 
 If you want the Rule Tile to output a Sprite Animation, you can set the Output to Animation. This will allow you to
 specify a number of Sprites to animate sequentially. The speed of the Animation can be randomized as well by changing
 the __Speed__ property.
 
-![Rule Tile with Animation Output](images/RuleTileOutputAnimation.png)
+![Rule Tile with Animation Output.](images/RuleTileOutputAnimation.png)
 
 When <b>Extend Neighbors</b> is enabled, the 3x3 box can be extended to allow for more specific neighbor matching. The
 Transform rule matching (eg. Rotated, Mirror) will apply for the extended neighbors set.
 
-![Rule Tile with Animation Output](images/RuleTileRuleExtendNeighbor.png)
+![Rule Tile with Animation Output.](images/RuleTileRuleExtendNeighbor.png)
 
 Paint with the Rule Tile in the same way as other Tiles by using the Tile Palette tools.
 
-![Scene View with Rule Tile](images/RuleTile.png)
+![Scene View with Rule Tile.](images/RuleTile.png)
 
 For optimization, please set the most common Rule at the top of the list of Rules and follow with next most common Rule
 and so on. When matching Rules during the placement of the Tile, the Rule Tile algorithm will check the first Rule

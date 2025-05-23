@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
@@ -31,6 +31,7 @@ namespace UnityEditor.Tilemaps
             {
                 Debug.LogWarningFormat("{0} does not contain a valid AutoTileTemplate.", relativePath);
             }
+
             return template;
         }
 
@@ -72,8 +73,10 @@ namespace UnityEditor.Tilemaps
                     else
                     {
                         match = Mathf.Approximately(templateSprite.x / template.width, sprite.rect.x / texture.width)
-                                && Mathf.Approximately(templateSprite.y / template.height, sprite.rect.y / texture.height);
+                                && Mathf.Approximately(templateSprite.y / template.height,
+                                    sprite.rect.y / texture.height);
                     }
+
                     if (match)
                     {
                         autoTile.AddSprite(sprite, texture, templateSprite.mask);
@@ -103,7 +106,7 @@ namespace UnityEditor.Tilemaps
             template.sprites = spriteData;
             return template;
         }
-        
+
         /// <summary>
         /// Creates and saves an AutoTileTemplate with a FilePanel.
         /// </summary>
@@ -117,7 +120,8 @@ namespace UnityEditor.Tilemaps
             , List<AutoTileTemplate.SpriteData> spriteData)
         {
             var template = CreateTemplate(imageWidth, imageHeight, maskType, spriteData);
-            var path = EditorUtility.SaveFilePanelInProject("Save AutoTile template", "New AutoTile Template", AutoTileTemplate.kExtension, "");
+            var path = EditorUtility.SaveFilePanelInProject("Save AutoTile template", "New AutoTile Template",
+                AutoTileTemplate.kExtension, "");
             if (!String.IsNullOrWhiteSpace(path))
                 AssetDatabase.CreateAsset(template, path);
         }

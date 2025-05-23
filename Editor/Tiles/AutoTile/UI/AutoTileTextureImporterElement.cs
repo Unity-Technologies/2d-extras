@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
@@ -11,10 +11,7 @@ namespace UnityEditor.Tilemaps
 
         public AutoTileTextureImporterElement()
         {
-            var textureField = new PropertyField
-            {
-                bindingPath = "m_Texture"
-            };
+            var textureField = new PropertyField { bindingPath = "m_Texture" };
             Add(textureField);
 
             var applyRevertHe = new VisualElement();

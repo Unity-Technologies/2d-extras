@@ -39,7 +39,7 @@ namespace UnityEditor.Tilemaps
         {
             ProjectWindowUtil.CreateAsset(ScriptableObject.CreateInstance<AutoTile>(), "New Auto Tile.asset");
         }
-        
+
         [MenuItem("Assets/Create/2D/Tiles/Hexagonal Rule Tile", priority = (int)ETilesMenuItemOrder.HexagonalRuleTile)]
         private static void CreateHexagonalRuleTile()
         {

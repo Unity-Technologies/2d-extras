@@ -6,7 +6,7 @@ new Brushes that suit different uses or scenarios. To find these additional Brus
 __Window > 2D > Tile Palette__) and open the Brush drop-down menu near the bottom of the editor. Select from the
 available Brush options for different effects.
 
-![](images/BrushDropdown.png)
+![Brush drop-down menu.](images/BrushDropdown.png)
 
 The source code for these scripts can be found in the
 repository [2d-extras](https://github.com/Unity-Technologies/2d-extras "2d-extras: Extras for 2d features"), and
@@ -49,7 +49,8 @@ the following additional Tile types that are included with this package.
   given [Rule Tile](RuleTile.md) to provide different behaviour without changing the original Rules.
 - [Advanced Rule Override Tile](AdvancedRuleOverrideTile.md): This Tile can override a subset of Rules for a
   given [Rule Tile](RuleTile.md) to provide specialized behavior, while keeping the rest of the original Rules intact.
-- [Auto Tile](AutoTile.md): This Tile match themselves based on the mask set on Textures to generate the AutoTile ruleset.
+- [Auto Tile](AutoTile.md): This Tile match themselves based on the mask set on Textures to generate the AutoTile
+  ruleset.
 
 ## Other
 
