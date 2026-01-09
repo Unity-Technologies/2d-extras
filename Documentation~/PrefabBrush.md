@@ -26,12 +26,12 @@ Brushes which can quickly place an assortment of GameObjects onto structured loc
 <td colspan="2">Set the number of and selection of Prefabs to paint from.</td>
 </tr>
 <tr>
-<td></td>
+<td>N/A</td>
 <td><strong>Size</strong></td>
 <td>Set the number of Prefabs that the Brush selects from.</td>
 </tr>
 <tr>
-<td></td>
+<td>N/A</td>
 <td><strong>Element *</strong></td>
 <td>Set one of the Prefabs to select from for each entry. The number of <b>Element</b> entries matches the value set in <b>Size</b>.</td>
 </tr>

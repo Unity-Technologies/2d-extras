@@ -351,7 +351,6 @@ namespace UnityEditor
 
         private void OnAddElement(object obj)
         {
-            var list = obj as ReorderableList;
             var rule = new RuleTile.TilingRule();
             rule.m_Output = RuleTile.TilingRuleOutput.OutputSprite.Single;
             rule.m_Sprites[0] = tile.m_DefaultSprite;
@@ -361,18 +360,7 @@ namespace UnityEditor
             var count = m_TilingRules.arraySize;
             ResizeRuleTileList(count + 1);
 
-            if (list.index == -1 || list.index >= list.count)
-            {
-                tile.m_TilingRules[count] = rule;
-            }
-            else
-            {
-                tile.m_TilingRules.Insert(list.index + 1, rule);
-                tile.m_TilingRules.RemoveAt(count + 1);
-                if (list.IsSelected(list.index))
-                    list.index += 1;
-                tile.m_TilingRules[list.index] = rule;
-            }
+            tile.m_TilingRules[count] = rule;
 
             UpdateTilingRuleIds();
         }

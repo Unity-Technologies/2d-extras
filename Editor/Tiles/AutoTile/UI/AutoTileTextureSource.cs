@@ -29,12 +29,17 @@ namespace UnityEditor.Tilemaps
 
             m_EditStopped = editStopped;
 
-            var assetsAtPath = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(texture2D));
+            var assetPath = AssetDatabase.GetAssetPath(texture2D);
+            var spriteCheck = assetPath.Equals("Resources/unity_builtin_extra");
+            var assetsAtPath = AssetDatabase.LoadAllAssetsAtPath(assetPath);
             m_ClickState = new AutoTileSpriteSource.ClickState();
             foreach (var assetAtPath in assetsAtPath)
             {
                 var spriteAsset = assetAtPath as Sprite;
                 if (spriteAsset == null)
+                    continue;
+
+                if (spriteCheck && spriteAsset.texture != texture2D)
                     continue;
 
                 var spriteImage = new AutoTileSpriteSource(spriteAsset, texture2D, m_ClickState, maskType);

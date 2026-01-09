@@ -4,10 +4,28 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## [4.3.1] - 2025-05-13
+## [5.0.2] - 2025-11-05
+### Added
+- [AutoTile] Add Has Physics Shape property if Collider Type is set to Sprite. AutoTile will set Collider Type to Sprite if the Sprite has physics shape and set Collider Type to None if the Sprite has no physics shape.
 
 ### Fixed
+- [AutoTileEditor] Fix minimum texture scale size when texture is smaller than 256 pixels
+- [AutoTileEditor] Fix texture display when texture is removed from AutoTile
+- [RuleTileEditor] Fix exception thrown when a Rule is added to an empty RuleTile, removed and added again.
 
+## [5.0.1] - 2025-06-12
+### Fixed
+- [AutoTileEditor] Fix exception thrown when texture count is reduced
+
+## [5.0.0] - 2025-05-16
+
+### Added
+- [AutoTile] Add Random property. AutoTile randomly picks a Sprite if multiple Sprites share the same mask. Otherwise, uses the first Sprite set with the mask.
+
+### Changed
+- Update minimum Unity version.
+
+### Fixed
 - [AutoTileEditor] Only clear entries for current Texture when loading an AutoTileTemplate for the selected Texture
 - [AutoTileEditor] Improve duplication checks for entries across multiple Textures
 

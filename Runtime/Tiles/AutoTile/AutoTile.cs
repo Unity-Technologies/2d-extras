@@ -95,6 +95,20 @@ namespace UnityEngine.Tilemaps
         /// </summary>
         [SerializeField] public AutoTileMaskType m_MaskType;
 
+        [SerializeField] private bool m_Random;
+
+        [SerializeField] private bool m_PhysicsShapeCheck;
+
+        /// <summary>
+        /// Use random Sprite for mask
+        /// </summary>
+        public bool random { get { return m_Random; } set { m_Random = value; } }
+
+        /// <summary>
+        /// Checks Physics Shape of Sprite before determining Collider Type
+        /// </summary>
+        internal bool physicsShapeCheck { get { return m_PhysicsShapeCheck; } set { m_PhysicsShapeCheck = value; } }
+
         [SerializeField, HideInInspector] internal AutoTileDictionary m_AutoTileDictionary = new AutoTileDictionary();
 
         #endregion
@@ -174,8 +188,33 @@ namespace UnityEngine.Tilemaps
 
             if (m_AutoTileDictionary.TryGetValue(mask, out var autoTileData))
             {
-                tileData.sprite = autoTileData.spriteList.Count > 0 ? autoTileData.spriteList[0] : m_DefaultSprite;
+                var sprite = m_DefaultSprite;
+                if (autoTileData.spriteList.Count > 0)
+                {
+                    if (m_Random)
+                    {
+                        long hash = position.x;
+                        hash = hash + 0xabcd1234 + (hash << 15);
+                        hash = (hash + 0x0987efab) ^ (hash >> 11);
+                        hash ^= position.y;
+                        hash = hash + 0x46ac12fd + (hash << 7);
+                        hash = (hash + 0xbe9730af) ^ (hash << 11);
+                        var oldState = Random.state;
+                        Random.InitState((int)hash);
+                        sprite = autoTileData.spriteList[Random.Range(0, autoTileData.spriteList.Count)];
+                        Random.state = oldState;
+                    }
+                    else
+                    {
+                        sprite = autoTileData.spriteList[0];
+                    }
+                }
+                tileData.sprite = sprite;
             }
+            if (physicsShapeCheck && tileData.sprite != null && tileData.colliderType == Tile.ColliderType.Sprite)
+                tileData.colliderType = tileData.sprite.GetPhysicsShapeCount() > 0
+                    ? Tile.ColliderType.Sprite
+                    : Tile.ColliderType.None;
         }
 
         internal void AddSprite(Sprite sprite, Texture2D texture, uint mask)

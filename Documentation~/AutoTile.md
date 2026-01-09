@@ -5,13 +5,15 @@ available for the AutoTile, the 2x2 type for 16 Sprites and the 3x3 type for 47 
 
 ### Properties
 
-| Property               | Function                                                                                                                                                      |
-|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| __Default Sprite__     | The Sprite set when there are no matches.                                                                                                                     |
-| __Default GameObject__ | The GameObject instantiated when set on the Tilemap.                                                                                                          |
-| __Tile Collider__      | The Collider Type used for generating colliders.                                                                                                              |
-| Mask Type              | Mask Type for setting Rules for the AutoTile. Use 2x2 for a 16 Sprite ruleset and 3x3 for a 47 Sprite ruleset                                                 |
-| Used Textures          | Sprites will be used from the selected Textures to make up the ruleset. You will be able to set the appropriate Sprites by painting the masks on the Sprites. |
+| Property               | Function                                                                                                                                                                 |
+|------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| __Default Sprite__     | The Sprite set when there are no matches.                                                                                                                                |
+| __Default GameObject__ | The GameObject instantiated when set on the Tilemap.                                                                                                                     |
+| __Tile Collider__      | The Collider Type used for generating colliders.                                                                                                                         |
+| __Has Physics Shape__  | Checks whether the Sprite used has a physics shape. If not, the Collider Type for the Tilemap position will be set to None. Valid if the Tile Collider is set to Sprite. |
+| Mask Type              | Mask Type for setting Rules for the AutoTile. Use 2x2 for a 16 Sprite ruleset and 3x3 for a 47 Sprite ruleset.                                                           |
+| Random                 | Randomly picks a Sprite if multiple Sprites share the same mask. Otherwise, uses the first Sprite set with the mask.                                                     |
+| Used Textures          | Sprites will be used from the selected Textures to make up the ruleset. You will be able to set the appropriate Sprites by painting the masks on the Sprites.            |
 
 ### Usage
 
