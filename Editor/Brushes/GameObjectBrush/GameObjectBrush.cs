@@ -726,7 +726,7 @@ namespace UnityEditor.Tilemaps
                 int hash;
                 unchecked
                 {
-                    hash = gameObject != null ? gameObject.GetInstanceID() : 0;
+                    hash = gameObject != null ? gameObject.GetEntityId() : 0;
                     hash = hash * 33 + offset.GetHashCode();
                     hash = hash * 33 + scale.GetHashCode();
                     hash = hash * 33 + orientation.GetHashCode();

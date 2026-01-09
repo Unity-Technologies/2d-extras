@@ -107,7 +107,7 @@ namespace UnityEngine.Tilemaps
         /// <summary>
         /// Checks Physics Shape of Sprite before determining Collider Type
         /// </summary>
-        internal bool physicsShapeCheck { get { return m_PhysicsShapeCheck; } set { m_PhysicsShapeCheck = value; } }
+        public bool physicsShapeCheck { get { return m_PhysicsShapeCheck; } set { m_PhysicsShapeCheck = value; } }
 
         [SerializeField, HideInInspector] internal AutoTileDictionary m_AutoTileDictionary = new AutoTileDictionary();
 

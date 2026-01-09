@@ -4,15 +4,20 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## [6.0.1] - 2025-09-25
+## [7.0.0] - 2025-09-30
+### Changed
+- Update Unity min version for package.
+
 ### Added
 - [AutoTile] Add Has Physics Shape property if Collider Type is set to Sprite. AutoTile will set Collider Type to Sprite if the Sprite has physics shape and set Collider Type to None if the Sprite has no physics shape.
+
+## [6.0.1] - 2025-09-25
 
 ### Fixed
 - [RuleTileEditor] Fix exception thrown when a Rule is added to an empty RuleTile, removed and added again.
 - [AutoTileEditor] Fix minimum texture scale size when texture is smaller than 256 pixels
 - [AutoTileEditor] Fix texture display when texture is removed from AutoTile
-  
+
 ## [6.0.0] - 2025-07-17
 
 ### Changed
